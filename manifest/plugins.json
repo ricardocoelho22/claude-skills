@@ -1,0 +1,10 @@
+{
+  "_comment": "Claude Code plugins (separate mechanism from skills). Reinstalled via the `claude plugin` CLI. Mirrors ~/.claude/settings.json enabledPlugins + known_marketplaces.json.",
+  "marketplaces": [
+    { "name": "claude-plugins-official", "source": "anthropics/claude-plugins-official" }
+  ],
+  "plugins": [
+    "code-simplifier@claude-plugins-official",
+    "vercel@claude-plugins-official"
+  ]
+}

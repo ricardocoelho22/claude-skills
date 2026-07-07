@@ -1,0 +1,15 @@
+{
+  "_comment": "Third-party global skills you use but did not author. Reinstalled from upstream via the Skills CLI (`npx skills add <source> -g -y -s <name>`). Sources recovered from ~/.agents/.skill-lock.json.",
+  "skills": [
+    { "name": "find-skills",                  "source": "vercel-labs/skills",    "group": "General" },
+    { "name": "frontend-design",              "source": "anthropics/skills",     "group": "Anthropic (example-skills)" },
+    { "name": "excalidraw-diagram-generator", "source": "github/awesome-copilot", "group": "General" },
+    { "name": "grill-me",                     "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "grill-with-docs",              "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "to-prd",                       "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "to-issues",                    "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "tdd",                          "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "handoff",                      "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "teach",                        "source": "mattpocock/skills",     "group": "Matt Pocock" }
+  ]
+}
