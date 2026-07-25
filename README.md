@@ -51,7 +51,6 @@ Installed via the Skills CLI: `npx skills add <source> -g -y -s <name>`.
 |-------|--------|
 | `find-skills` | [`vercel-labs/skills`](https://github.com/vercel-labs/skills) |
 | `frontend-design` | [`anthropics/skills`](https://github.com/anthropics/skills) |
-| `excalidraw-diagram-generator` | [`github/awesome-copilot`](https://github.com/github/awesome-copilot) |
 | `grill-me` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `grill-with-docs` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `to-prd` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
