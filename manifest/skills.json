@@ -10,6 +10,12 @@
     { "name": "to-issues",                    "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "tdd",                          "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "handoff",                      "source": "mattpocock/skills",     "group": "Matt Pocock" },
-    { "name": "teach",                        "source": "mattpocock/skills",     "group": "Matt Pocock" }
+    { "name": "teach",                        "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "code-review",                  "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "implement",                    "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "research",                     "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "to-spec",                      "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "to-tickets",                   "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "wayfinder",                    "source": "mattpocock/skills",     "group": "Matt Pocock" }
   ]
 }

@@ -10,6 +10,7 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_SKILLS_DIR="${HOME}/.claude/skills"
+CLAUDE_AGENTS_DIR="${HOME}/.claude/agents"
 
 log()  { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m[warn]\033[0m %s\n' "$*" >&2; }
@@ -37,7 +38,28 @@ for dir in "${personal[@]}"; do
   fi
 done
 
-# --- 2. Third-party skills via the Skills CLI (npx skills) ---
+# --- 2. Sub-agent definitions: symlink repo agents/<name>.md -> ~/.claude/agents/ ---
+# Skills that delegate (e.g. implement-fleet) are inert without these.
+log "Linking sub-agents from agents/ …"
+mkdir -p "$CLAUDE_AGENTS_DIR"
+agents=("$REPO_DIR"/agents/*.md)
+if [ ${#agents[@]} -eq 0 ]; then
+  echo "   (none yet)"
+fi
+for src in "${agents[@]}"; do
+  name="$(basename "$src")"
+  target="$CLAUDE_AGENTS_DIR/$name"
+  if [ -L "$target" ] && [ "$(readlink "$target")" = "$src" ]; then
+    echo "   ok   $name (already linked)"
+  elif [ -e "$target" ] && [ ! -L "$target" ]; then
+    warn "$target exists and is not a symlink — leaving it untouched"
+  else
+    ln -sfn "$src" "$target"
+    echo "   link $name"
+  fi
+done
+
+# --- 3. Third-party skills via the Skills CLI (npx skills) ---
 log "Installing third-party skills (npx skills add) …"
 if ! command -v npx >/dev/null 2>&1; then
   warn "npx (Node.js) not found — skipping skills. Install Node.js, then re-run."
@@ -52,7 +74,7 @@ else
   ' "$REPO_DIR/manifest/skills.json")
 fi
 
-# --- 3. Plugins via the Claude Code CLI ---
+# --- 4. Plugins via the Claude Code CLI ---
 log "Configuring plugins (claude plugin) …"
 if ! command -v claude >/dev/null 2>&1; then
   warn "'claude' CLI not found — skipping plugins."

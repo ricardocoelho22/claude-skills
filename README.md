@@ -15,10 +15,33 @@ cd claude-skills
 
 | Path | What it is |
 |------|------------|
-| `skills/` | **My own** global skills (real files = source of truth). Symlinked into `~/.claude/skills/`. Empty for now. |
+| `skills/` | **My own** global skills (real files = source of truth). Symlinked into `~/.claude/skills/`. |
+| `agents/` | **My own** sub-agent definitions. Symlinked into `~/.claude/agents/`. |
 | `manifest/skills.json` | Third-party global skills I use but didn't write. Reinstalled from upstream. |
 | `manifest/plugins.json` | Claude Code plugins + their marketplace. |
 | `install.sh` | Bootstrap script. |
+
+## My own skills
+
+### `implement-fleet`
+
+Orchestrated version of `/implement`. The session model frames the work, holds the
+user gates, writes the briefs and verifies every return; pinned sub-agents do the
+execution. Split by phase:
+
+| Phase | Agent | Model |
+|-------|-------|-------|
+| Recon | `impl-explorer` | sonnet (read-only) |
+| Implement | `impl-tdd` | sonnet |
+| Review | `impl-reviewer` | opus (read-only, two axes in parallel) |
+
+Two user gates: seams + slice order before any test is written, and per-ticket
+before committing.
+
+**Depends on** the third-party `tdd` and `code-review` skills (both in
+`manifest/skills.json`) — `impl-tdd` reads `~/.claude/skills/tdd/SKILL.md`, and the
+orchestrator pastes the smell baseline out of `~/.claude/skills/code-review/SKILL.md`.
+Install those before using it.
 
 ## Third-party skills (reinstalled, not vendored)
 
@@ -36,6 +59,16 @@ Installed via the Skills CLI: `npx skills add <source> -g -y -s <name>`.
 | `tdd` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `handoff` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `teach` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `code-review` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `implement` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `research` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `to-spec` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `to-tickets` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `wayfinder` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+
+These are installer-managed (`~/.agents/.skill-lock.json`) — **never edit them in
+place**, the installer overwrites on update. Fork or write your own alongside, which
+is exactly why `implement-fleet` lives in `skills/` rather than patching `implement`.
 
 ## Plugins
 
@@ -51,6 +84,12 @@ Installed via `claude plugin`. Marketplace: [`anthropics/claude-plugins-official
 1. Create `skills/<name>/SKILL.md` (and any supporting files).
 2. Re-run `./install.sh` to symlink it into `~/.claude/skills/`.
 3. Commit and push.
+
+Same for a sub-agent: drop `agents/<name>.md` in, re-run `./install.sh`. Agent
+definitions are read at session start, so restart Claude Code before they appear.
+
+Keep paths inside these files `~`-relative, never `/Users/<me>/…` — they have to
+resolve on a machine with a different username.
 
 ## Adding a new third-party skill / plugin
 
