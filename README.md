@@ -56,7 +56,7 @@ Review runs `/code-review` with its reviewers spawned as `impl-reviewer`, so the
 review method tracks upstream `code-review` while the model stays pinned.
 
 **Depends on** the `codex` skill and CLI (optional: missing codex triggers the
-fallback), and the third-party `tdd` and `code-review` skills.
+fallback), and the third-party `tdd`, `code-review`, and `grilling` skills.
 
 ### `implement-fleet` (legacy)
 

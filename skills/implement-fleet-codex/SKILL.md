@@ -107,7 +107,12 @@ Done when: the run file holds the backend, BASE per repo, BASE failures, and a p
 
 ## Gate A — The plan 🚦 (optional)
 
-Stop only when the plan has open questions the user must resolve: seam candidates you cannot choose between, spec ambiguities with real downstream cost, unknowns that force a re-do if wrong. Ask them one per message. Otherwise state the ticket order and proceed.
+Stop only when the plan has open questions the user must resolve: seam candidates you cannot choose between, spec ambiguities with real downstream cost, unknowns that force a re-do if wrong. Otherwise state the ticket order and proceed.
+
+When you stop, invoke `/grilling` with two adaptations:
+
+- **Root:** the open questions above, not the whole spec. Grill only what hangs off them; decisions the spec already settles are out of bounds.
+- **Exit:** once the user confirms shared understanding, write each answer into the plan in the run file, then proceed.
 
 ## Phase 1 — Per ticket
 
