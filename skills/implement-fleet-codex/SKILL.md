@@ -39,29 +39,30 @@ Every executor runs sequentially: two executors touching one working tree collid
 **Backend check** (once, in Phase 0):
 
 ```
-codex exec -m gpt-6-luna -s read-only -o <run-dir>/probe.md "Reply with OK." </dev/null
+~/.claude/skills/codex/scripts/codex-run.sh -m gpt-6-luna -c model_reasoning_effort=low -s read-only \
+  -o <run-dir>/probe.md "Reply with OK."
 ```
 
-`probe.md` containing OK → backend `codex`. Anything else → backend `claude` for the whole run. Record the backend in the run file.
+Exit 0 → backend `codex`. Anything else → backend `claude` for the whole run. Record the backend in the run file.
 
-**Codex call.** Run from the repo root so session lookup by cwd works:
+**Codex call.** Through the `codex` skill's wrapper, from the repo root so session lookup by cwd works:
 
 ```
-cd <repo> && codex exec -s <sandbox> -m <model> -c model_reasoning_effort=<effort> \
+cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh -s <sandbox> -m <model> -c model_reasoning_effort=<effort> \
   -o <run-dir>/<ticket>-<slice>-<role>.md \
-  "Your role is defined in ~/.claude/agents/<role>.md: read it and follow it, ignoring its frontmatter. <brief>" </dev/null
+  "Your role is defined in ~/.claude/agents/<role>.md: read it and follow it, ignoring its frontmatter. <brief>"
 ```
 
-Sandbox is `workspace-write` unless the cast says `read-only`. Mechanics (flags, stdin, delivery) are in the `codex` skill.
+Sandbox is `workspace-write` unless the cast says `read-only`. Mechanics (flags, exit codes, delivery) are in the `codex` skill.
 
 **Claude call.** The Agent tool with `subagent_type: <role>`, the same brief, `run_in_background: false`.
 
-**Fallback.** A codex call has failed when its `-o` file is missing or empty (codex exits 0 even on a bad model slug). Re-run that one step on the Claude agent and note it in the run file. After two codex failures in one run, switch the rest of the run to `claude`.
+**Fallback.** A codex call has failed when the wrapper exits non-zero. Re-run that one step on the Claude agent and note it in the run file. After two codex failures in one run, switch the rest of the run to `claude`.
 
 **Session hygiene.** Start a fresh codex session per role per slice. Re-briefing the same executor on the same slice resumes instead, keeping its context and cache warm:
 
 ```
-cd <repo> && codex exec resume --last -o <run-dir>/<ticket>-<slice>-<role>-2.md "<follow-up brief>" </dev/null
+cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh resume --last -o <run-dir>/<ticket>-<slice>-<role>-2.md "<follow-up brief>"
 ```
 
 Briefs point at paths and commits; codex reads what it needs.

@@ -11,15 +11,18 @@ TDD at the wrong seam is expensive to redo. If the public seams the tests will s
 
 ## The pipeline
 
-1. **Delegate.** Hand codex the brief with `codex exec` (see `codex`). The brief states the work and instructs codex to: *use `$tdd` at the agreed seams, typecheck as you go, run the relevant tests.* Capture the `-o` result and the git diff.
+1. **Delegate.** Hand codex the brief through the `codex` skill's wrapper (`codex-run.sh`). The brief states the work and instructs codex to: *use `$tdd` at the agreed seams, typecheck as you go, run the relevant tests.* Capture the `-o` result and the git diff.
 
 2. **Review — a second codex agent.** A fresh, read-only codex running `$code-review`, returning a structured verdict:
 
    ```
-   codex exec -s read-only --output-schema <scratch>/verdict.json \
+   ~/.claude/skills/codex/scripts/codex-run.sh -s read-only \
+     --output-schema ~/.claude/skills/codex-implement/verdict.schema.json \
      -o <scratch>/review.md \
-     "Run \$code-review of the changes since <base>. Return {verdict:'pass'|'fail', issues:[{file,line,severity,note}]}."
+     "Run \$code-review of the changes since <base>. Return the verdict: fail when any issue must be fixed before commit."
    ```
+
+   `review.md` comes back as JSON: `{verdict: pass|fail, issues: [{file, line, severity: high|medium|low, note}]}`.
 
    Lighter native alternative: `codex review --uncommitted`.
 
