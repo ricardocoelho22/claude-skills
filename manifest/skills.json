@@ -15,6 +15,21 @@
     { "name": "research",                     "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "to-spec",                      "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "to-tickets",                   "source": "mattpocock/skills",     "group": "Matt Pocock" },
-    { "name": "wayfinder",                    "source": "mattpocock/skills",     "group": "Matt Pocock" }
+    { "name": "wayfinder",                    "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "grilling",                     "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "domain-modeling",              "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "wait-what",                    "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "codebase-design",              "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "ask-matt",                     "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "diagnosing-bugs",              "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "improve-codebase-architecture","source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "prototype",                    "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "resolving-merge-conflicts",    "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "setup-matt-pocock-skills",     "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "to-questionnaire",             "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "triage",                       "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "wizard",                       "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "writing-for-agents",           "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "retro",                        "source": "mattpocock/skills",     "group": "Matt Pocock" }
   ]
 }

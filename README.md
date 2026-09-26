@@ -30,61 +30,75 @@ clarity, ticket dependencies), and recommends `/implement` or `/implement-fleet`
 before either one starts. Confirms with the user, then hands off to whichever is
 chosen. Exists so the fleet/plain choice is made from evidence, not a guess.
 
-### `implement-fleet`
-
-Orchestrated version of `/implement`. The session model frames the work, holds the
-user gates, writes the briefs and verifies every return; pinned sub-agents do the
-execution. Split by phase:
-
-| Phase | Agent | Model |
-|-------|-------|-------|
-| Recon | `impl-explorer` | sonnet (read-only) |
-| Implement | `impl-tdd` | sonnet |
-| Review | `impl-reviewer` | opus (read-only, two axes in parallel) |
-
-Two user gates: seams + slice order before any test is written, and per-ticket
-before committing.
-
-**Depends on** the third-party `tdd` and `code-review` skills (both in
-`manifest/skills.json`) — `impl-tdd` reads `~/.claude/skills/tdd/SKILL.md`, and the
-orchestrator pastes the smell baseline out of `~/.claude/skills/code-review/SKILL.md`.
-Install those before using it.
-
 ### `implement-fleet-codex`
 
-Successor to `implement-fleet`; the old skill stays as a fallback until this one
-has proven itself. Codex agents execute, Claude reviews, so every change gets a
-cross-model review. Falls back to the Claude agents when codex is unavailable.
+Orchestrated implementation of a spec or set of tickets, codex-first. The session
+model writes the plan and the briefs, holds the user gates, and verifies every
+return; codex agents execute and Claude reviews, so every change gets a
+cross-model review. When codex is unavailable (or a call fails), each step falls
+back to its Claude agent.
 
-| Phase | Role | Codex route | Claude fallback |
-|-------|------|-------------|-----------------|
+| Step | Role | Codex route | Claude fallback |
+|------|------|-------------|-----------------|
 | Recon | `impl-explorer` | `gpt-6-sol` medium, read-only | sonnet medium |
-| Tests / implement | `impl-tdd` | `gpt-6-sol` medium | sonnet medium |
+| Tests, then implement | `impl-tdd` | `gpt-6-sol` medium | sonnet medium |
 | Trim tests | `impl-trimmer` | `gpt-6-sol` medium | sonnet medium |
 | Review | `impl-reviewer` via `/code-review` | — | opus medium |
-| Fix | `impl-fixer` | `gpt-6-sol` high | sonnet high |
+| Fix (one round) | `impl-fixer` | `gpt-6-sol` high | sonnet high |
 | Manual checklist | ad hoc | `gpt-6-luna` low | haiku |
 
-Per ticket: slices (tests → implement) → trim → review → fix → manual checklist →
-Gate B (required, short report). Gate A (the plan) is optional.
+Flow: recon → BASE test failures recorded → plan → **Gate A** (optional: only
+when the plan has open questions) → per ticket: slices (tests → implement) →
+trim → review → fix → manual checklist → **Gate B** (required: a short report to
+read before committing) → cross-ticket review for multi-ticket runs.
 
-**Depends on** the `codex` CLI (optional; triggers the fallback when missing) and
-the `tdd` and `code-review` skills.
+Review runs `/code-review` with its reviewers spawned as `impl-reviewer`, so the
+review method tracks upstream `code-review` while the model stays pinned.
+
+**Depends on** the `codex` skill and CLI (optional: missing codex triggers the
+fallback), and the third-party `tdd` and `code-review` skills.
+
+### `implement-fleet` (legacy)
+
+The Claude-only predecessor of `implement-fleet-codex`, kept as a fallback until
+the codex version has proven itself, then retired. The session model does recon,
+writes briefs and holds the gates; `impl-tdd` writes tests and code on sonnet,
+`/code-review` reviews, and `impl-fixer` applies the fixes.
+
+**Depends on** the third-party `tdd` and `code-review` skills.
 
 ### `codex`
 
-Routing mechanics for handing a single task to the [codex CLI](https://github.com/openai/codex)
-via `codex exec` — sandbox flags, model/effort overrides, and how to take delivery
-(the `-o` file plus the git diff). No methodology; just the plumbing.
+Routing mechanics for handing a single task to the [codex CLI](https://github.com/openai/codex).
+Every call goes through `scripts/codex-run.sh`, a `codex exec` wrapper that closes
+stdin (an open stdin hangs backgrounded runs), writes the transcript to a log
+instead of the caller's context, and turns codex's silent failures into exit codes:
+2 for a codex error (bad model, usage limit), 3 for a missing `-o` output. Also
+covers sandbox flags, model/effort overrides, session resume, and taking delivery
+(the `-o` file plus the git diff).
 
 ### `codex-implement`
 
-Implement → review → verify pipeline on top of `codex`. Agrees seams with the user,
-has codex implement with `$tdd`, runs a second read-only codex on `$code-review` for
-a structured verdict, then verifies tests and typecheck locally before committing.
+Implement → review → verify pipeline on top of `codex`, for a single task. Agrees
+seams with the user, has codex implement with `$tdd`, runs a second read-only
+codex on `$code-review` returning a JSON verdict (schema in
+`verdict.schema.json`), then verifies tests and typecheck locally before committing.
 
 **Depends on** the `codex` CLI being installed and configured (`~/.codex/config.toml`),
 and on `tdd` / `code-review` being available to codex via `~/.agents/skills`.
+
+## My own sub-agents
+
+Each role file is the single definition of that role: Claude spawns it as a
+sub-agent, and `implement-fleet-codex` briefs codex to read the same file.
+
+| Agent | Role | Used by |
+|-------|------|---------|
+| `impl-explorer` | Read-only recon: files in scope, reuse, seams, commands | `implement-fleet-codex` |
+| `impl-tdd` | One slice test-first: test-writer or implementer mode | both fleets |
+| `impl-trimmer` | Deletes or merges redundant tests, one reason each | `implement-fleet-codex` |
+| `impl-reviewer` | Thin opus shell that follows the review brief it's given | `implement-fleet-codex` |
+| `impl-fixer` | Applies a triaged set of review findings, one round | both fleets |
 
 ## Third-party skills (reinstalled, not vendored)
 
@@ -107,6 +121,21 @@ Installed via the Skills CLI: `npx skills add <source> -g -y -s <name>`.
 | `to-spec` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `to-tickets` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `wayfinder` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `grilling` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `domain-modeling` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `wait-what` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `codebase-design` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `ask-matt` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `diagnosing-bugs` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `improve-codebase-architecture` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `prototype` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `resolving-merge-conflicts` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `setup-matt-pocock-skills` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `to-questionnaire` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `triage` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `wizard` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `writing-for-agents` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `retro` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 
 These are installer-managed (`~/.agents/.skill-lock.json`) — **never edit them in
 place**, the installer overwrites on update. Fork or write your own alongside, which
