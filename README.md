@@ -50,6 +50,21 @@ before committing.
 orchestrator pastes the smell baseline out of `~/.claude/skills/code-review/SKILL.md`.
 Install those before using it.
 
+### `codex`
+
+Routing mechanics for handing a single task to the [codex CLI](https://github.com/openai/codex)
+via `codex exec` — sandbox flags, model/effort overrides, and how to take delivery
+(the `-o` file plus the git diff). No methodology; just the plumbing.
+
+### `codex-implement`
+
+Implement → review → verify pipeline on top of `codex`. Agrees seams with the user,
+has codex implement with `$tdd`, runs a second read-only codex on `$code-review` for
+a structured verdict, then verifies tests and typecheck locally before committing.
+
+**Depends on** the `codex` CLI being installed and configured (`~/.codex/config.toml`),
+and on `tdd` / `code-review` being available to codex via `~/.agents/skills`.
+
 ## Third-party skills (reinstalled, not vendored)
 
 Installed via the Skills CLI: `npx skills add <source> -g -y -s <name>`.
