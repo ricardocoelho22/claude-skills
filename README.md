@@ -50,6 +50,27 @@ before committing.
 orchestrator pastes the smell baseline out of `~/.claude/skills/code-review/SKILL.md`.
 Install those before using it.
 
+### `implement-fleet-codex`
+
+Successor to `implement-fleet`; the old skill stays as a fallback until this one
+has proven itself. Codex agents execute, Claude reviews, so every change gets a
+cross-model review. Falls back to the Claude agents when codex is unavailable.
+
+| Phase | Role | Codex route | Claude fallback |
+|-------|------|-------------|-----------------|
+| Recon | `impl-explorer` | `gpt-6-sol` medium, read-only | sonnet medium |
+| Tests / implement | `impl-tdd` | `gpt-6-sol` medium | sonnet medium |
+| Trim tests | `impl-trimmer` | `gpt-6-sol` medium | sonnet medium |
+| Review | `impl-reviewer` via `/code-review` | — | opus medium |
+| Fix | `impl-fixer` | `gpt-6-sol` high | sonnet high |
+| Manual checklist | ad hoc | `gpt-6-luna` low | haiku |
+
+Per ticket: slices (tests → implement) → trim → review → fix → manual checklist →
+Gate B (required, short report). Gate A (the plan) is optional.
+
+**Depends on** the `codex` CLI (optional; triggers the fallback when missing) and
+the `tdd` and `code-review` skills.
+
 ### `codex`
 
 Routing mechanics for handing a single task to the [codex CLI](https://github.com/openai/codex)
