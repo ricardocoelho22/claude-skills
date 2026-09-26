@@ -23,6 +23,13 @@ cd claude-skills
 
 ## My own skills
 
+### `scout`
+
+Reads a spec or ticket(s), does light recon (repo count, subsystem spread, seam
+clarity, ticket dependencies), and recommends `/implement` or `/implement-fleet`
+before either one starts. Confirms with the user, then hands off to whichever is
+chosen. Exists so the fleet/plain choice is made from evidence, not a guess.
+
 ### `implement-fleet`
 
 Orchestrated version of `/implement`. The session model frames the work, holds the
