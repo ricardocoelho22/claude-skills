@@ -14,7 +14,7 @@ Same destination as `/implement-fleet` (working, reviewed, committed code), with
 Your four jobs, in priority order:
 
 1. **Hold the gates.** Sub-agents cannot talk to the user. Every human decision happens here, or it does not happen.
-2. **Write the briefs.** An executor knows nothing about this conversation. Brief quality caps output quality.
+2. **Write the briefs.** Brief quality caps output quality (see *Writing a brief*).
 3. **Verify the returns.** An executor's summary is a claim. Re-run the checks yourself.
 4. **Carry the thread.** You are the only participant who sees the whole run.
 
@@ -32,9 +32,9 @@ Your four jobs, in priority order:
 
 Role files live in `~/.claude/agents/`. Both backends read the same file, so a role has one definition.
 
-Every executor runs sequentially: two executors touching one working tree collide.
-
 ## Executors
+
+Executors run one at a time, since two executors touching one working tree collide. While one runs in the background, the working tree is its alone. Spend the wait on the user and the run file, and verify once its completion notice arrives.
 
 **Backend check** (once, in Phase 0):
 
@@ -43,7 +43,7 @@ Every executor runs sequentially: two executors touching one working tree collid
   -o <run-dir>/probe.md "Reply with OK."
 ```
 
-Exit 0 → backend `codex`. Anything else → backend `claude` for the whole run. Record the backend in the run file.
+It runs in the foreground, since it takes seconds. Exit 0 → backend `codex`. Anything else → backend `claude` for the whole run. Record the backend in the run file.
 
 **Codex call.** Through the `codex` skill's wrapper, from the repo root so session lookup by cwd works:
 
@@ -53,9 +53,9 @@ cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh -s <sandbox> -m <model>
   "Your role is defined in ~/.claude/agents/<role>.md: read it and follow it, ignoring its frontmatter. <brief>"
 ```
 
-Sandbox is `workspace-write` unless the cast says `read-only`. Mechanics (flags, exit codes, delivery) are in the `codex` skill.
+Sandbox is `workspace-write` unless the cast says `read-only`. Launch it with Bash `run_in_background: true`. Mechanics (flags, exit codes, background runs, delivery) are in the `codex` skill.
 
-**Claude call.** The Agent tool with `subagent_type: <role>`, the same brief, `run_in_background: false`.
+**Claude call.** The Agent tool with `subagent_type: <role>` and the same brief. Sub-agents already run in the background.
 
 **Fallback.** A codex call has failed when the wrapper exits non-zero. Re-run that one step on the Claude agent and note it in the run file. After two codex failures in one run, switch the rest of the run to `claude`.
 
@@ -64,8 +64,6 @@ Sandbox is `workspace-write` unless the cast says `read-only`. Mechanics (flags,
 ```
 cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh resume --last -o <run-dir>/<ticket>-<slice>-<role>-2.md "<follow-up brief>"
 ```
-
-Briefs point at paths and commits; codex reads what it needs.
 
 **New files.** After every executor return, run `git add -N` on the files it created, so every `git diff` below shows them.
 
@@ -83,7 +81,7 @@ git -C <repo> rev-parse HEAD                 # BASE — record it
 git -C <repo> status --porcelain             # must be clean, or ask the user
 ```
 
-A workspace can span several independent repos. Check; do not assume. Pin a separate BASE per repo.
+A workspace can span several independent repos, so check for them and pin a separate BASE per repo.
 
 **Open the run file.** Create `.scratch/implement-fleet/<slug>.md` (the run dir is `.scratch/implement-fleet/<slug>/`). It holds: spec path, backend, each repo's BASE and branch, BASE failures, the plan, and a per-slice landing log. You are the only writer. Confirm `.scratch/` is gitignored first; if not, use the session scratchpad directory and put its path in every brief.
 
@@ -93,7 +91,7 @@ A workspace can span several independent repos. Check; do not assume. Pin a sepa
 
 **Record BASE failures.** Run the full test suite once per repo. Write every failing test into the run file. A later failure on this list is pre-existing; a failure off it belongs to this run.
 
-**Write the plan** into the run file. You write it; it is the step where mistakes fan out into every later step.
+**Write the plan** into the run file yourself: mistakes here fan out into every later step.
 
 - **Ticket order**, derived from blocking edges.
 - **Per ticket:** the vertical slices in sequence; for each slice, the seams it tests (one line on why each earns a test) and its acceptance criteria.
@@ -159,7 +157,7 @@ Verify: the file exists and every item is a hand check.
 
 ## Gate B — Ready to commit 🚦 (required)
 
-The user reads the code here to stay grounded and catch quirks. Hand them a report that makes that fast. Use exactly this shape, one line per item, no paragraphs, around 20 lines:
+The user reads the code here to stay grounded and catch quirks. Hand them a report that makes that fast. Use exactly this shape, one line per item, around 20 lines:
 
 ```
 ## Ticket <NN> — <title>        ✅ tests · ✅ typecheck
@@ -204,7 +202,7 @@ An executor has no access to this conversation, the spec, or the user's answers.
 - **The boundary**: what is out of scope, and the instruction to stop and report rather than expand.
 - **What to return**, concretely.
 
-Quote content directly: "as discussed" and "the usual pattern" do not resolve inside an executor.
+Quote decisions and the user's answers directly: "as discussed" and "the usual pattern" do not resolve inside an executor. Point at files and commits by path; the executor reads them itself.
 
 ## When not to use this
 
