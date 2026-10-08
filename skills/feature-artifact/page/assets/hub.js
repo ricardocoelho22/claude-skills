@@ -164,7 +164,7 @@
     root.innerHTML = back +
       '<header><span class="eyebrow">Slice ' + String(idx + 1).padStart(2, "0") + "</span><h1>" + esc(s.title) + "</h1>" +
       '<p class="destination">' + esc(s.purpose) + "</p><div>" + chip(sliceStatus(s)) + "</div></header>" +
-      '<section><h2>Summary</h2><div class="prose short">' +
+      '<section><h2>Summary</h2><div class="prose">' +
       (s.summary ? md(s.summary) : '<p class="empty">No summary yet.</p>') + "</div>" +
       (s.specPath ? '<p class="muted">The full spec is <span class="mono">' + esc(s.specPath) + "</span>.</p>" : "") + "</section>" +
       "<section><h2>Tickets</h2>" + ticketList(s.tickets || []) + "</section>" + footer();
