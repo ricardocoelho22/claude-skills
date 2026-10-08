@@ -42,7 +42,7 @@ back to its Claude agent.
 | Trim tests | `impl-trimmer` | `gpt-6-sol` medium | haiku medium |
 
 Flow: recon → BASE test failures recorded → plan → **Gate A** (optional: only
-when the plan has open questions) → per ticket: slices (tests → implement) →
+when the plan has open questions) → per ticket: cycles (tests → implement) →
 review → fix → manual checklist → trim → **Gate B** (required: a short report to
 read before committing) → cross-ticket review for multi-ticket runs.
 
@@ -74,6 +74,20 @@ A ~15-line reading guide to a diff: read order with reasons, key changes,
 decisions (reasons only when recorded), and what to watch for. Orientation, not
 judgment. Orchestrate's Gate B report is a diff-tour plus the run's lines.
 
+### `feature-artifact`
+
+A feature's page, published as a claude.ai artifact: destination, architecture,
+vertical slices with their ticket status, and what waits on the user. The page is a
+view of the feature's files and is never edited by hand. `create` drafts the
+feature's `overview.md` for one review, then publishes. `refresh` rebuilds the page
+from the files and republishes it to the same URL, flagging drift (for example, a
+spec that changed after its summary was written). The page is fixed templates in
+`page/` that read a generated `data.json`, so it looks the same on every refresh.
+
+`feature-layout.md` is the shared convention for where feature files live: a
+features root above the repos, `specs/<slice>/` per vertical slice, and a tracker
+doc template that steers `wayfinder`, `to-spec`, and `to-tickets` into that tree.
+
 ### `codex`
 
 Routing mechanics for handing a single task to the [codex CLI](https://github.com/openai/codex).
@@ -102,7 +116,7 @@ sub-agent, and `orchestrate` briefs codex to read the same file.
 | Agent | Role | Used by |
 |-------|------|---------|
 | `impl-explorer` | Read-only recon: files in scope, reuse, seams, commands | `orchestrate` |
-| `impl-tdd` | One slice test-first: test-writer or implementer mode | `orchestrate` |
+| `impl-tdd` | One test-first cycle: test-writer or implementer mode | `orchestrate` |
 | `impl-trimmer` | Deletes or merges redundant tests, one reason each | `trim-tests`, `orchestrate` |
 | `impl-reviewer` | Thin opus shell that follows the review brief it's given | `orchestrate` |
 | `impl-fixer` | Applies a triaged set of review findings, one round | `orchestrate` |
