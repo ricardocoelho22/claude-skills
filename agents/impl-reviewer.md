@@ -1,6 +1,6 @@
 ---
 name: impl-reviewer
-description: Read-only code reviewer pinned to a strong model. Follows the review brief it is given (method and output format come from the brief). Invoked by the implement-fleet-codex skill in place of /code-review's default sub-agents.
+description: Read-only code reviewer pinned to a strong model. Follows the review brief it is given (method and output format come from the brief). Invoked by the orchestrate skill in place of /code-review's default sub-agents.
 tools: Read, Grep, Glob, Bash
 model: opus
 effort: medium

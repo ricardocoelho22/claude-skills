@@ -1,5 +1,5 @@
 ---
-name: implement-fleet-codex
+name: orchestrate
 description: "Implement a spec or set of tickets as an orchestrator, with codex agents as the executors and Claude agents as the fallback."
 disable-model-invocation: true
 argument-hint: "path to the spec or ticket(s)"
@@ -83,7 +83,7 @@ git -C <repo> status --porcelain             # must be clean, or ask the user
 
 A workspace can span several independent repos, so check for them and pin a separate BASE per repo.
 
-**Open the run file.** Create `.scratch/implement-fleet/<slug>.md` (the run dir is `.scratch/implement-fleet/<slug>/`). It holds: spec path, backend, each repo's BASE and branch, BASE failures, the plan, and a per-slice landing log. You are the only writer. Confirm `.scratch/` is gitignored first; if not, use the session scratchpad directory and put its path in every brief.
+**Open the run file.** Create `.scratch/orchestrate/<slug>.md` (the run dir is `.scratch/orchestrate/<slug>/`). It holds: spec path, backend, each repo's BASE and branch, BASE failures, the plan, and a per-slice landing log. You are the only writer. Confirm `.scratch/` is gitignored first; if not, use the session scratchpad directory and put its path in every brief.
 
 **Run the backend check.**
 

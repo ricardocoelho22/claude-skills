@@ -1,6 +1,6 @@
 ---
 name: impl-fixer
-description: Applies a consolidated set of code-review findings across a completed implementation. Invoked by the implement-fleet-codex skill after the final review phase; not for slice-level work.
+description: Applies a consolidated set of code-review findings across a completed implementation. Invoked by the orchestrate skill after the final review phase; not for slice-level work.
 model: sonnet
 effort: high
 ---

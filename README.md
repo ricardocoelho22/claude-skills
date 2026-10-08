@@ -23,7 +23,7 @@ cd claude-skills
 
 ## My own skills
 
-### `implement-fleet-codex`
+### `orchestrate`
 
 Orchestrated implementation of a spec or set of tickets, codex-first. The session
 model writes the plan and the briefs, holds the user gates, and verifies every
@@ -62,13 +62,13 @@ verifies against a snapshot that only tests were removed and everything stays gr
 
 At most 10 one-line hand checks (`do this → see this`) for a diff: only what a
 human must verify by looking (visual states, flows, timing, real external
-services). Also the rule set the fleet's checklist executor follows.
+services). Also the rule set orchestrate's checklist executor follows.
 
 ### `diff-tour`
 
 A ~15-line reading guide to a diff: read order with reasons, key changes,
 decisions (reasons only when recorded), and what to watch for. Orientation, not
-judgment. The fleet's Gate B report is a diff-tour plus the run's lines.
+judgment. Orchestrate's Gate B report is a diff-tour plus the run's lines.
 
 ### `codex`
 
@@ -93,15 +93,15 @@ and on `tdd` / `code-review` being available to codex via `~/.agents/skills`.
 ## My own sub-agents
 
 Each role file is the single definition of that role: Claude spawns it as a
-sub-agent, and `implement-fleet-codex` briefs codex to read the same file.
+sub-agent, and `orchestrate` briefs codex to read the same file.
 
 | Agent | Role | Used by |
 |-------|------|---------|
-| `impl-explorer` | Read-only recon: files in scope, reuse, seams, commands | `implement-fleet-codex` |
-| `impl-tdd` | One slice test-first: test-writer or implementer mode | `implement-fleet-codex` |
-| `impl-trimmer` | Deletes or merges redundant tests, one reason each | `trim-tests`, `implement-fleet-codex` |
-| `impl-reviewer` | Thin opus shell that follows the review brief it's given | `implement-fleet-codex` |
-| `impl-fixer` | Applies a triaged set of review findings, one round | `implement-fleet-codex` |
+| `impl-explorer` | Read-only recon: files in scope, reuse, seams, commands | `orchestrate` |
+| `impl-tdd` | One slice test-first: test-writer or implementer mode | `orchestrate` |
+| `impl-trimmer` | Deletes or merges redundant tests, one reason each | `trim-tests`, `orchestrate` |
+| `impl-reviewer` | Thin opus shell that follows the review brief it's given | `orchestrate` |
+| `impl-fixer` | Applies a triaged set of review findings, one round | `orchestrate` |
 
 ## Third-party skills (reinstalled, not vendored)
 
@@ -142,7 +142,7 @@ Installed via the Skills CLI: `npx skills add <source> -g -y -s <name>`.
 
 These are installer-managed (`~/.agents/.skill-lock.json`) — **never edit them in
 place**, the installer overwrites on update. Fork or write your own alongside, which
-is exactly why `implement-fleet-codex` lives in `skills/` rather than patching `implement`.
+is exactly why `orchestrate` lives in `skills/` rather than patching `implement`.
 
 ## Plugins
 
