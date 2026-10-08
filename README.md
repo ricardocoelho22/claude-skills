@@ -1,7 +1,8 @@
 # claude-skills
 
 My portable Claude Code setup. Clone it on a new laptop and run one script to
-restore all my global skills and plugins.
+link my own global skills and sub-agents. Third-party skills and plugins are
+listed in `manifest/` but installed by hand.
 
 ```bash
 git clone <this-repo-url> claude-skills
@@ -17,9 +18,9 @@ cd claude-skills
 |------|------------|
 | `skills/` | **My own** global skills (real files = source of truth). Symlinked into `~/.claude/skills/`. |
 | `agents/` | **My own** sub-agent definitions. Symlinked into `~/.claude/agents/`. |
-| `manifest/skills.json` | Third-party global skills I use but didn't write. Reinstalled from upstream. |
-| `manifest/plugins.json` | Claude Code plugins + their marketplace. |
-| `install.sh` | Bootstrap script. |
+| `manifest/skills.json` | Third-party global skills I use but didn't write. Not installed by `install.sh`. |
+| `manifest/plugins.json` | Claude Code plugins + their marketplace. Not installed by `install.sh`. |
+| `install.sh` | Symlinks `skills/` and `agents/` into `~/.claude/`. |
 
 ## My own skills
 
@@ -108,8 +109,8 @@ sub-agent, and `orchestrate` briefs codex to read the same file.
 
 ## Third-party skills (reinstalled, not vendored)
 
-Installed via the Skills CLI: `npx skills add <source> -g -y -s <names…>`, one call per
-source. Update them all with `npx skills update -g`.
+`install.sh` does not install these. Install by hand with the Skills CLI:
+`npx skills add <source> -g -y -s <names…>`, one call per source. Update them all with `npx skills update -g`.
 
 Matt also ships these as a self-updating Claude Code plugin (`mattpocock-skills`).
 They stay on the Skills CLI here because the plugin would namespace them
@@ -154,7 +155,8 @@ is exactly why `orchestrate` lives in `skills/` rather than patching `implement`
 
 ## Plugins
 
-Installed via `claude plugin`. Marketplace: [`anthropics/claude-plugins-official`](https://github.com/anthropics/claude-plugins-official).
+`install.sh` does not install these. Install by hand with `claude plugin marketplace add`
+and `claude plugin install <name> -s user`. Marketplace: [`anthropics/claude-plugins-official`](https://github.com/anthropics/claude-plugins-official).
 
 | Plugin | Marketplace |
 |--------|-------------|
@@ -175,8 +177,8 @@ resolve on a machine with a different username.
 
 ## Adding a new third-party skill / plugin
 
-Add an entry to `manifest/skills.json` or `manifest/plugins.json`, then re-run
-`./install.sh`. Find the upstream source of an installed skill in
+Install it by hand (see above) and add an entry to `manifest/skills.json` or
+`manifest/plugins.json` to keep the record. Find the upstream source of an installed skill in
 `~/.agents/.skill-lock.json`.
 
 ## Note on project-specific skills

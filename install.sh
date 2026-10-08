@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# Bootstrap your Claude Code skills + plugins on a fresh machine.
+# Link this repo's own Claude Code skills and sub-agents on a fresh machine.
+# Third-party skills and plugins are not installed; see manifest/ for the list.
 #
 #   git clone <this-repo> && cd claude-skills && ./install.sh
 #
@@ -59,47 +60,4 @@ for src in "${agents[@]}"; do
   fi
 done
 
-# --- 3. Third-party skills via the Skills CLI (npx skills) ---
-log "Installing third-party skills (npx skills add) …"
-if ! command -v npx >/dev/null 2>&1; then
-  warn "npx (Node.js) not found — skipping skills. Install Node.js, then re-run."
-else
-  # One call per source, so each upstream repo is cloned once. Commands inside the
-  # read loops get </dev/null so they cannot swallow the rest of the list.
-  while IFS=$'\t' read -r source names; do
-    [ -z "${names:-}" ] && continue
-    echo "   → $source ($names)"
-    # shellcheck disable=SC2086  # names is a space-separated list, split on purpose
-    npx -y skills add "$source" -g -y -s $names </dev/null || warn "skill install failed: $source ($names)"
-  done < <(node -e '
-    const m = require(process.argv[1]);
-    const bySource = {};
-    for (const s of m.skills) (bySource[s.source] ??= []).push(s.name);
-    for (const [src, names] of Object.entries(bySource)) console.log(`${src}\t${names.join(" ")}`);
-  ' "$REPO_DIR/manifest/skills.json")
-fi
-
-# --- 4. Plugins via the Claude Code CLI ---
-log "Configuring plugins (claude plugin) …"
-if ! command -v claude >/dev/null 2>&1; then
-  warn "'claude' CLI not found — skipping plugins."
-else
-  while IFS=$'\t' read -r kind val; do
-    case "$kind" in
-      MARKET)
-        echo "   + marketplace $val"
-        claude plugin marketplace add "$val" --scope user </dev/null || warn "marketplace add: $val (may already exist)"
-        ;;
-      PLUGIN)
-        echo "   + plugin $val"
-        claude plugin install "$val" -s user </dev/null || warn "plugin install: $val (may already be installed)"
-        ;;
-    esac
-  done < <(node -e '
-    const m = require(process.argv[1]);
-    for (const mp of m.marketplaces) console.log(`MARKET\t${mp.source}`);
-    for (const p of m.plugins) console.log(`PLUGIN\t${p}`);
-  ' "$REPO_DIR/manifest/plugins.json")
-fi
-
-log "Done. Restart Claude Code to load newly installed plugins/skills."
+log "Done. Restart Claude Code to load newly linked skills/agents."
