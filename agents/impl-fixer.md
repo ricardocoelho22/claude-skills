@@ -1,6 +1,6 @@
 ---
 name: impl-fixer
-description: Applies a triaged set of code-review findings, or the user's change requests at Gate B, across a completed implementation. Invoked by the orchestrate skill; not for slice-level work.
+description: Applies a triaged set of code-review findings, or the user's change requests at Gate B, across a completed implementation. Invoked by the orchestrate skill; not for cycle-level work.
 model: sonnet
 effort: high
 ---

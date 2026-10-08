@@ -36,7 +36,7 @@ The root is untracked by default. To keep history, the user can make it a privat
     archive/             old material kept for reference
 ```
 
-- A **slice** is a vertical slice of the feature: a piece that delivers something on its own, such as "users CRUD" or "connect the page to the API". Each slice has its own spec and tickets. (`orchestrate` calls the units inside one ticket **steps**.)
+- A **slice** is a vertical slice of the feature: a piece that delivers something on its own, such as "users CRUD" or "connect the page to the API". Each slice has its own spec and tickets. (`orchestrate` splits one ticket into test-first **cycles**; a cycle is not a slice.)
 - Every slice has a folder under `specs/`, also when the feature has only one slice. The tree has one shape, so no skill has to guess.
 - Ticket numbers are unique across the feature. A new ticket takes the next number after the highest one in any slice.
 - A ticket file starts with `# NN: <title>` and has a `Status:` line (bold markers allowed) and a `Blocked by:` line.

@@ -41,7 +41,7 @@ back to its Claude agent.
 | Trim tests | `impl-trimmer` | `gpt-6-sol` medium | haiku medium |
 
 Flow: recon → BASE test failures recorded → plan → **Gate A** (optional: only
-when the plan has open questions) → per ticket: slices (tests → implement) →
+when the plan has open questions) → per ticket: cycles (tests → implement) →
 review → fix → manual checklist → trim → **Gate B** (required: a short report to
 read before committing) → cross-ticket review for multi-ticket runs.
 
@@ -115,7 +115,7 @@ sub-agent, and `orchestrate` briefs codex to read the same file.
 | Agent | Role | Used by |
 |-------|------|---------|
 | `impl-explorer` | Read-only recon: files in scope, reuse, seams, commands | `orchestrate` |
-| `impl-tdd` | One slice test-first: test-writer or implementer mode | `orchestrate` |
+| `impl-tdd` | One test-first cycle: test-writer or implementer mode | `orchestrate` |
 | `impl-trimmer` | Deletes or merges redundant tests, one reason each | `trim-tests`, `orchestrate` |
 | `impl-reviewer` | Thin opus shell that follows the review brief it's given | `orchestrate` |
 | `impl-fixer` | Applies a triaged set of review findings, one round | `orchestrate` |
