@@ -49,6 +49,7 @@ On a Claude call, set the Agent tool's `model` and `effort`; on a codex call, `-
 - **Step up.** When verification rejects a return because the executor fell short (tests red for the wrong reason, typecheck failing, files touched outside its scope, checks left failing), re-run that step one rung up. A rejection that points at the plan (a test green before any production code, a seam that cannot hold) goes to the user instead: a stronger model cannot fix a wrong plan.
   - The re-run is a fresh call with the new rung's flags. Before it, restore every file the rejected return touched outside its scope from the call's checkpoint (see *Executors*), keep its in-scope work, and put the failing check output in the brief.
   - Each step steps up at most once. A second rejection, or a rejection at rung 4, goes to the user. The fixer's review round starts at rung 4, so its rejection goes straight to the user; Gate B change requests start lower and can step up.
+  - A failure counts against the executor unless it is on the BASE failures list, or three re-runs on unchanged code both pass and fail; log a flaky test next to the BASE failures.
   - A blocked executor has not been rejected: it gets a tighter brief (step 1b).
 - **Gate B changes.** Sized by the request; see *Gate B*.
 
