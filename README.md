@@ -37,7 +37,7 @@ back to its Claude agent.
 | Tests, then implement | `impl-tdd` | `gpt-6-sol` medium | sonnet medium |
 | Review | `impl-reviewer` via `/code-review` | — | opus medium |
 | Fix (one round) | `impl-fixer` | `gpt-6-sol` high | sonnet high |
-| Manual checklist | ad hoc | `gpt-6-luna` low | haiku |
+| Manual checklist | follows `manual-checklist` | `gpt-6-luna` low | haiku |
 | Trim tests | `impl-trimmer` | `gpt-6-sol` medium | sonnet medium |
 
 Flow: recon → BASE test failures recorded → plan → **Gate A** (optional: only
@@ -50,6 +50,25 @@ review method tracks upstream `code-review` while the model stays pinned.
 
 **Depends on** the `codex` skill and CLI (optional: missing codex triggers the
 fallback), and the third-party `tdd`, `code-review`, and `grilling` skills.
+
+### `trim-tests`
+
+Cuts freshly written tests down to the ones that earn their place: deletes and
+merges only, each removal tagged duplicate, mock-only, or off-seam. Scopes to
+test files changed since a base, confirms the seams, runs `impl-trimmer`, then
+verifies against a snapshot that only tests were removed and everything stays green.
+
+### `manual-checklist`
+
+At most 10 one-line hand checks (`do this → see this`) for a diff: only what a
+human must verify by looking (visual states, flows, timing, real external
+services). Also the rule set the fleet's checklist executor follows.
+
+### `diff-tour`
+
+A ~15-line reading guide to a diff: read order with reasons, key changes,
+decisions (reasons only when recorded), and what to watch for. Orientation, not
+judgment. The fleet's Gate B report is a diff-tour plus the run's lines.
 
 ### `codex`
 
@@ -80,7 +99,7 @@ sub-agent, and `implement-fleet-codex` briefs codex to read the same file.
 |-------|------|---------|
 | `impl-explorer` | Read-only recon: files in scope, reuse, seams, commands | `implement-fleet-codex` |
 | `impl-tdd` | One slice test-first: test-writer or implementer mode | `implement-fleet-codex` |
-| `impl-trimmer` | Deletes or merges redundant tests, one reason each | `implement-fleet-codex` |
+| `impl-trimmer` | Deletes or merges redundant tests, one reason each | `trim-tests`, `implement-fleet-codex` |
 | `impl-reviewer` | Thin opus shell that follows the review brief it's given | `implement-fleet-codex` |
 | `impl-fixer` | Applies a triaged set of review findings, one round | `implement-fleet-codex` |
 

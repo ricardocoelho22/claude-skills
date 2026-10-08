@@ -145,7 +145,7 @@ Send the fix-now set to `impl-fixer` as one brief, quoting each finding with you
 
 ### 4. Manual checklist
 
-Brief the checklist executor with the ticket content, its seams, and `git diff <TICKET_BASE>`. Ask for a markdown checklist of at most 10 items: only checks a human does by hand (visual states, UI flows, timing), each one line: what to do, what to see. Save it next to the ticket as `manual-test-<NN>-<slug>.md`.
+Brief the checklist executor to read `~/.claude/skills/manual-checklist/SKILL.md` and follow it, with the ticket path, base `TICKET_BASE`, and the output path `manual-test-<NN>-<slug>.md` next to the ticket.
 
 Verify: the file exists and every item is a hand check.
 
@@ -157,17 +157,11 @@ Verify: the diff since the trimmer started only removes or merges test code, the
 
 ## Gate B — Ready to commit 🚦 (required)
 
-The user reads the code here to stay grounded and catch quirks. Hand them a report that makes that fast. Use exactly this shape, one line per item, around 20 lines:
+The user reads the code here to stay grounded and catch quirks. Hand them a report that makes that fast: the `/diff-tour` of the ticket against `TICKET_BASE`, with the test and typecheck status on its title line and the run's lines appended, around 25 lines in all:
 
 ```
 ## Ticket <NN> — <title>        ✅ tests · ✅ typecheck
-Read first: <file> (<why>), then <file>
-Changed: <n> files, +<a> −<d>
-
-Key changes:
-- <up to 3: behavior that changed, where>
-Decisions:
-- <up to 3: choice made — reason>
+<the diff-tour body: Read first … Watch for>
 
 Review:     <n> fixed · <n> deferred (<reason>) · <n> rejected
 Trimmed:    <test name> — <reason>   (one line each, or "none")
