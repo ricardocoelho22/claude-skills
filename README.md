@@ -23,13 +23,6 @@ cd claude-skills
 
 ## My own skills
 
-### `scout`
-
-Reads a spec or ticket(s), does light recon (repo count, subsystem spread, seam
-clarity, ticket dependencies), and recommends `/implement` or `/implement-fleet`
-before either one starts. Confirms with the user, then hands off to whichever is
-chosen. Exists so the fleet/plain choice is made from evidence, not a guess.
-
 ### `implement-fleet-codex`
 
 Orchestrated implementation of a spec or set of tickets, codex-first. The session
@@ -57,15 +50,6 @@ review method tracks upstream `code-review` while the model stays pinned.
 
 **Depends on** the `codex` skill and CLI (optional: missing codex triggers the
 fallback), and the third-party `tdd`, `code-review`, and `grilling` skills.
-
-### `implement-fleet` (legacy)
-
-The Claude-only predecessor of `implement-fleet-codex`, kept as a fallback until
-the codex version has proven itself, then retired. The session model does recon,
-writes briefs and holds the gates; `impl-tdd` writes tests and code on sonnet,
-`/code-review` reviews, and `impl-fixer` applies the fixes.
-
-**Depends on** the third-party `tdd` and `code-review` skills.
 
 ### `codex`
 
@@ -95,10 +79,10 @@ sub-agent, and `implement-fleet-codex` briefs codex to read the same file.
 | Agent | Role | Used by |
 |-------|------|---------|
 | `impl-explorer` | Read-only recon: files in scope, reuse, seams, commands | `implement-fleet-codex` |
-| `impl-tdd` | One slice test-first: test-writer or implementer mode | both fleets |
+| `impl-tdd` | One slice test-first: test-writer or implementer mode | `implement-fleet-codex` |
 | `impl-trimmer` | Deletes or merges redundant tests, one reason each | `implement-fleet-codex` |
 | `impl-reviewer` | Thin opus shell that follows the review brief it's given | `implement-fleet-codex` |
-| `impl-fixer` | Applies a triaged set of review findings, one round | both fleets |
+| `impl-fixer` | Applies a triaged set of review findings, one round | `implement-fleet-codex` |
 
 ## Third-party skills (reinstalled, not vendored)
 
@@ -139,7 +123,7 @@ Installed via the Skills CLI: `npx skills add <source> -g -y -s <name>`.
 
 These are installer-managed (`~/.agents/.skill-lock.json`) — **never edit them in
 place**, the installer overwrites on update. Fork or write your own alongside, which
-is exactly why `implement-fleet` lives in `skills/` rather than patching `implement`.
+is exactly why `implement-fleet-codex` lives in `skills/` rather than patching `implement`.
 
 ## Plugins
 

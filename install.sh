@@ -39,7 +39,7 @@ for dir in "${personal[@]}"; do
 done
 
 # --- 2. Sub-agent definitions: symlink repo agents/<name>.md -> ~/.claude/agents/ ---
-# Skills that delegate (e.g. implement-fleet) are inert without these.
+# Skills that delegate (e.g. implement-fleet-codex) are inert without these.
 log "Linking sub-agents from agents/ …"
 mkdir -p "$CLAUDE_AGENTS_DIR"
 agents=("$REPO_DIR"/agents/*.md)

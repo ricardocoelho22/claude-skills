@@ -1,13 +1,13 @@
 ---
 name: implement-fleet-codex
-description: "Implement a spec or set of tickets as an orchestrator, with codex agents as the executors and Claude agents as the fallback. Successor to implement-fleet."
+description: "Implement a spec or set of tickets as an orchestrator, with codex agents as the executors and Claude agents as the fallback."
 disable-model-invocation: true
 argument-hint: "path to the spec or ticket(s)"
 ---
 
 # Orchestrated implementation, codex-first
 
-Same destination as `/implement-fleet` (working, reviewed, committed code), with codex doing the execution and Claude doing the review. Code written by one model family and reviewed by another is the point: each catches the other's blind spots.
+Working, reviewed, committed code, with codex doing the execution and Claude doing the review. Code written by one model family and reviewed by another is the point: each catches the other's blind spots.
 
 **You are the orchestrator.** You write the plan and the briefs, hold the gates, and verify every return. Executors write code. Finding yourself editing a source file means you have taken an executor's job.
 

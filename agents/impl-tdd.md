@@ -1,6 +1,6 @@
 ---
 name: impl-tdd
-description: Executes one vertical slice of an implementation test-first, at seams that were already agreed with the user. Invoked by the implement-fleet skill with a self-contained brief; not for open-ended feature work.
+description: Executes one vertical slice of an implementation test-first, at seams that were already agreed with the user. Invoked by the implement-fleet-codex skill with a self-contained brief; not for open-ended feature work.
 model: sonnet
 effort: medium
 ---

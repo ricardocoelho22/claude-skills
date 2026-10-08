@@ -1,6 +1,6 @@
 ---
 name: impl-explorer
-description: Read-only reconnaissance for an implementation run. Maps the files that must change, the utilities worth reusing, the public seams tests should sit at, and the project's test/typecheck commands. Invoked by the implement-fleet skill; not for general search.
+description: Read-only reconnaissance for an implementation run. Maps the files that must change, the utilities worth reusing, the public seams tests should sit at, and the project's test/typecheck commands. Invoked by the implement-fleet-codex skill; not for general search.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 effort: medium
