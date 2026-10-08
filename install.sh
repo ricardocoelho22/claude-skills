@@ -64,13 +64,18 @@ log "Installing third-party skills (npx skills add) …"
 if ! command -v npx >/dev/null 2>&1; then
   warn "npx (Node.js) not found — skipping skills. Install Node.js, then re-run."
 else
-  while IFS=$'\t' read -r source name; do
-    [ -z "${name:-}" ] && continue
-    echo "   → $source ($name)"
-    npx -y skills add "$source" -g -y -s "$name" || warn "skill install failed: $name"
+  # One call per source, so each upstream repo is cloned once. Commands inside the
+  # read loops get </dev/null so they cannot swallow the rest of the list.
+  while IFS=$'\t' read -r source names; do
+    [ -z "${names:-}" ] && continue
+    echo "   → $source ($names)"
+    # shellcheck disable=SC2086  # names is a space-separated list, split on purpose
+    npx -y skills add "$source" -g -y -s $names </dev/null || warn "skill install failed: $source ($names)"
   done < <(node -e '
     const m = require(process.argv[1]);
-    for (const s of m.skills) console.log(`${s.source}\t${s.name}`);
+    const bySource = {};
+    for (const s of m.skills) (bySource[s.source] ??= []).push(s.name);
+    for (const [src, names] of Object.entries(bySource)) console.log(`${src}\t${names.join(" ")}`);
   ' "$REPO_DIR/manifest/skills.json")
 fi
 
@@ -83,11 +88,11 @@ else
     case "$kind" in
       MARKET)
         echo "   + marketplace $val"
-        claude plugin marketplace add "$val" --scope user || warn "marketplace add: $val (may already exist)"
+        claude plugin marketplace add "$val" --scope user </dev/null || warn "marketplace add: $val (may already exist)"
         ;;
       PLUGIN)
         echo "   + plugin $val"
-        claude plugin install "$val" -s user || warn "plugin install: $val (may already be installed)"
+        claude plugin install "$val" -s user </dev/null || warn "plugin install: $val (may already be installed)"
         ;;
     esac
   done < <(node -e '

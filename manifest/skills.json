@@ -5,13 +5,12 @@
     { "name": "frontend-design",              "source": "anthropics/skills",     "group": "Anthropic (example-skills)" },
     { "name": "grill-me",                     "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "grill-with-docs",              "source": "mattpocock/skills",     "group": "Matt Pocock" },
-    { "name": "to-prd",                       "source": "mattpocock/skills",     "group": "Matt Pocock" },
-    { "name": "to-issues",                    "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "tdd",                          "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "handoff",                      "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "teach",                        "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "code-review",                  "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "implement",                    "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "implement-spec",               "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "research",                     "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "to-spec",                      "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "to-tickets",                   "source": "mattpocock/skills",     "group": "Matt Pocock" },
@@ -24,12 +23,12 @@
     { "name": "diagnosing-bugs",              "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "improve-codebase-architecture","source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "prototype",                    "source": "mattpocock/skills",     "group": "Matt Pocock" },
-    { "name": "resolving-merge-conflicts",    "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "setup-matt-pocock-skills",     "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "to-questionnaire",             "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "triage",                       "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "wizard",                       "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "writing-for-agents",           "source": "mattpocock/skills",     "group": "Matt Pocock" },
-    { "name": "retro",                        "source": "mattpocock/skills",     "group": "Matt Pocock" }
+    { "name": "retro",                        "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "pr",                           "source": "mattpocock/skills",     "group": "Matt Pocock" }
   ]
 }

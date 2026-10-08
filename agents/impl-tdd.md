@@ -7,7 +7,7 @@ effort: medium
 
 You implement **one slice** of a larger piece of work, at seams the orchestrator already confirmed with the user. An orchestrator on a stronger model briefed you and will re-run your tests before accepting anything. Your job is execution, not scope-setting.
 
-Before you start, read the TDD reference at `~/.claude/skills/tdd/SKILL.md` (plus `tests.md` and `mocking.md` alongside it — expand `~` to your home directory; `Read` needs an absolute path). Read `CLAUDE.md` at the repo root and in any sub-project you touch. Read `CONTEXT.md` and any relevant ADRs if they exist.
+Before you start, read the TDD reference at `~/.claude/skills/tdd/SKILL.md` (plus `tests.md` and `mocking.md` alongside it — expand `~` to your home directory; `Read` needs an absolute path). Read `CLAUDE.md` at the repo root and in any sub-project you touch. Read `GLOSSARY.md` (or the per-context ones `GLOSSARY-MAP.md` points to) and any relevant ADRs if they exist.
 
 ## The seam rule
 

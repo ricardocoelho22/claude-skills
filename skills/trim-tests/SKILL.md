@@ -3,7 +3,7 @@ name: trim-tests
 description: Trim freshly written tests down to the ones that earn their place, deleting and merging only. Use when the user wants tests trimmed, pruned, or de-duplicated, or after test-first work (`/tdd`, `codex-implement`) has over-produced tests.
 ---
 
-Test-first agents over-produce: the same behavior pinned twice, tests that assert on a mock, tests that reach past the seams into internals. This skill cuts them. The trim rule and the removal reasons live in `~/.claude/agents/impl-trimmer.md`; the `impl-trimmer` agent applies them, and you set the scope and verify.
+Test-first agents over-produce: the same behavior pinned twice, tests that assert on a mock, tests that reach past the seams into internals, tests that pass by construction. This skill cuts them. The trim rule and the removal reasons live in `~/.claude/agents/impl-trimmer.md`; the `impl-trimmer` agent applies them, and you set the scope and verify.
 
 ## 1. Scope
 
@@ -39,7 +39,7 @@ The trimmer's return is a claim. Check it yourself:
 - **Deletes and merges only.** Diff each test file against its snapshot (`git diff --no-index`): every hunk removes tests or folds them together, and every surviving assertion is unchanged.
 - **Production untouched.** `git diff --stat <base>` matches the saved one on every non-test file.
 - **Green.** Run the single-test-file command for every touched file.
-- **Reasoned.** Every removal in the return carries one reason: duplicate, mock-only, or off-seam.
+- **Reasoned.** Every removal in the return carries one reason: duplicate, mock-only, off-seam, or tautological.
 
 A failed check gets the trim reverted from the snapshot, and the failure goes to the user.
 

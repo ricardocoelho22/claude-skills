@@ -71,7 +71,7 @@ cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh resume --last -o <run-d
 
 ## Phase 0 — Recon and plan
 
-Read the spec or tickets yourself, in full. This reading is your ground: the source of truth you judge every return against.
+Read the spec or tickets yourself, in full, fetching ticket references through the repo's issue tracker (`docs/agents/issue-tracker.md`). This reading is your ground: the source of truth you judge every return against.
 
 **Pin the ground.** For each git repo the work touches:
 
@@ -87,7 +87,7 @@ A workspace can span several independent repos, so check for them and pin a sepa
 
 **Run the backend check.**
 
-**Explore.** Brief the explorer with the spec path, the repo roots, and the feature in your own words. Spot-check its report: open every file it names as in scope and every reuse candidate. Its report is a claim.
+**Explore.** Brief the explorer with the spec path, the repo roots, and the feature in your own words. Save its report as `<run-dir>/recon.md` (a codex explorer's `-o` file already is). Spot-check it: open every file it names as in scope and every reuse candidate. Its report is a claim.
 
 **Record BASE failures.** Run the full test suite once per repo. Write every failing test into the run file. A later failure on this list is pre-existing; a failure off it belongs to this run.
 
@@ -99,7 +99,7 @@ A workspace can span several independent repos, so check for them and pin a sepa
 - **Commands**: verified from config: single test file, full suite, typecheck, lint. Name the package manager.
 - **Risks**: shared state, generated code, env vars, the BASE failures.
 
-**Track status.** Keep each ticket's status current in its markdown file under `features/`: `in-progress` when its first slice starts, `done` when Gate B's commit lands, `needs-info` when escalated to the user mid-work.
+**Track status** the way the repo's issue tracker records it: `in-progress` when a ticket's first slice starts, resolved the way the tracker closes work when Gate B's commit lands, `needs-info` when escalated to the user mid-work.
 
 Done when: the run file holds the backend, BASE per repo, BASE failures, and a plan with seams for every slice.
 
@@ -137,7 +137,7 @@ Invoke `/code-review` and follow its steps with two adaptations:
 - **Diff:** use `git diff <TICKET_BASE>` (working tree against the ticket's base) and the fixed point `TICKET_BASE`. The ticket is uncommitted, so the skill's `...HEAD` form would show nothing.
 - **Reviewers:** where it spawns the Standards and Spec sub-agents, spawn each as `subagent_type: impl-reviewer`, with the prompt the skill specifies.
 
-Triage the findings against your own reading of the code: fix now, deferred (logged in the run file with a reason), or rejected. A finding that a test is redundant, mock-only, or off-seam goes to the trim in step 5, not the fixer.
+Triage the findings against your own reading of the code: fix now, deferred (logged in the run file with a reason), or rejected. A finding that a test is redundant, mock-only, off-seam, or tautological goes to the trim in step 5, not the fixer.
 
 ### 3. Fix
 
@@ -183,6 +183,8 @@ Each ticket was reviewed on its own. Once all are committed, invoke `/code-revie
 
 Run the full test suite once per repo, yourself, plus lint and build if the project defines a combined gate. Compare failures against the BASE failures. Report: tickets landed, commits per repo, checklist paths, deferred findings, codex fallbacks taken, anything left unverified.
 
+Then offer `/retro` while this session is still in context. The run file is its primary source: fallbacks, blocked executors, fix rounds, and deferred findings are where the environment cost the run.
+
 ---
 
 ## Writing a brief
@@ -196,8 +198,4 @@ An executor has no access to this conversation, the spec, or the user's answers.
 - **The boundary**: what is out of scope, and the instruction to stop and report rather than expand.
 - **What to return**, concretely.
 
-Quote decisions and the user's answers directly: "as discussed" and "the usual pattern" do not resolve inside an executor. Point at files and commits by path; the executor reads them itself.
-
-## When not to use this
-
-A one-file change, a bug fix you already understand, or any task where framing costs more than doing. Use `/implement` for those.
+Quote what lives only in this conversation (decisions, the user's answers): "as discussed" and "the usual pattern" do not resolve inside an executor. Point at what lives in a file (the spec, `recon.md`, the plan in the run file, commits) by path instead of pasting it; the executor reads it itself.

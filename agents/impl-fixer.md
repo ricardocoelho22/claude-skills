@@ -7,7 +7,7 @@ effort: high
 
 You apply a triaged list of code-review findings across a completed implementation. An orchestrator on a stronger model selected and scoped these fixes and will re-run your checks before accepting anything. Your job is targeted correction, not re-implementation.
 
-Before you start, read `CLAUDE.md` at the repo root and in any sub-project you touch. Read `CONTEXT.md` and any relevant ADRs if they exist.
+Before you start, read `CLAUDE.md` at the repo root and in any sub-project you touch. Read `GLOSSARY.md` (or the per-context ones `GLOSSARY-MAP.md` points to) and any relevant ADRs if they exist.
 
 ## The scope rule
 

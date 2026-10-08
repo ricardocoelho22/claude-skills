@@ -51,10 +51,13 @@ review method tracks upstream `code-review` while the model stays pinned.
 **Depends on** the `codex` skill and CLI (optional: missing codex triggers the
 fallback), and the third-party `tdd`, `code-review`, and `grilling` skills.
 
+This is the main driver for all implementation work; it does not hand off to
+`/implement` or `/implement-spec`.
+
 ### `trim-tests`
 
 Cuts freshly written tests down to the ones that earn their place: deletes and
-merges only, each removal tagged duplicate, mock-only, or off-seam. Scopes to
+merges only, each removal tagged duplicate, mock-only, off-seam, or tautological. Scopes to
 test files changed since a base, confirms the seams, runs `impl-trimmer`, then
 verifies against a snapshot that only tests were removed and everything stays green.
 
@@ -105,7 +108,13 @@ sub-agent, and `orchestrate` briefs codex to read the same file.
 
 ## Third-party skills (reinstalled, not vendored)
 
-Installed via the Skills CLI: `npx skills add <source> -g -y -s <name>`.
+Installed via the Skills CLI: `npx skills add <source> -g -y -s <names…>`, one call per
+source. Update them all with `npx skills update -g`.
+
+Matt also ships these as a self-updating Claude Code plugin (`mattpocock-skills`).
+They stay on the Skills CLI here because the plugin would namespace them
+(`mattpocock-skills:tdd`) and move them out of `~/.agents/skills`, which breaks the
+path references in `impl-tdd` and the `$tdd` / `$code-review` calls codex makes.
 
 | Skill | Source |
 |-------|--------|
@@ -113,13 +122,12 @@ Installed via the Skills CLI: `npx skills add <source> -g -y -s <name>`.
 | `frontend-design` | [`anthropics/skills`](https://github.com/anthropics/skills) |
 | `grill-me` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `grill-with-docs` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
-| `to-prd` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
-| `to-issues` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `tdd` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `handoff` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `teach` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `code-review` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `implement` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `implement-spec` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `research` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `to-spec` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `to-tickets` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
@@ -132,13 +140,13 @@ Installed via the Skills CLI: `npx skills add <source> -g -y -s <name>`.
 | `diagnosing-bugs` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `improve-codebase-architecture` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `prototype` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
-| `resolving-merge-conflicts` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `setup-matt-pocock-skills` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `to-questionnaire` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `triage` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `wizard` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `writing-for-agents` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `retro` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `pr` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 
 These are installer-managed (`~/.agents/.skill-lock.json`) — **never edit them in
 place**, the installer overwrites on update. Fork or write your own alongside, which

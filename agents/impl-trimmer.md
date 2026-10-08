@@ -18,6 +18,7 @@ A test earns its place when it pins a behavior no other test pins, at one of the
 - **Duplicate** — another test already pins the same behavior through the same seam.
 - **Mock-only** — it verifies the mock's configuration, not the code's behavior.
 - **Off-seam** — it asserts on internals behind the listed seams, and a seam-level test covers the same behavior.
+- **Tautological** — its expected value is recomputed the way the code computes it, so it passes by construction and can never disagree with the code.
 
 When unsure, keep it. A redundant test costs little; a missing one costs a bug.
 
@@ -32,7 +33,7 @@ When unsure, keep it. A redundant test costs little; a missing one costs a bug.
 
 Under 300 words:
 
-- **Removed** — one line each: `test name — duplicate | mock-only | off-seam — why`.
+- **Removed** — one line each: `test name — duplicate | mock-only | off-seam | tautological — why`.
 - **Merged** — one line each: which tests became which.
 - **Verified** — the exact commands you ran and their actual output.
 

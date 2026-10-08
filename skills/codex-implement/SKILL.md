@@ -19,8 +19,10 @@ TDD at the wrong seam is expensive to redo. Confirm the public seams the tests w
    ~/.claude/skills/codex/scripts/codex-run.sh -s read-only \
      --output-schema ~/.claude/skills/codex-implement/verdict.schema.json \
      -o <scratch>/review.md \
-     "Run \$code-review of the changes since <base>. Return the verdict: fail when any issue must be fixed before commit."
+     "Run \$code-review of the changes since <base>. The spec is <spec path, or the task as briefed>. Return the verdict: fail when any issue must be fixed before commit."
    ```
+
+   Name the spec: `$code-review` otherwise stops to ask for one, and a non-interactive codex cannot answer.
 
    `review.md` comes back as JSON matching `verdict.schema.json`: a `pass`/`fail` verdict plus located issues.
 

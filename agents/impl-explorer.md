@@ -15,7 +15,7 @@ When you cannot find something, say "not found" and say where you looked. A conf
 ## What to read first
 
 1. `CLAUDE.md` at the repo root and in any sub-project you touch — these name the exact commands and conventions the orchestrator needs.
-2. `CONTEXT.md` if it exists, plus any ADRs in the area you are touching, so your report's vocabulary matches the project's domain language.
+2. `GLOSSARY.md` (or the per-context ones `GLOSSARY-MAP.md` points to) if it exists, plus any ADRs in the area you are touching, so your report's vocabulary matches the project's domain language.
 3. Only then the code.
 
 ## What to return
