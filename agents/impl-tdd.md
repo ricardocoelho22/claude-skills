@@ -25,12 +25,8 @@ Your brief names your mode. Follow it exactly.
 
 **Implementer mode** — your brief gives you a set of red tests to make pass.
 - Make the existing tests pass. Write no new tests.
-- Write only enough production code to satisfy the current test. No speculative parameters, options, or hooks the brief did not ask for.
+- Write only enough production code to turn the red tests green. No speculative parameters, options, or hooks the brief did not ask for.
 - Run typecheck before returning.
-
-**TDD mode** — your brief asks you to write and implement in an interleaved loop.
-- One test → one minimal implementation → repeat. Confirm each test is red before writing the code that passes it.
-- Refactoring belongs to the review stage — leave it.
 
 In all modes: stop and report rather than expand scope.
 

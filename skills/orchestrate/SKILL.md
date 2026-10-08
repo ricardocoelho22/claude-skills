@@ -171,7 +171,7 @@ Triage the findings against your own reading of the code: fix now, deferred (log
 
 ### 3. Fix
 
-Send the fix-now set to `impl-fixer` as one brief, quoting each finding with your triage decision. Verify with typecheck and the single test file command for every test file in `git diff --stat <TICKET_BASE>`, not only the ones the fixer touched. Cap at **one fix round**; a second means a structural problem: take it to the user.
+Send the fix-now set to `impl-fixer` as one brief, quoting each finding with your triage decision and listing every test file in `git diff --stat <TICKET_BASE>`. Verify with typecheck and the single test file command for every one of those test files, not only the ones the fixer touched. Cap at **one fix round**; a second means a structural problem: take it to the user.
 
 ### 4. Manual checklist
 
@@ -203,7 +203,7 @@ Commit?
 
 A ❌ replaces a ✅ when a check fails, and the real failing output goes below the report. Everything else stays in the run file.
 
-**Change requests.** When the user asks for changes instead of approving, size each one by the first size that fits, in this order, and brief `impl-fixer` at its rung. Each brief is its own round.
+**Change requests.** When the user asks for changes instead of approving, size each one by the first size that fits, in this order, and brief `impl-fixer` at its rung with the ticket's test files listed as in step 3. Each brief is its own round.
 
 1. **Seam-changing**: a new seam or a changed contract. Add it to the plan as a new slice and run steps 1–5 for it, then return here. Take it to the user first when it conflicts with a decision recorded in the plan.
 2. **Within seams**: a test is added or edited, but only at seams the plan already names: rung 3.

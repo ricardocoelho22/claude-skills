@@ -38,4 +38,4 @@ How this repo already does the thing being built — the closest 1-2 analogous i
 The exact, verified-from-config commands for: install, single test file, full test suite, typecheck, lint. Quote the `package.json` script or config file you sourced each from. Name the package manager.
 
 ### Risks and unknowns
-Anything that will bite the implementer: shared state, migrations, generated code, env vars, auth, cross-repo coupling, tests already failing on the base commit. State plainly what you could not determine.
+Anything that will bite the implementer: shared state, migrations, generated code, env vars, auth, cross-repo coupling. State plainly what you could not determine.

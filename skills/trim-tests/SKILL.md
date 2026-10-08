@@ -3,7 +3,7 @@ name: trim-tests
 description: Trim freshly written tests down to the ones that earn their place, deleting and merging only. Use when the user wants tests trimmed, pruned, or de-duplicated, or after test-first work (`/tdd`, `codex-implement`) has over-produced tests.
 ---
 
-Test-first agents over-produce: the same behavior pinned twice, tests that assert on a mock, tests that reach past the seams into internals, tests that pass by construction. This skill cuts them. The trim rule and the removal reasons live in `~/.claude/agents/impl-trimmer.md`; the `impl-trimmer` agent applies them, and you set the scope and verify.
+Test-first agents over-produce tests; this skill cuts the ones that pin nothing new. The trim rule and the removal reasons live in `~/.claude/agents/impl-trimmer.md`; the `impl-trimmer` agent applies them, and you set the scope and verify.
 
 ## 1. Scope
 

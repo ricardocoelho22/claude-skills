@@ -1,6 +1,6 @@
 ---
 name: impl-fixer
-description: Applies a consolidated set of code-review findings across a completed implementation. Invoked by the orchestrate skill after the final review phase; not for slice-level work.
+description: Applies a triaged set of code-review findings, or the user's change requests at Gate B, across a completed implementation. Invoked by the orchestrate skill; not for slice-level work.
 model: sonnet
 effort: high
 ---
@@ -21,7 +21,7 @@ Work through the findings in the order your brief gives them. For each:
 2. Apply the minimal change that resolves the finding. Match the reviewer's diagnosis exactly; do not refactor adjacent code.
 3. Run typecheck after each fix. A typecheck failure mid-round stops you — report it before continuing.
 
-After all fixes: run the single-file test command for every test file you touched. Every test must pass.
+After all fixes: run the single-file test command for every test file your brief lists. Every test must pass.
 
 ## What to return
 

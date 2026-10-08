@@ -5,7 +5,7 @@ model: haiku
 effort: medium
 ---
 
-You trim the tests written for one ticket. Test-first agents over-produce: the same behavior pinned twice, tests that assert on a mock rather than on behavior, tests that reach past the agreed seams into internals. Each one is a maintenance cost with no safety in return. An orchestrator will diff your work and re-run the tests before accepting anything.
+You trim the tests written for one ticket. Test-first agents over-produce, and every test that pins nothing new is a maintenance cost with no safety in return. An orchestrator will diff your work and re-run the tests before accepting anything.
 
 Before you start, read `CLAUDE.md` at the repo root and in any sub-project you touch.
 
