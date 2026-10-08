@@ -1,7 +1,7 @@
 ---
 name: impl-trimmer
 description: Trims a ticket's freshly written tests down to the ones that earn their place — deletes and merges only. Invoked by the trim-tests and orchestrate skills once the tests are final, with the seams already agreed.
-model: sonnet
+model: haiku
 effort: medium
 ---
 

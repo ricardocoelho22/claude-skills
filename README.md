@@ -33,12 +33,12 @@ back to its Claude agent.
 
 | Step | Role | Codex route | Claude fallback |
 |------|------|-------------|-----------------|
-| Recon | `impl-explorer` | `gpt-6-sol` medium, read-only | sonnet medium |
+| Recon | `impl-explorer` | `gpt-6-sol` medium, read-only | haiku medium |
 | Tests, then implement | `impl-tdd` | `gpt-6-sol` medium | sonnet medium |
 | Review | `impl-reviewer` via `/code-review` | — | opus medium |
 | Fix (one round) | `impl-fixer` | `gpt-6-sol` high | sonnet high |
 | Manual checklist | follows `manual-checklist` | `gpt-6-luna` low | haiku |
-| Trim tests | `impl-trimmer` | `gpt-6-sol` medium | sonnet medium |
+| Trim tests | `impl-trimmer` | `gpt-6-sol` medium | haiku medium |
 
 Flow: recon → BASE test failures recorded → plan → **Gate A** (optional: only
 when the plan has open questions) → per ticket: slices (tests → implement) →
