@@ -25,9 +25,9 @@ Your four jobs, in priority order:
 | Orchestrator + planner | — (you) | — | session model |
 | Explorer | `impl-explorer` | `gpt-6-sol` · medium · `read-only` | `impl-explorer` |
 | Test-writer / Implementer | `impl-tdd` | `gpt-6-sol` · medium | `impl-tdd` |
-| Test trimmer | `impl-trimmer` | `gpt-6-sol` · medium | `impl-trimmer` |
 | Fixer | `impl-fixer` | `gpt-6-sol` · high | `impl-fixer` |
 | Manual checklist | — (ad hoc) | `gpt-6-luna` · low | general-purpose, `model: haiku` |
+| Test trimmer | `impl-trimmer` | `gpt-6-sol` · medium | `impl-trimmer` |
 | Reviewer | `impl-reviewer` | — (always Claude) | `impl-reviewer` (opus · medium) |
 
 Role files live in `~/.claude/agents/`. Both backends read the same file, so a role has one definition.
@@ -130,30 +130,30 @@ Verify: the diff touches production files only, typecheck is clean, the single t
 
 Append what landed to the run file.
 
-### 2. Trim
-
-Brief `impl-trimmer` with the ticket's test files (from `git diff --stat <TICKET_BASE>`), the plan's seams for the ticket, and the commands.
-
-Verify: the diff since the trimmer started only removes or merges test code, the tests stay green, and every removal carries a reason in its return. Put the removals in the run file for Gate B.
-
-### 3. Review
+### 2. Review
 
 Invoke `/code-review` and follow its steps with two adaptations:
 
 - **Diff:** use `git diff <TICKET_BASE>` (working tree against the ticket's base) and the fixed point `TICKET_BASE`. The ticket is uncommitted, so the skill's `...HEAD` form would show nothing.
 - **Reviewers:** where it spawns the Standards and Spec sub-agents, spawn each as `subagent_type: impl-reviewer`, with the prompt the skill specifies.
 
-Triage the findings against your own reading of the code: fix now, deferred (logged in the run file with a reason), or rejected.
+Triage the findings against your own reading of the code: fix now, deferred (logged in the run file with a reason), or rejected. A finding that a test is redundant, mock-only, or off-seam goes to the trim in step 5, not the fixer.
 
-### 4. Fix
+### 3. Fix
 
 Send the fix-now set to `impl-fixer` as one brief, quoting each finding with your triage decision. Verify with typecheck and the single test file command for every touched test file. Cap at **one fix round**; a second means a structural problem: take it to the user.
 
-### 5. Manual checklist
+### 4. Manual checklist
 
 Brief the checklist executor with the ticket content, its seams, and `git diff <TICKET_BASE>`. Ask for a markdown checklist of at most 10 items: only checks a human does by hand (visual states, UI flows, timing), each one line: what to do, what to see. Save it next to the ticket as `manual-test-<NN>-<slug>.md`.
 
 Verify: the file exists and every item is a hand check.
+
+### 5. Trim
+
+Trim runs last, once the ticket's tests are final, so no fixer time goes into tests that are about to be cut. Brief `impl-trimmer` with the ticket's test files (from `git diff --stat <TICKET_BASE>`), the plan's seams for the ticket, the commands, and the test findings routed here in step 2.
+
+Verify: the diff since the trimmer started only removes or merges test code, the tests stay green, and every removal carries a reason in its return. Put the removals in the run file for Gate B.
 
 ## Gate B — Ready to commit 🚦 (required)
 
@@ -183,7 +183,7 @@ On approval, commit per repo on the current branch in the project's commit style
 
 ## Phase 2 — Cross-ticket review (multi-ticket runs only)
 
-Each ticket was reviewed on its own. Once all are committed, invoke `/code-review` with fixed point BASE, reviewers spawned as `impl-reviewer`, and add to the brief: **per-ticket review is done; report only issues that span tickets** (duplicated helpers, inconsistent naming, contracts that drifted between tickets). Triage and fix as in steps 3–4, then commit the fixes.
+Each ticket was reviewed on its own. Once all are committed, invoke `/code-review` with fixed point BASE, reviewers spawned as `impl-reviewer`, and add to the brief: **per-ticket review is done; report only issues that span tickets** (duplicated helpers, inconsistent naming, contracts that drifted between tickets). Triage and fix as in steps 2–3, then commit the fixes.
 
 ## Finish
 

@@ -35,14 +35,14 @@ back to its Claude agent.
 |------|------|-------------|-----------------|
 | Recon | `impl-explorer` | `gpt-6-sol` medium, read-only | sonnet medium |
 | Tests, then implement | `impl-tdd` | `gpt-6-sol` medium | sonnet medium |
-| Trim tests | `impl-trimmer` | `gpt-6-sol` medium | sonnet medium |
 | Review | `impl-reviewer` via `/code-review` | — | opus medium |
 | Fix (one round) | `impl-fixer` | `gpt-6-sol` high | sonnet high |
 | Manual checklist | ad hoc | `gpt-6-luna` low | haiku |
+| Trim tests | `impl-trimmer` | `gpt-6-sol` medium | sonnet medium |
 
 Flow: recon → BASE test failures recorded → plan → **Gate A** (optional: only
 when the plan has open questions) → per ticket: slices (tests → implement) →
-trim → review → fix → manual checklist → **Gate B** (required: a short report to
+review → fix → manual checklist → trim → **Gate B** (required: a short report to
 read before committing) → cross-ticket review for multi-ticket runs.
 
 Review runs `/code-review` with its reviewers spawned as `impl-reviewer`, so the

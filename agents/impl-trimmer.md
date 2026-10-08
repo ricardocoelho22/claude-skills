@@ -1,6 +1,6 @@
 ---
 name: impl-trimmer
-description: Trims a ticket's freshly written tests down to the ones that earn their place — deletes and merges only. Invoked by the implement-fleet-codex skill after a ticket's slices are green; not for general test cleanup.
+description: Trims a ticket's freshly written tests down to the ones that earn their place — deletes and merges only. Invoked by the implement-fleet-codex skill as a ticket's last step, once its tests are final; not for general test cleanup.
 model: sonnet
 effort: medium
 ---
