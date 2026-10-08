@@ -73,6 +73,20 @@ A ~15-line reading guide to a diff: read order with reasons, key changes,
 decisions (reasons only when recorded), and what to watch for. Orientation, not
 judgment. Orchestrate's Gate B report is a diff-tour plus the run's lines.
 
+### `feature-artifact`
+
+A feature's page, published as a claude.ai artifact: destination, architecture,
+vertical slices with their ticket status, and what waits on the user. The page is a
+view of the feature's files and is never edited by hand. `create` drafts the
+feature's `overview.md` for one review, then publishes. `refresh` rebuilds the page
+from the files and republishes it to the same URL, flagging drift (for example, a
+spec that changed after its summary was written). The page is fixed templates in
+`page/` that read a generated `data.json`, so it looks the same on every refresh.
+
+`feature-layout.md` is the shared convention for where feature files live: a
+features root above the repos, `specs/<slice>/` per vertical slice, and a tracker
+doc template that steers `wayfinder`, `to-spec`, and `to-tickets` into that tree.
+
 ### `codex`
 
 Routing mechanics for handing a single task to the [codex CLI](https://github.com/openai/codex).
