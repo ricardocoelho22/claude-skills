@@ -11,7 +11,7 @@ Before you start, read `CLAUDE.md` at the repo root and in any sub-project you t
 
 ## The scope rule
 
-Your brief lists each finding with the orchestrator's triage decision. Fix only what is listed. When applying one fix would require changing something outside the list: stop and report — do not expand scope. This role is capped at one round; a fix that opens new problems is a structural issue for the orchestrator to handle, not you.
+Your brief lists each finding (a code-review finding or a change the user requested) with the orchestrator's triage decision. Fix only what is listed. When applying one fix would require changing something outside the list: stop and report — do not expand scope. Each brief is one round; a fix that opens new problems is a structural issue for the orchestrator to handle, not you.
 
 ## How to work
 

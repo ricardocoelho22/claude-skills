@@ -32,6 +32,26 @@ Your four jobs, in priority order:
 
 Role files live in `~/.claude/agents/`. Both backends read the same file, so a role has one definition.
 
+## Rungs
+
+The cast sets each executor's default; the reviewer stays pinned to its cast entry. Three cases move an executor call up or down this ladder:
+
+| Rung | Claude (`model` · `effort`) | Codex (`-m` · effort) |
+|---|---|---|
+| 1 | `haiku` · low | `gpt-6-luna` · low |
+| 2 | `haiku` · medium | `gpt-6-luna` · medium |
+| 3 | `sonnet` · medium | `gpt-6-sol` · medium |
+| 4 | `sonnet` · high | `gpt-6-sol` · high |
+
+On a Claude call, set the Agent tool's `model` and `effort`; on a codex call, `-m` and `-c model_reasoning_effort=`. Rung 4 is the ceiling: moves never go past it. Log each call's rung, and every step-up, in the run file's landing log.
+
+- **Slice marks.** Executors on a slice the plan marks `mechanical` run one rung down from their default; `design-heavy`, one rung up.
+- **Step up.** When verification rejects a return because the executor fell short (tests red for the wrong reason, typecheck failing, files touched outside its scope, checks left failing), re-run that step one rung up. A rejection that points at the plan (a test green before any production code, a seam that cannot hold) goes to the user instead: a stronger model cannot fix a wrong plan.
+  - The re-run is a fresh call with the new rung's flags. Before it, restore every file the rejected return touched outside its scope from the call's checkpoint (see *Executors*), keep its in-scope work, and put the failing check output in the brief.
+  - Each step steps up at most once. A second rejection, or a rejection at rung 4, goes to the user. The fixer's review round starts at rung 4, so its rejection goes straight to the user; Gate B change requests start lower and can step up.
+  - A blocked executor has not been rejected: it gets a tighter brief (step 1b).
+- **Gate B changes.** Sized by the request; see *Gate B*.
+
 ## Executors
 
 Executors run one at a time, since two executors touching one working tree collide. While one runs in the background, the working tree is its alone. Spend the wait on the user and the run file, and verify once its completion notice arrives.
@@ -57,9 +77,18 @@ Sandbox is `workspace-write` unless the cast says `read-only`. Launch it with Ba
 
 **Claude call.** The Agent tool with `subagent_type: <role>` and the same brief. Sub-agents already run in the background.
 
-**Fallback.** A codex call has failed when the wrapper exits non-zero. Re-run that one step on the Claude agent and note it in the run file. After two codex failures in one run, switch the rest of the run to `claude`.
+**Checkpoint.** Before every executor call, snapshot each repo's working tree without touching it (`<run-dir>` as an absolute path), and record the tree hash with the call in the run file:
 
-**Session hygiene.** Start a fresh codex session per role per slice. Re-briefing the same executor on the same slice resumes instead, keeping its context and cache warm:
+```
+cp "$(git -C <repo> rev-parse --path-format=absolute --git-path index)" <run-dir>/snap.idx
+GIT_INDEX_FILE=<run-dir>/snap.idx git -C <repo> add -A && GIT_INDEX_FILE=<run-dir>/snap.idx git -C <repo> write-tree
+```
+
+`git -C <repo> diff <tree>` is then that call's delta, and `git -C <repo> restore --source=<tree> --worktree -- <file>` puts one file back as it was before the call (delete a file the call created).
+
+**Fallback.** A codex call has failed when the wrapper exits non-zero. Check its delta against the checkpoint and restore what it touched, then re-run that one step on the Claude agent at the same rung and note it in the run file. After two codex failures in one run, switch the rest of the run to `claude`.
+
+**Session hygiene.** Start a fresh codex session per role per slice. Re-briefing the same executor on the same slice at the same rung resumes instead, keeping its context and cache warm; a step-up is always a fresh call:
 
 ```
 cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh resume --last -o <run-dir>/<ticket>-<slice>-<role>-2.md "<follow-up brief>"
@@ -94,7 +123,7 @@ A workspace can span several independent repos, so check for them and pin a sepa
 **Write the plan** into the run file yourself: mistakes here fan out into every later step.
 
 - **Ticket order**, derived from blocking edges.
-- **Per ticket:** the vertical slices in sequence; for each slice, the seams it tests (one line on why each earns a test) and its acceptance criteria.
+- **Per ticket:** the vertical slices in sequence; for each slice, the seams it tests (one line on why each earns a test), its acceptance criteria, and a `mechanical` or `design-heavy` mark when it sits off the norm (see *Rungs*).
 - **Reuse**: helpers and fixtures executors must call instead of reimplementing.
 - **Commands**: verified from config: single test file, full suite, typecheck, lint. Name the package manager.
 - **Risks**: shared state, generated code, env vars, the BASE failures.
@@ -122,11 +151,11 @@ Each slice runs two executors in sequence. Complete both before starting the nex
 
 **1a — Tests.** Brief `impl-tdd` in test-writer mode: the slice's seams from the plan, the commands, the paths, and the boundary: **write failing tests only; return before writing production code.**
 
-Verify: `git -C <repo> diff --stat`, `git -C <repo> diff`, then the single test file command. Every changed file is a test file. Every test is red for a behavioral reason, not an import error or missing fixture. A test green before any production code means the seam is wrong: take it to the user.
+Verify: the call's delta (`git -C <repo> diff --stat <tree>`, then `git -C <repo> diff <tree>`), then the single test file command. Every changed file is a test file. Every test is red for a behavioral reason, not an import error or missing fixture. Typecheck errors are expected only where a test calls API the slice has not built yet. A test green before any production code means the seam is wrong: take it to the user.
 
 **1b — Implement.** Brief `impl-tdd` in implementer mode: the red test files, the commands, the paths, and the boundary: **make the red tests green; write no new tests and nothing speculative.**
 
-Verify: the diff touches production files only, typecheck is clean, the single test file is green. A blocked implementer gets a tighter brief, resumed on the same session.
+Verify: the call's delta (against its checkpoint) touches production files only, typecheck is clean, the single test file is green. A blocked implementer gets a tighter brief, resumed on the same session.
 
 Append what landed to the run file.
 
@@ -141,7 +170,7 @@ Triage the findings against your own reading of the code: fix now, deferred (log
 
 ### 3. Fix
 
-Send the fix-now set to `impl-fixer` as one brief, quoting each finding with your triage decision. Verify with typecheck and the single test file command for every touched test file. Cap at **one fix round**; a second means a structural problem: take it to the user.
+Send the fix-now set to `impl-fixer` as one brief, quoting each finding with your triage decision. Verify with typecheck and the single test file command for every test file in `git diff --stat <TICKET_BASE>`, not only the ones the fixer touched. Cap at **one fix round**; a second means a structural problem: take it to the user.
 
 ### 4. Manual checklist
 
@@ -173,15 +202,24 @@ Commit?
 
 A ❌ replaces a ✅ when a check fails, and the real failing output goes below the report. Everything else stays in the run file.
 
+**Change requests.** When the user asks for changes instead of approving, size each one by the first size that fits, in this order, and brief `impl-fixer` at its rung. Each brief is its own round.
+
+1. **Seam-changing**: a new seam or a changed contract. Add it to the plan as a new slice and run steps 1–5 for it, then return here. Take it to the user first when it conflicts with a decision recorded in the plan.
+2. **Within seams**: a test is added or edited, but only at seams the plan already names: rung 3.
+3. **Local code** (a refactor, a symbol rename): the ticket's existing tests still describe the result, so no test is added or edited: rung 2.
+4. **Text only** (docs, comments, a diagram): rung 1.
+
+Batch same-rung requests into one brief. Verify as in step 3; a local-code return that touched a test file was sized wrong, so restore that test file from the checkpoint and re-run the request as within-seams. A request rejected at rung 4 is too big for a Gate B change: take it to the user as a new slice or ticket. When behavior changed, update the manual checklist. Then re-show Gate B: after a within-seams change, the full report with a fresh `/diff-tour`; otherwise, the title line, one line per change, and `Commit?`.
+
 On approval, commit per repo on the current branch in the project's commit style. Start the next ticket at Phase 1. Re-open Gate A only when a ticket needs seams the plan does not cover.
 
 ## Phase 2 — Cross-ticket review (multi-ticket runs only)
 
-Each ticket was reviewed on its own. Once all are committed, invoke `/code-review` with fixed point BASE, reviewers spawned as `impl-reviewer`, and add to the brief: **per-ticket review is done; report only issues that span tickets** (duplicated helpers, inconsistent naming, contracts that drifted between tickets). Triage and fix as in steps 2–3, then commit the fixes.
+Each ticket was reviewed on its own. Once all are committed, invoke `/code-review` with fixed point BASE, reviewers spawned as `impl-reviewer`, and add to the brief: **per-ticket review is done; report only issues that span tickets** (duplicated helpers, inconsistent naming, contracts that drifted between tickets). Triage and fix as in steps 2–3, then run the full test suite once per repo and compare failures against the BASE failures. Show the fixes at a Gate B (the report's title line, the review line, one line per fix, and `Commit?`) and commit on approval.
 
 ## Finish
 
-Run the full test suite once per repo, yourself, plus lint and build if the project defines a combined gate. Compare failures against the BASE failures. Report: tickets landed, commits per repo, checklist paths, deferred findings, codex fallbacks taken, anything left unverified.
+Run the full test suite once per repo, yourself, plus lint and build if the project defines a combined gate. Compare failures against the BASE failures; a new failure goes to the user before you report. Report: tickets landed, commits per repo, checklist paths, deferred findings, codex fallbacks taken, step-ups (role, slice, from and to rung), anything left unverified.
 
 Then offer `/retro` while this session is still in context. The run file is its primary source: fallbacks, blocked executors, fix rounds, and deferred findings are where the environment cost the run.
 

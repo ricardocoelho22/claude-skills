@@ -21,6 +21,7 @@ Your brief names your mode. Follow it exactly.
 - Write all failing tests for this slice's confirmed seams.
 - Confirm each test is red for a genuine behavioral reason — not a missing import or fixture — before returning.
 - Return with no production code changed.
+- Typecheck errors are expected only where a test calls API this slice has not built yet; name them in your return.
 
 **Implementer mode** — your brief gives you a set of red tests to make pass.
 - Make the existing tests pass. Write no new tests.
