@@ -33,7 +33,7 @@ Find the features root (see *Features root* in the layout), then the feature fol
 1. **Gather** from the files:
    - **Slices**: from `## Slices` in `overview.md`, in that order. A slice's tickets are the files in its `issues/` folder that start with `# NN: <title>`; each ticket's state comes from its `Status:` line, mapped as *Ticket status* in the layout says. A `manual-test-NN-*.md` file is that ticket's checklist.
    - **Decisions**: each line under *Decisions so far* in `wayfinder/map.md`: the linked ticket title, and the gist cut to its first sentence. None when there is no map.
-   - **Related**: the links under `## Related` in `overview.md`.
+   - **Related**: the links under `## Related` in `overview.md`. When `delivery-tickets/` holds markdown files, add one more line with no link: "Delivery tickets: N drafts in delivery-tickets/".
 2. **Find what waits on the user.** Each finding is one line, in the writing rule's style:
    - a ticket in state `needs-you`, named with its slice;
    - a status word the layout does not list;
@@ -81,7 +81,7 @@ Build in `<scratchpad>/feature-artifact/<feature>/`, starting from an empty fold
   ],
   "waiting": [ { "text": "One line.", "href": "slice.html#<id> or doc.html#<id> or null" } ],
   "decisions": [ { "title": "Ticket title", "gist": "First sentence of the gist." } ],
-  "links": [ { "title": "From Related", "note": "Its one line", "href": "doc.html#<id> or src/proto/<name>.html" } ],
+  "links": [ { "title": "From Related", "note": "Its one line", "href": "doc.html#<id> or src/proto/<name>.html or null" } ],
   "docs": { "<id>": { "title": "Page title", "kind": "Manual checks | Research | Notes", "src": "src/docs/<id>.md" } },
   "published": ["", "./", "index.html", "slice.html", "doc.html", "<every other published path>"]
 }

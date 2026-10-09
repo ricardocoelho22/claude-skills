@@ -32,6 +32,8 @@ The root is untracked by default. To keep history, the user can make it a privat
           NN-<slug>.md               implementation tickets
           manual-test-NN-<slug>.md   manual checklists
           assets/                    images and files the tickets link
+    delivery-tickets/    drafts of tickets for the team's tracker (Linear, Jira)
+      assets/
     runs/                orchestrate run files
     scratchpad/          experiments, assets, prototypes
     archive/             old material kept for reference
@@ -41,6 +43,7 @@ The root is untracked by default. To keep history, the user can make it a privat
 - Every slice has a folder under `specs/`, also when the feature has only one slice. The tree has one shape, so no skill has to guess.
 - Ticket numbers are unique within a slice. Each slice numbers its tickets from `01`. To name a ticket outside its slice, give the slice too ("ticket 03 in users CRUD").
 - A ticket file starts with `# NN: <title>` and has a `Status:` line (bold markers allowed) and a `Blocked by:` line. Any other file in `issues/` is not a ticket, even when its name starts with a number (for example a handoff note).
+- `delivery-tickets/` holds drafts of tickets for the team's online tracker. They describe delivery for the team, so they need not match the slices one to one. The online tracker holds the real ticket and its status; the feature page only counts the drafts.
 - `scratchpad/` and `archive/` are not part of the feature page. A file there appears on the page only when `overview.md` links it under *Related*.
 
 ## Ticket status

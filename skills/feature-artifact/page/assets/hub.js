@@ -161,7 +161,7 @@
     }
     if ((data.links || []).length) {
       html += '<section id="links"><h2>Related</h2><ul class="list">' + data.links.map(function (l) {
-        return '<li><a href="' + esc(l.href) + '">' + esc(l.title) + "</a>" + (l.note ? '<span class="gist">' + esc(l.note) + "</span>" : "") + "</li>";
+        return "<li>" + (l.href ? '<a href="' + esc(l.href) + '">' + esc(l.title) + "</a>" : "<strong>" + esc(l.title) + "</strong>") + (l.note ? '<span class="gist">' + esc(l.note) + "</span>" : "") + "</li>";
       }).join("") + "</ul></section>";
     }
     root.innerHTML = html + footer();
