@@ -31,6 +31,9 @@ The root is untracked by default. To keep history, the user can make it a privat
         issues/
           NN-<slug>.md               implementation tickets
           manual-test-NN-<slug>.md   manual checklists
+          assets/                    images and files the tickets link
+    delivery-tickets/    drafts of tickets for the team's tracker (Linear, Jira)
+      assets/
     runs/                orchestrate run files
     scratchpad/          experiments, assets, prototypes
     archive/             old material kept for reference
@@ -38,20 +41,25 @@ The root is untracked by default. To keep history, the user can make it a privat
 
 - A **slice** is a vertical slice of the feature: a piece that delivers something on its own, such as "users CRUD" or "connect the page to the API". Each slice has its own spec and tickets. (`orchestrate` splits one ticket into test-first **cycles**; a cycle is not a slice.)
 - Every slice has a folder under `specs/`, also when the feature has only one slice. The tree has one shape, so no skill has to guess.
-- Ticket numbers are unique across the feature. A new ticket takes the next number after the highest one in any slice.
-- A ticket file starts with `# NN: <title>` and has a `Status:` line (bold markers allowed) and a `Blocked by:` line.
+- Ticket numbers are unique within a slice. Each slice numbers its tickets from `01`. To name a ticket outside its slice, give the slice too ("ticket 03 in users CRUD").
+- A ticket file starts with `# NN: <title>` and has a `Status:` line (bold markers allowed) and a `Blocked by:` line. Any other file in `issues/` is not a ticket, even when its name starts with a number (for example a handoff note).
+- `delivery-tickets/` holds drafts of tickets for the team's online tracker. They describe delivery for the team, so they need not match the slices one to one. The online tracker holds the real ticket and its status; the feature page only counts the drafts.
 - `scratchpad/` and `archive/` are not part of the feature page. A file there appears on the page only when `overview.md` links it under *Related*.
 
 ## Ticket status
 
-The repo's `triage-labels.md` gives the status strings. The feature page uses four states:
+Read the first word or term after `Status:`. Ignore bold markers and case, and treat spaces and underscores as hyphens (`Needs info` is `needs-info`). Any text after that term is a note and does not change the state. The repo's `triage-labels.md` can add status words; map each one to the state it means.
 
-| State | Status strings |
-|---|---|
-| `done` | done, resolved, closed |
-| `in-progress` | in-progress, claimed |
-| `needs-info` | needs-info |
-| `open` | any other string, or no `Status:` line |
+| State | Status words | On the feature page |
+|---|---|---|
+| `done` | done, resolved, closed, completed, shipped, merged | counts toward progress |
+| `in-progress` | in-progress, claimed, in-review | |
+| `needs-you` | needs-info, ready-for-human, needs-triage | listed under *Waiting on you* |
+| `open` | open, todo, ready-for-agent, blocked; no `Status:` line | |
+| `deferred` | deferred, on-hold, later | shown, left out of progress |
+| `dropped` | dropped, wontfix, won't-fix, archived, cancelled, duplicate | folded away, left out of progress |
+
+A word that is in neither list counts as `open`, and the page lists it under *Waiting on you* so someone can map it.
 
 ## overview.md
 
@@ -118,8 +126,8 @@ Issues and specs live as markdown files in the features root, outside this repo.
 
 - Features root: `<path>`. One feature per folder: `<features-root>/<feature>/`.
 - A spec is `<feature>/specs/<slice>/spec.md`. A slice is a vertical slice of the feature; when the user has not named one, ask which slice the spec is for.
-- Implementation tickets are one file each at `<feature>/specs/<slice>/issues/NN-<slug>.md`. Numbers are unique across the feature: take the next number after the highest one in any slice.
-- Triage state is a `Status:` line near the top of each ticket (see `triage-labels.md`).
+- Implementation tickets are one file each at `<feature>/specs/<slice>/issues/NN-<slug>.md`, numbered from `01` within the slice. Files the tickets link go in `<feature>/specs/<slice>/issues/assets/`.
+- Triage state is a `Status:` line near the top of each ticket (see `triage-labels.md`). Put the status word first; a note can follow it on the same line.
 - Comments append to the bottom of the file under a `## Comments` heading.
 
 ## When a skill says "publish to the issue tracker"

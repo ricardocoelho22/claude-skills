@@ -55,7 +55,7 @@ header { display: grid; gap: 0.7rem; }
 .progress span { display: block; height: 100%; }
 .progress .done { background: var(--done); }
 .progress .in-progress { background: var(--active); }
-.progress .needs-info { background: var(--wait); }
+.progress .needs-you { background: var(--wait); }
 
 /* Waiting on you */
 .waiting { background: var(--wait-bg); border: 1px solid var(--wait); border-radius: 8px; padding: 1rem 1.1rem; display: grid; gap: 0.5rem; }
@@ -87,8 +87,8 @@ header { display: grid; gap: 0.7rem; }
 .chip::before { content: ""; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: currentColor; }
 .chip.done { color: var(--done); }
 .chip.in-progress { color: var(--active); }
-.chip.needs-info { color: var(--wait); }
-.chip.open, .chip.not-started, .chip.no-tickets, .chip.planned { color: var(--idle); }
+.chip.needs-you { color: var(--wait); }
+.chip.open, .chip.not-started, .chip.no-tickets, .chip.planned, .chip.deferred, .chip.dropped { color: var(--idle); }
 
 /* Slice ledger */
 .ledger { border-top: 1px solid var(--rule); }
@@ -105,6 +105,7 @@ header { display: grid; gap: 0.7rem; }
 .tickets li { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr) auto; gap: 0.6rem; align-items: baseline; font-size: 0.93rem; }
 .tickets .tnum { font: 0.8rem var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
 .tickets li.is-done .ttitle { color: var(--muted); }
+.tickets li.is-dropped .ttitle { text-decoration: line-through; }
 .closed-group summary { cursor: pointer; color: var(--muted); font-size: 0.88rem; padding-block: 0.2rem; }
 
 /* Decisions and links */

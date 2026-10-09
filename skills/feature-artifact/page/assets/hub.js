@@ -4,7 +4,7 @@
   "use strict";
 
   var LABELS = {
-    "done": "Done", "in-progress": "In progress", "needs-info": "Needs you", "open": "Open",
+    "done": "Done", "in-progress": "In progress", "needs-you": "Needs you", "open": "Open", "deferred": "Deferred", "dropped": "Dropped",
     "not-started": "Not started", "no-tickets": "No tickets yet", "planned": "Planned"
   };
   var root = document.getElementById("app");
@@ -17,12 +17,18 @@
   }
   function chip(status) { return '<span class="chip ' + esc(status) + '">' + esc(LABELS[status] || status) + "</span>"; }
 
+  // Deferred and dropped tickets are set aside: shown, but left out of progress and slice status.
+  function setAside(t) { return t.status === "deferred" || t.status === "dropped"; }
+  function active(tickets) { return (tickets || []).filter(function (t) { return !setAside(t); }); }
+
   function sliceStatus(s) {
-    var t = s.tickets || [];
-    if (!t.length) return s.specPath ? "no-tickets" : "planned";
+    var all = s.tickets || [];
+    if (!all.length) return s.specPath ? "no-tickets" : "planned";
+    var t = active(all);
+    if (!t.length) return all.some(function (x) { return x.status === "deferred"; }) ? "deferred" : "dropped";
     var n = function (st) { return t.filter(function (x) { return x.status === st; }).length; };
     if (n("done") === t.length) return "done";
-    if (n("needs-info")) return "needs-info";
+    if (n("needs-you")) return "needs-you";
     if (n("in-progress") || n("done")) return "in-progress";
     return "not-started";
   }
@@ -84,11 +90,12 @@
   function ticketList(tickets) {
     var row = function (t) {
       var extra = t.checklist ? ' · <a href="doc.html#' + esc(t.checklist) + '">checks</a>' : "";
-      return '<li class="' + (t.status === "done" ? "is-done" : "") + '"><span class="tnum">#' + esc(t.num) + "</span>" +
+      return '<li class="' + (t.status === "done" || setAside(t) ? "is-done" : "") + (t.status === "dropped" ? " is-dropped" : "") + '"><span class="tnum">#' + esc(t.num) + "</span>" +
         '<span class="ttitle">' + esc(t.title) + extra + "</span>" + chip(t.status) + "</li>";
     };
-    var open = tickets.filter(function (t) { return t.status !== "done"; });
+    var open = active(tickets).filter(function (t) { return t.status !== "done"; });
     var done = tickets.filter(function (t) { return t.status === "done"; });
+    var aside = tickets.filter(setAside);
     var html = open.length ? '<ul class="tickets">' + open.map(row).join("") + "</ul>" : "";
     if (done.length) {
       var list = '<ul class="tickets">' + done.map(row).join("") + "</ul>";
@@ -96,21 +103,28 @@
         ? '<details class="closed-group"><summary>' + done.length + " done</summary>" + list + "</details>"
         : list;
     }
+    if (aside.length) {
+      html += '<details class="closed-group"><summary>' + aside.length + " deferred or dropped</summary>" +
+        '<ul class="tickets">' + aside.map(row).join("") + "</ul></details>";
+    }
     return html || '<p class="empty">No tickets yet.</p>';
   }
 
   function renderHub() {
-    var tickets = allTickets();
+    var everything = allTickets();
+    var tickets = active(everything);
+    var asideCount = everything.length - tickets.length;
     var count = function (st) { return tickets.filter(function (t) { return t.status === st; }).length; };
     var total = tickets.length || 1;
-    var bar = ["done", "in-progress", "needs-info"].map(function (st) {
+    var bar = ["done", "in-progress", "needs-you"].map(function (st) {
       return count(st) ? '<span class="' + st + '" style="width:' + (100 * count(st) / total) + '%"></span>' : "";
     }).join("");
 
     var html = '<header><span class="eyebrow">Feature</span><h1>' + esc(data.feature) + "</h1>" +
       '<p class="destination">' + esc(data.destination) + "</p>" +
       '<div class="progress" role="img" aria-label="' + count("done") + " of " + tickets.length + ' tickets done">' + bar + "</div>" +
-      '<div class="meta"><span>' + count("done") + " of " + tickets.length + " tickets done</span><span>" +
+      '<div class="meta"><span>' + count("done") + " of " + tickets.length + " tickets done" +
+      (asideCount ? " (" + asideCount + " deferred or dropped)" : "") + "</span><span>" +
       data.slices.length + (data.slices.length === 1 ? " slice" : " slices") + "</span><span>Updated " + esc(data.builtAt) + "</span></div></header>";
 
     if ((data.waiting || []).length) {
@@ -124,15 +138,15 @@
 
     html += '<section id="slices"><h2>Slices</h2><div class="ledger">' + data.slices.map(function (s, i) {
       var st = sliceStatus(s);
-      var t = s.tickets || [];
+      var t = active(s.tickets);
       var done = t.filter(function (x) { return x.status === "done"; }).length;
-      var openAttr = data.slices.length === 1 || st === "in-progress" || st === "needs-info" ? " open" : "";
+      var openAttr = data.slices.length === 1 || st === "in-progress" || st === "needs-you" ? " open" : "";
       return "<details" + openAttr + "><summary>" +
         '<span class="num">' + String(i + 1).padStart(2, "0") + "</span>" +
         '<span class="title">' + esc(s.title) + "</span>" +
         '<span class="side">' + chip(st) + '<span class="count">' + done + "/" + t.length + "</span></span>" +
         '<span class="purpose">' + esc(s.purpose) + "</span></summary>" +
-        '<div class="body">' + ticketList(t) +
+        '<div class="body">' + ticketList(s.tickets || []) +
         (s.summary ? '<a href="slice.html#' + esc(s.id) + '">Read the slice summary</a>' : '<span class="muted">No summary yet.</span>') +
         "</div></details>";
     }).join("") + "</div></section>";
@@ -147,7 +161,7 @@
     }
     if ((data.links || []).length) {
       html += '<section id="links"><h2>Related</h2><ul class="list">' + data.links.map(function (l) {
-        return '<li><a href="' + esc(l.href) + '">' + esc(l.title) + "</a>" + (l.note ? '<span class="gist">' + esc(l.note) + "</span>" : "") + "</li>";
+        return "<li>" + (l.href ? '<a href="' + esc(l.href) + '">' + esc(l.title) + "</a>" : "<strong>" + esc(l.title) + "</strong>") + (l.note ? '<span class="gist">' + esc(l.note) + "</span>" : "") + "</li>";
       }).join("") + "</ul></section>";
     }
     root.innerHTML = html + footer();

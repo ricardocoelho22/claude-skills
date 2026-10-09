@@ -31,11 +31,12 @@ Find the features root (see *Features root* in the layout), then the feature fol
 ## Refresh
 
 1. **Gather** from the files:
-   - **Slices**: from `## Slices` in `overview.md`, in that order. A slice's tickets are the `NN-*.md` files in its `issues/` folder; each ticket's state comes from its `Status:` line, mapped to the four states in the layout. A `manual-test-NN-*.md` file is that ticket's checklist.
+   - **Slices**: from `## Slices` in `overview.md`, in that order. A slice's tickets are the files in its `issues/` folder that start with `# NN: <title>`; each ticket's state comes from its `Status:` line, mapped as *Ticket status* in the layout says. A `manual-test-NN-*.md` file is that ticket's checklist.
    - **Decisions**: each line under *Decisions so far* in `wayfinder/map.md`: the linked ticket title, and the gist cut to its first sentence. None when there is no map.
-   - **Related**: the links under `## Related` in `overview.md`.
+   - **Related**: the links under `## Related` in `overview.md`. When `delivery-tickets/` holds markdown files, add one more line with no link: "Delivery tickets: N drafts in delivery-tickets/".
 2. **Find what waits on the user.** Each finding is one line, in the writing rule's style:
-   - a ticket in state `needs-info`;
+   - a ticket in state `needs-you`, named with its slice;
+   - a status word the layout does not list;
    - an open, unblocked, unclaimed wayfinder ticket of type `grilling` or `prototype` (a decision that needs the user);
    - a folder under `specs/` that `overview.md` does not list, or a listed `Folder:` that does not exist while the slice has a summary;
    - a `spec.md` changed after its slice's `Summary checked` date (compare the file's modification date);
@@ -74,13 +75,13 @@ Build in `<scratchpad>/feature-artifact/<feature>/`, starting from an empty fold
       "specPath": "specs/<slice>/spec.md, or null when the slice is planned",
       "summary": "Markdown of the slice's summary, copied as it is, or null",
       "tickets": [
-        { "num": "07", "title": "From the # heading, without the number", "status": "open | in-progress | needs-info | done", "checklist": "<doc id> or null" }
+        { "num": "07", "title": "From the # heading, without the number", "status": "open | in-progress | needs-you | done | deferred | dropped", "checklist": "<doc id> or null" }
       ]
     }
   ],
   "waiting": [ { "text": "One line.", "href": "slice.html#<id> or doc.html#<id> or null" } ],
   "decisions": [ { "title": "Ticket title", "gist": "First sentence of the gist." } ],
-  "links": [ { "title": "From Related", "note": "Its one line", "href": "doc.html#<id> or src/proto/<name>.html" } ],
+  "links": [ { "title": "From Related", "note": "Its one line", "href": "doc.html#<id> or src/proto/<name>.html or null" } ],
   "docs": { "<id>": { "title": "Page title", "kind": "Manual checks | Research | Notes", "src": "src/docs/<id>.md" } },
   "published": ["", "./", "index.html", "slice.html", "doc.html", "<every other published path>"]
 }
