@@ -22,7 +22,7 @@ Find the features root (see *Features root* in the layout), then the feature fol
 ## Create
 
 1. **Read the feature.** Read `wayfinder/map.md`, every `specs/<slice>/spec.md`, and the title and status of every ticket. In an older tree, read whatever specs, maps, and tickets the folder holds.
-2. **Draft `overview.md`** in the layout's format, following its writing rule. Every claim comes from a file you read: the destination from the map or the spec, the architecture and the slice summaries from the specs. When the feature has one spec that covers several slices, propose the slices and say which tickets go in each. Set each `Summary checked` to today.
+2. **Draft `overview.md`** in the layout's format, following its writing rule. Every claim comes from a file you read: the destination from the map or the spec, the architecture and the slice summaries from the specs, the experiments from resolved wayfinder `prototype` and `research` tickets and from experiment files in `scratchpad/`. When the feature has one spec that covers several slices, propose the slices and say which tickets go in each. Set each `Summary checked` to today.
 3. **Review with the user.** Show the draft and change it until the user approves it. The user reviews the overview once, here; later refreshes only read it. Write the approved file.
 
    Done when: the user has approved `overview.md` and it is on disk.
@@ -33,6 +33,7 @@ Find the features root (see *Features root* in the layout), then the feature fol
 1. **Gather** from the files:
    - **Slices**: from `## Slices` in `overview.md`, in that order. A slice's tickets are the files in its `issues/` folder that start with `# NN: <title>`; each ticket's state comes from its `Status:` line, mapped as *Ticket status* in the layout says. A `manual-test-NN-*.md` file is that ticket's checklist.
    - **Decisions**: each line under *Decisions so far* in `wayfinder/map.md`: the linked ticket title, and the gist cut to its first sentence. None when there is no map.
+   - **Experiments**: each entry under `## Experiments` in `overview.md`, in that order.
    - **Related**: the links under `## Related` in `overview.md`. When `delivery-tickets/` holds markdown files, add one more line with no link: "Delivery tickets: N drafts in delivery-tickets/".
 2. **Find what waits on the user.** Each finding is one line, in the writing rule's style:
    - a ticket in state `needs-you`, named with its slice;
@@ -40,7 +41,8 @@ Find the features root (see *Features root* in the layout), then the feature fol
    - an open, unblocked, unclaimed wayfinder ticket of type `grilling` or `prototype` (a decision that needs the user);
    - a folder under `specs/` that `overview.md` does not list, or a listed `Folder:` that does not exist while the slice has a summary;
    - a `spec.md` changed after its slice's `Summary checked` date (compare the file's modification date);
-   - a slice with a `spec.md` but no summary.
+   - a slice with a `spec.md` but no summary;
+   - a resolved wayfinder `prototype` ticket that no *Experiments* entry names as its source.
 
    Report drift on the page. Never fix `overview.md` during a refresh: the user, or the skill that changed the plan, updates it.
 3. **Build and publish** (below).
@@ -53,7 +55,7 @@ Done when: the publish succeeded and every finding from step 2 is on the page.
 Build in `<scratchpad>/feature-artifact/<feature>/`, starting from an empty folder each time.
 
 1. Copy everything in this skill's `page/` folder into the build folder. In `index.html`, replace the text of `<title>` with the feature name.
-2. Copy each checklist and each *Related* markdown file to `src/docs/<id>.md`, and each *Related* HTML prototype to `src/proto/<name>.html`. Copy them as they are; never edit a copied file.
+2. Copy each checklist, and each markdown file named under *Experiments* or *Related*, to `src/docs/<id>.md`. Copy each HTML prototype named there to `src/proto/<name>.html`. Copy them as they are; never edit a copied file. An experiment whose source is a folder or a branch gets no copy; the page shows its path.
 3. Write `data.json` (schema below).
 4. Publish with the `Artifact` tool: `file_path` is the build folder's `index.html`, `root` is the build folder, and `files` lists every other file in it. On a refresh, pass `url` from `overview.md`; when this session has not yet read or published that artifact, read it first (`action: "read"`). The page templates already meet the artifact page contract, so a refresh needs no design pass.
 
@@ -81,10 +83,11 @@ Build in `<scratchpad>/feature-artifact/<feature>/`, starting from an empty fold
   ],
   "waiting": [ { "text": "One line.", "href": "slice.html#<id> or doc.html#<id> or null" } ],
   "decisions": [ { "title": "Ticket title", "gist": "First sentence of the gist." } ],
+  "experiments": [ { "title": "From the ### heading", "result": "From Result:", "summary": "Its sentences, copied as they are", "source": "From Source:", "href": "doc.html#<id> or src/proto/<name>.html or null" } ],
   "links": [ { "title": "From Related", "note": "Its one line", "href": "doc.html#<id> or src/proto/<name>.html or null" } ],
-  "docs": { "<id>": { "title": "Page title", "kind": "Manual checks | Research | Notes", "src": "src/docs/<id>.md" } },
+  "docs": { "<id>": { "title": "Page title", "kind": "Manual checks | Experiment | Research | Notes", "src": "src/docs/<id>.md" } },
   "published": ["", "./", "index.html", "slice.html", "doc.html", "<every other published path>"]
 }
 ```
 
-A link inside copied markdown that points at a path not in `published` shows as plain text, so list every published path there.
+A link inside copied markdown that points at a path not in `published` shows as plain text, so list every published path there. One-line fields (titles, purposes, gists, results, waiting lines) take inline markdown. Raw HTML in any markdown shows as text.

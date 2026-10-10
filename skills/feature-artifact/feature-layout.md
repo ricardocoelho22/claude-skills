@@ -21,7 +21,7 @@ The root is untracked by default. To keep history, the user can make it a privat
 ```
 <features-root>/
   <feature>/
-    overview.md          the feature in one file: destination, intro, architecture, slices, links
+    overview.md          the feature in one file: destination, intro, architecture, slices, experiments, links
     wayfinder/
       map.md             the wayfinder map
       issues/NN-<slug>.md   decision tickets
@@ -44,7 +44,7 @@ The root is untracked by default. To keep history, the user can make it a privat
 - Ticket numbers are unique within a slice. Each slice numbers its tickets from `01`. To name a ticket outside its slice, give the slice too ("ticket 03 in users CRUD").
 - A ticket file starts with `# NN: <title>` and has a `Status:` line (bold markers allowed) and a `Blocked by:` line. Any other file in `issues/` is not a ticket, even when its name starts with a number (for example a handoff note).
 - `delivery-tickets/` holds drafts of tickets for the team's online tracker. They describe delivery for the team, so they need not match the slices one to one. The online tracker holds the real ticket and its status; the feature page only counts the drafts.
-- `scratchpad/` and `archive/` are not part of the feature page. A file there appears on the page only when `overview.md` links it under *Related*.
+- `scratchpad/` and `archive/` are not part of the feature page. A file there appears on the page only when `overview.md` names it under *Experiments* or links it under *Related*.
 
 ## Ticket status
 
@@ -100,6 +100,15 @@ Summary checked: <YYYY-MM-DD>
 
 ### <next slice> ...
 
+## Experiments
+
+### <Experiment title>
+
+Source: <path relative to the feature folder: a wayfinder ticket, a scratchpad file or folder, or a branch>
+Result: <one line: what we learned or decided>
+
+<One to three sentences: what we tried, and why.>
+
 ## Related
 
 - [<title>](<path relative to the feature folder>) — <one line>
@@ -108,6 +117,7 @@ Summary checked: <YYYY-MM-DD>
 - The slices are in build order.
 - A slice without a folder is **planned**. It has a title and a purpose, and no summary yet.
 - `Summary checked` is the date someone last compared the summary with `spec.md`. When the spec changes, update the summary and the date.
+- *Experiments* lists the prototypes, spikes, and evaluations done while shaping the feature: wayfinder `prototype` and `research` tickets, and experiments from spec or idea work. It is context, not the plan, so the page shows it after the slices and decisions. Add an entry when an experiment ends, with its result.
 
 ## Writing
 

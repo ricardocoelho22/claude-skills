@@ -36,9 +36,26 @@
     return data.slices.reduce(function (acc, s) { return acc.concat(s.tickets || []); }, []);
   }
 
-  // Markdown: rendered with marked; mermaid fences become diagrams; links to unpublished files become plain text.
+  // Markdown: rendered with marked. Raw HTML in a source shows as text, mermaid fences become
+  // diagrams, and links to files that are not published become plain text.
+  if (window.marked) {
+    window.marked.use({ renderer: { html: function (h) { return esc(typeof h === "object" ? h.text : h); } } });
+  }
   function md(text) {
     var html = window.marked ? window.marked.parse(text || "") : "<pre>" + esc(text) + "</pre>";
+    return tidy(html);
+  }
+  // One-line fields (titles, purposes, gists) take inline markdown only.
+  function inline(text) {
+    return window.marked ? tidy(window.marked.parseInline(String(text == null ? "" : text))) : esc(text);
+  }
+  // Text for the browser tab: inline markdown with the marks removed.
+  function plain(text) {
+    var box = document.createElement("div");
+    box.innerHTML = inline(text);
+    return box.textContent;
+  }
+  function tidy(html) {
     var box = document.createElement("div");
     box.innerHTML = html;
     box.querySelectorAll("pre > code.language-mermaid").forEach(function (code) {
@@ -89,9 +106,9 @@
 
   function ticketList(tickets) {
     var row = function (t) {
-      var extra = t.checklist ? ' · <a href="doc.html#' + esc(t.checklist) + '">checks</a>' : "";
+      var extra = t.checklist ? ' &middot; <a href="doc.html#' + esc(t.checklist) + '">checks</a>' : "";
       return '<li class="' + (t.status === "done" || setAside(t) ? "is-done" : "") + (t.status === "dropped" ? " is-dropped" : "") + '"><span class="tnum">#' + esc(t.num) + "</span>" +
-        '<span class="ttitle">' + esc(t.title) + extra + "</span>" + chip(t.status) + "</li>";
+        '<span class="ttitle">' + inline(t.title) + extra + "</span>" + chip(t.status) + "</li>";
     };
     var open = active(tickets).filter(function (t) { return t.status !== "done"; });
     var done = tickets.filter(function (t) { return t.status === "done"; });
@@ -121,7 +138,7 @@
     }).join("");
 
     var html = '<header><span class="eyebrow">Feature</span><h1>' + esc(data.feature) + "</h1>" +
-      '<p class="destination">' + esc(data.destination) + "</p>" +
+      '<p class="destination">' + inline(data.destination) + "</p>" +
       '<div class="progress" role="img" aria-label="' + count("done") + " of " + tickets.length + ' tickets done">' + bar + "</div>" +
       '<div class="meta"><span>' + count("done") + " of " + tickets.length + " tickets done" +
       (asideCount ? " (" + asideCount + " deferred or dropped)" : "") + "</span><span>" +
@@ -130,10 +147,10 @@
     if ((data.waiting || []).length) {
       html += '<section class="waiting" aria-labelledby="w"><h2 id="w">Waiting on you</h2><ul>' +
         data.waiting.map(function (w) {
-          return "<li>" + (w.href ? '<a href="' + esc(w.href) + '">' + esc(w.text) + "</a>" : esc(w.text)) + "</li>";
+          return "<li>" + inline(w.text) + (w.href ? ' <a href="' + esc(w.href) + '">Open</a>' : "") + "</li>";
         }).join("") + "</ul></section>";
     }
-    if (data.intro) html += '<section><h2>About this feature</h2><div class="prose short">' + md(data.intro) + "</div></section>";
+    if (data.intro) html += '<section><h2>About this feature</h2><div class="prose">' + md(data.intro) + "</div></section>";
     if (data.architecture) html += '<section id="architecture"><h2>Architecture</h2><div class="prose">' + md(data.architecture) + "</div></section>";
 
     html += '<section id="slices"><h2>Slices</h2><div class="ledger">' + data.slices.map(function (s, i) {
@@ -143,9 +160,9 @@
       var openAttr = data.slices.length === 1 || st === "in-progress" || st === "needs-you" ? " open" : "";
       return "<details" + openAttr + "><summary>" +
         '<span class="num">' + String(i + 1).padStart(2, "0") + "</span>" +
-        '<span class="title">' + esc(s.title) + "</span>" +
+        '<span class="title">' + inline(s.title) + "</span>" +
         '<span class="side">' + chip(st) + '<span class="count">' + done + "/" + t.length + "</span></span>" +
-        '<span class="purpose">' + esc(s.purpose) + "</span></summary>" +
+        '<span class="purpose">' + inline(s.purpose) + "</span></summary>" +
         '<div class="body">' + ticketList(s.tickets || []) +
         (s.summary ? '<a href="slice.html#' + esc(s.id) + '">Read the slice summary</a>' : '<span class="muted">No summary yet.</span>') +
         "</div></details>";
@@ -155,17 +172,26 @@
     if (decisions.length) {
       var latest = decisions.slice(-5).reverse();
       html += '<section id="decisions"><h2>Recent decisions</h2><ul class="list">' + latest.map(function (d) {
-        return "<li><strong>" + esc(d.title) + '</strong><span class="gist">' + esc(d.gist) + "</span></li>";
+        return "<li><strong>" + inline(d.title) + '</strong><span class="gist">' + inline(d.gist) + "</span></li>";
       }).join("") + "</ul>" +
         (decisions.length > latest.length ? '<a href="doc.html#decisions">All ' + decisions.length + " decisions</a>" : "") + "</section>";
     }
+    if ((data.experiments || []).length) {
+      html += '<section id="experiments"><h2>Experiments</h2><ul class="list">' + data.experiments.map(function (x) {
+        var title = x.href ? '<a href="' + esc(x.href) + '">' + inline(x.title) + "</a>" : "<strong>" + inline(x.title) + "</strong>";
+        return "<li>" + title +
+          (x.summary ? '<span class="gist">' + inline(x.summary) + "</span>" : "") +
+          (x.result ? '<span class="result"><span class="label">Result</span> ' + inline(x.result) + "</span>" : "") +
+          (!x.href && x.source ? '<span class="mono muted">' + esc(x.source) + "</span>" : "") + "</li>";
+      }).join("") + "</ul></section>";
+    }
     if ((data.links || []).length) {
       html += '<section id="links"><h2>Related</h2><ul class="list">' + data.links.map(function (l) {
-        return "<li>" + (l.href ? '<a href="' + esc(l.href) + '">' + esc(l.title) + "</a>" : "<strong>" + esc(l.title) + "</strong>") + (l.note ? '<span class="gist">' + esc(l.note) + "</span>" : "") + "</li>";
+        return "<li>" + (l.href ? '<a href="' + esc(l.href) + '">' + inline(l.title) + "</a>" : "<strong>" + inline(l.title) + "</strong>") + (l.note ? '<span class="gist">' + inline(l.note) + "</span>" : "") + "</li>";
       }).join("") + "</ul></section>";
     }
     root.innerHTML = html + footer();
-    document.title = data.feature;
+    document.title = plain(data.feature);
     drawDiagrams();
   }
 
@@ -176,13 +202,13 @@
     var back = '<a class="back" href="./">Back to ' + esc(data.feature) + "</a>";
     if (!s) { root.innerHTML = back + '<p class="empty">This slice is not in the feature.</p>'; return; }
     root.innerHTML = back +
-      '<header><span class="eyebrow">Slice ' + String(idx + 1).padStart(2, "0") + "</span><h1>" + esc(s.title) + "</h1>" +
-      '<p class="destination">' + esc(s.purpose) + "</p><div>" + chip(sliceStatus(s)) + "</div></header>" +
+      '<header><span class="eyebrow">Slice ' + String(idx + 1).padStart(2, "0") + "</span><h1>" + inline(s.title) + "</h1>" +
+      '<p class="destination">' + inline(s.purpose) + "</p><div>" + chip(sliceStatus(s)) + "</div></header>" +
       '<section><h2>Summary</h2><div class="prose">' +
       (s.summary ? md(s.summary) : '<p class="empty">No summary yet.</p>') + "</div>" +
       (s.specPath ? '<p class="muted">The full spec is <span class="mono">' + esc(s.specPath) + "</span>.</p>" : "") + "</section>" +
       "<section><h2>Tickets</h2>" + ticketList(s.tickets || []) + "</section>" + footer();
-    document.title = s.title + " · " + data.feature;
+    document.title = plain(s.title) + " \u00b7 " + plain(data.feature);
     drawDiagrams();
   }
 
@@ -192,18 +218,20 @@
     if (id === "decisions") {
       root.innerHTML = back + '<header><span class="eyebrow">Decisions</span><h1>Decisions so far</h1></header><ul class="list">' +
         (data.decisions || []).map(function (d) {
-          return "<li><strong>" + esc(d.title) + '</strong><span class="gist">' + esc(d.gist) + "</span></li>";
+          return "<li><strong>" + inline(d.title) + '</strong><span class="gist">' + inline(d.gist) + "</span></li>";
         }).join("") + "</ul>" + footer();
-      document.title = "Decisions · " + data.feature;
+      document.title = "Decisions \u00b7 " + plain(data.feature);
       return;
     }
     var doc = (data.docs || {})[id];
     if (!doc) { root.innerHTML = back + '<p class="empty">This document is not in the feature.</p>'; return; }
-    root.innerHTML = back + '<header><span class="eyebrow">' + esc(doc.kind || "Document") + "</span><h1>" + esc(doc.title) + "</h1></header>" +
+    root.innerHTML = back + '<header><span class="eyebrow">' + esc(doc.kind || "Document") + "</span><h1>" + inline(doc.title) + "</h1></header>" +
       '<div class="prose" id="doc"><p class="empty">Loading.</p></div>' + footer();
-    document.title = doc.title + " · " + data.feature;
+    document.title = plain(doc.title) + " \u00b7 " + plain(data.feature);
     fetchText(doc.src).then(function (text) {
-      document.getElementById("doc").innerHTML = md(text);
+      var box = document.getElementById("doc");
+      box.innerHTML = md(text);
+      if (box.firstElementChild && box.firstElementChild.tagName === "H1") box.firstElementChild.remove();
       drawDiagrams();
     }).catch(function (e) { document.getElementById("doc").innerHTML = '<p class="empty">' + esc(e.message) + "</p>"; });
   }
