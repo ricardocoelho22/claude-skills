@@ -49,7 +49,7 @@ section { display: grid; gap: 0.9rem; min-width: 0; }
 
 /* Header */
 header { display: grid; gap: 0.7rem; }
-.destination { font-size: 1.12rem; color: var(--fg); max-width: 62ch; margin: 0; }
+.destination { font-size: 1.12rem; color: var(--fg); margin: 0; }
 .meta { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; color: var(--muted); font-size: 0.86rem; }
 .progress { display: flex; gap: 3px; height: 8px; border-radius: 4px; overflow: hidden; background: var(--rule); }
 .progress span { display: block; height: 100%; }
@@ -64,14 +64,13 @@ header { display: grid; gap: 0.7rem; }
 
 /* Rendered markdown */
 .prose { min-width: 0; }
-.prose.short > * { max-width: 65ch; }
 .prose > :first-child { margin-top: 0; }
 .prose > :last-child { margin-bottom: 0; }
 .prose p, .prose ul, .prose ol { margin: 0 0 0.8rem; }
 .prose h1 { font-size: 1.6rem; margin: 1.6rem 0 0.6rem; }
 .prose h2 { margin: 1.6rem 0 0.5rem; }
 .prose h3 { margin: 1.2rem 0 0.4rem; }
-.prose code { font-family: var(--font-mono); font-size: 0.85em; background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; }
+code { font-family: var(--font-mono); font-size: 0.85em; background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; }
 .prose pre { background: var(--code-bg); padding: 0.8rem 1rem; border-radius: 6px; overflow-x: auto; }
 .prose pre code { background: none; padding: 0; }
 .prose pre.mermaid { background: var(--surface); border: 1px solid var(--rule); text-align: center; padding: 1rem; }
@@ -92,9 +91,9 @@ header { display: grid; gap: 0.7rem; }
 
 /* Slice ledger */
 .ledger { border-top: 1px solid var(--rule); }
-.ledger details { border-bottom: 1px solid var(--rule); }
-.ledger summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 2.2rem minmax(0, 1fr) auto; gap: 0.2rem 0.8rem; align-items: start; padding: 0.85rem 0.2rem; }
-.ledger summary::-webkit-details-marker { display: none; }
+.ledger > details { border-bottom: 1px solid var(--rule); }
+.ledger > details > summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 2.2rem minmax(0, 1fr) auto; gap: 0.2rem 0.8rem; align-items: start; padding: 0.85rem 0.2rem; }
+.ledger > details > summary::-webkit-details-marker { display: none; }
 .ledger .num { font: 600 0.82rem/1.9 var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
 .ledger .title { font-weight: 650; }
 .ledger .purpose { grid-column: 2; color: var(--muted); font-size: 0.93rem; }
@@ -106,12 +105,15 @@ header { display: grid; gap: 0.7rem; }
 .tickets .tnum { font: 0.8rem var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
 .tickets li.is-done .ttitle { color: var(--muted); }
 .tickets li.is-dropped .ttitle { text-decoration: line-through; }
-.closed-group summary { cursor: pointer; color: var(--muted); font-size: 0.88rem; padding-block: 0.2rem; }
+.closed-group > summary { display: list-item; cursor: pointer; color: var(--muted); font-size: 0.88rem; padding-block: 0.2rem; }
 
-/* Decisions and links */
+/* Decisions, experiments, and links */
 .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
 .list li { display: grid; gap: 0.1rem; }
-.list .gist { color: var(--muted); font-size: 0.93rem; max-width: 65ch; }
+.list .gist { color: var(--muted); font-size: 0.93rem; }
+.list .result { font-size: 0.93rem; }
+.list .result .label { font: 600 0.68rem/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--done); margin-right: 0.3rem; }
+.list .mono { font-size: 0.78rem; }
 
 footer { border-top: 1px solid var(--rule); padding-top: 1rem; color: var(--muted); font-size: 0.82rem; display: grid; gap: 0.2rem; }
 .empty { color: var(--muted); font-style: italic; }
