@@ -31,7 +31,7 @@ Find the features root (see *Features root* in the layout), then the feature fol
 ## Refresh
 
 1. **Gather** from the files:
-   - **Slices**: from `## Slices` in `overview.md`, in that order. A slice's tickets are the files in its `issues/` folder that start with `# NN: <title>`; each ticket's state comes from its `Status:` line, mapped as *Ticket status* in the layout says. A `manual-test-NN-*.md` file is that ticket's checklist.
+   - **Slices**: from `## Slices` in `overview.md`, in that order. A slice's tickets are the files in its `issues/` folder that start with `# NN: <title>`; each ticket's state comes from its `Status:` line, mapped as *Ticket status* in the layout says. A `manual-test-NN-*.md` file is that ticket's manual-checks guide: reference the page links from the ticket, with its checks assumed done, so it adds nothing to the ticket's state or to what waits on the user.
    - **Decisions**: each line under *Decisions so far* in `wayfinder/map.md`: the linked ticket title, and the gist cut to its first sentence. None when there is no map.
    - **Experiments**: each entry under `## Experiments` in `overview.md`, in that order.
    - **Related**: the links under `## Related` in `overview.md`. When `delivery-tickets/` holds markdown files, add one more line with no link: "Delivery tickets: N drafts in delivery-tickets/".
@@ -55,7 +55,7 @@ Done when: the publish succeeded and every finding from step 2 is on the page.
 Build in `<scratchpad>/feature-artifact/<feature>/`, starting from an empty folder each time.
 
 1. Copy everything in this skill's `page/` folder into the build folder. In `index.html`, replace the text of `<title>` with the feature name.
-2. Copy each checklist, and each markdown file named under *Experiments* or *Related*, to `src/docs/<id>.md`. Copy each HTML prototype named there to `src/proto/<name>.html`. Copy them as they are; never edit a copied file. An experiment whose source is a folder or a branch gets no copy; the page shows its path.
+2. Copy each manual-checks guide, and each markdown file named under *Experiments* or *Related*, to `src/docs/<id>.md`. Copy each HTML prototype named there to `src/proto/<name>.html`. Copy them as they are; never edit a copied file. An experiment whose source is a folder or a branch gets no copy; the page shows its path.
 3. Write `data.json` (schema below).
 4. Publish with the `Artifact` tool: `file_path` is the build folder's `index.html`, `root` is the build folder, and `files` lists every other file in it. On a refresh, pass `url` from `overview.md`; when this session has not yet read or published that artifact, read it first (`action: "read"`). The page templates already meet the artifact page contract, so a refresh needs no design pass.
 

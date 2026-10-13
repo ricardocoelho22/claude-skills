@@ -26,7 +26,7 @@ Your four jobs, in priority order:
 | Explorer | `impl-explorer` | `gpt-6-sol` · medium · `read-only` | `impl-explorer` |
 | Test-writer / Implementer | `impl-tdd` | `gpt-6-sol` · medium | `impl-tdd` |
 | Fixer | `impl-fixer` | `gpt-6-sol` · high | `impl-fixer` |
-| Manual checklist | — (ad hoc) | `gpt-6-luna` · low | general-purpose, `model: haiku` |
+| Manual checks | — (ad hoc) | `gpt-6-luna` · low | general-purpose, `model: haiku` |
 | Test trimmer | `impl-trimmer` | `gpt-6-sol` · medium | `impl-trimmer` |
 | Reviewer | `impl-reviewer` | — (always Claude) | `impl-reviewer` (opus · medium) |
 
@@ -173,11 +173,13 @@ Triage the findings against your own reading of the code: fix now, deferred (log
 
 Send the fix-now set to `impl-fixer` as one brief, quoting each finding with your triage decision and listing every test file in `git diff --stat <TICKET_BASE>`. Verify with typecheck and the single test file command for every one of those test files, not only the ones the fixer touched. Cap at **one fix round**; a second means a structural problem: take it to the user.
 
-### 4. Manual checklist
+### 4. Manual checks
 
-Brief the checklist executor to read `~/.claude/skills/manual-checklist/SKILL.md` and follow it, with the ticket path, base `TICKET_BASE`, and the output path `manual-test-<NN>-<slug>.md` next to the ticket.
+Brief the manual-checks executor to read `~/.claude/skills/manual-checklist/SKILL.md` and follow it, with the ticket path, base `TICKET_BASE`, and the output path `manual-test-<NN>-<slug>.md` next to the ticket.
 
-Verify: the file exists and every item is a hand check.
+Verify: the file exists and every item is a plain-bullet hand check.
+
+The file is a **guide** for the user, reference like the diff-tour. Assume its checks done: the ticket's status, Gate B's approval, and every report treat the ticket as verified by the tests and typecheck alone.
 
 ### 5. Trim
 
@@ -196,7 +198,7 @@ The user reads the code here to stay grounded and catch quirks. Hand them a repo
 Review:     <n> fixed · <n> deferred (<reason>) · <n> rejected
 Trimmed:    <test name> — <reason>   (one line each, or "none")
 Deviations: <from the plan, or "none">
-Manual checks: <path> (<n> items)
+Guide:      <path> (manual checks, for reference)
 
 Commit?
 ```
@@ -210,7 +212,7 @@ A ❌ replaces a ✅ when a check fails, and the real failing output goes below 
 3. **Local code** (a refactor, a symbol rename): the ticket's existing tests still describe the result, so no test is added or edited: rung 2.
 4. **Text only** (docs, comments, a diagram): rung 1.
 
-Batch same-rung requests into one brief. Verify as in step 3; a local-code return that touched a test file was sized wrong, so restore that test file from the checkpoint and re-run the request as within-seams. A request rejected at rung 4 is too big for a Gate B change: take it to the user as a new cycle or ticket. When behavior changed, update the manual checklist. Then re-show Gate B: after a within-seams change, the full report with a fresh `/diff-tour`; otherwise, the title line, one line per change, and `Commit?`.
+Batch same-rung requests into one brief. Verify as in step 3; a local-code return that touched a test file was sized wrong, so restore that test file from the checkpoint and re-run the request as within-seams. A request rejected at rung 4 is too big for a Gate B change: take it to the user as a new cycle or ticket. When behavior changed, update the manual-checks guide. Then re-show Gate B: after a within-seams change, the full report with a fresh `/diff-tour`; otherwise, the title line, one line per change, and `Commit?`.
 
 On approval, commit per repo on the current branch in the project's commit style. Start the next ticket at Phase 1. Re-open Gate A only when a ticket needs seams the plan does not cover.
 
@@ -220,7 +222,7 @@ Each ticket was reviewed on its own. Once all are committed, invoke `/code-revie
 
 ## Finish
 
-Run the full test suite once per repo, yourself, plus lint and build if the project defines a combined gate. Compare failures against the BASE failures; a new failure goes to the user before you report. Report: tickets landed, commits per repo, checklist paths, deferred findings, codex fallbacks taken, step-ups (role, cycle, from and to rung), anything left unverified.
+Run the full test suite once per repo, yourself, plus lint and build if the project defines a combined gate. Compare failures against the BASE failures; a new failure goes to the user before you report. Report: tickets landed, commits per repo, guide paths, deferred findings, codex fallbacks taken, step-ups (role, cycle, from and to rung), any test, typecheck, lint, or build you could not run.
 
 Then offer `/retro` while this session is still in context. The run file is its primary source: fallbacks, blocked executors, fix rounds, and deferred findings are where the environment cost the run.
 

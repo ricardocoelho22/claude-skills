@@ -30,7 +30,7 @@ The root is untracked by default. To keep history, the user can make it a privat
         spec.md
         issues/
           NN-<slug>.md               implementation tickets
-          manual-test-NN-<slug>.md   manual checklists
+          manual-test-NN-<slug>.md   manual-checks guides (reference, assumed done)
           assets/                    images and files the tickets link
     delivery-tickets/    drafts of tickets for the team's tracker (Linear, Jira)
       assets/

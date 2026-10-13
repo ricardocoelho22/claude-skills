@@ -36,10 +36,14 @@
     return data.slices.reduce(function (acc, s) { return acc.concat(s.tickets || []); }, []);
   }
 
-  // Markdown: rendered with marked. Raw HTML in a source shows as text, mermaid fences become
-  // diagrams, and links to files that are not published become plain text.
+  // Markdown: rendered with marked. Raw HTML in a source shows as text, task-list items show as
+  // plain bullets, mermaid fences become diagrams, tables get a scroll box, and links to files
+  // that are not published become plain text.
   if (window.marked) {
-    window.marked.use({ renderer: { html: function (h) { return esc(typeof h === "object" ? h.text : h); } } });
+    window.marked.use({ renderer: {
+      html: function (h) { return esc(typeof h === "object" ? h.text : h); },
+      checkbox: function () { return ""; }
+    } });
   }
   function md(text) {
     var html = window.marked ? window.marked.parse(text || "") : "<pre>" + esc(text) + "</pre>";
@@ -63,6 +67,13 @@
       pre.className = "mermaid";
       pre.textContent = code.textContent;
       code.parentNode.replaceWith(pre);
+    });
+    box.querySelectorAll("table").forEach(function (table) {
+      var scroll = document.createElement("div");
+      scroll.className = "table-scroll";
+      scroll.tabIndex = 0;
+      table.replaceWith(scroll);
+      scroll.appendChild(table);
     });
     box.querySelectorAll("a[href]").forEach(function (a) {
       var href = a.getAttribute("href");
