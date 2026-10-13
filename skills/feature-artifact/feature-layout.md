@@ -80,7 +80,9 @@ Artifact: <the feature page URL; empty until the first publish>
 
 ## Architecture
 
-<A few sentences on the main parts and how they connect. Optional: one mermaid `flowchart TD` of up to about 10 nodes.>
+<Summary: one paragraph of two to four sentences on the main parts and how they connect. It must make sense alone.>
+
+<Optional detail: more paragraphs, tables, and one mermaid `flowchart TD` of up to about 10 nodes.>
 
 ## Slices
 
@@ -114,6 +116,7 @@ Result: <one line: what we learned or decided>
 - [<title>](<path relative to the feature folder>) — <one line>
 ```
 
+- The overview page shows only the first paragraph of *Architecture*, the summary. The rest is on the architecture page, one click away.
 - The slices are in build order.
 - A slice without a folder is **planned**. It has a title and a purpose, and no summary yet.
 - `Summary checked` is the date someone last compared the summary with `spec.md`. When the spec changes, update the summary and the date.

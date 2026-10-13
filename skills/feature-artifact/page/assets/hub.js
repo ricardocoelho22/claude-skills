@@ -138,6 +138,15 @@
     return html || '<p class="empty">No tickets yet.</p>';
   }
 
+  // The overview shows only the opening paragraph of a long markdown block; the rest is one click away.
+  function lead(text) {
+    var first = String(text || "").trim().split(/\n\s*\n/)[0];
+    return /^(#|\||```|[-*+] |\d+\. |>)/.test(first) ? "" : first;
+  }
+  function experimentTitle(x) {
+    return x.href ? '<a href="' + esc(x.href) + '">' + inline(x.title) + "</a>" : "<strong>" + inline(x.title) + "</strong>";
+  }
+
   function renderHub() {
     var everything = allTickets();
     var tickets = active(everything);
@@ -153,48 +162,46 @@
       '<div class="progress" role="img" aria-label="' + count("done") + " of " + tickets.length + ' tickets done">' + bar + "</div>" +
       '<div class="meta"><span>' + count("done") + " of " + tickets.length + " tickets done" +
       (asideCount ? " (" + asideCount + " deferred or dropped)" : "") + "</span><span>" +
-      data.slices.length + (data.slices.length === 1 ? " slice" : " slices") + "</span><span>Updated " + esc(data.builtAt) + "</span></div></header>";
-
-    if ((data.waiting || []).length) {
-      html += '<section class="waiting" aria-labelledby="w"><h2 id="w">Waiting on you</h2><ul>' +
-        data.waiting.map(function (w) {
-          return "<li>" + inline(w.text) + (w.href ? ' <a href="' + esc(w.href) + '">Open</a>' : "") + "</li>";
-        }).join("") + "</ul></section>";
+      data.slices.length + (data.slices.length === 1 ? " slice" : " slices") + "</span></div>";
+    var waiting = (data.waiting || []).length;
+    if (waiting) {
+      html += '<a class="waiting-line" href="doc.html#waiting">' + waiting + (waiting === 1 ? " thing waits" : " things wait") + " on you</a>";
     }
-    if (data.intro) html += '<section><h2>About this feature</h2><div class="prose">' + md(data.intro) + "</div></section>";
-    if (data.architecture) html += '<section id="architecture"><h2>Architecture</h2><div class="prose">' + md(data.architecture) + "</div></section>";
+    html += "</header>";
 
-    html += '<section id="slices"><h2>Slices</h2><div class="ledger">' + data.slices.map(function (s, i) {
+    html += '<section id="slices"><h2>Slices</h2><div class="ledger">' +
+      '<div class="ledger-head" aria-hidden="true"><span>#</span><span>Slice</span><span class="r">Done</span><span>Status</span></div>' + data.slices.map(function (s, i) {
       var st = sliceStatus(s);
       var t = active(s.tickets);
       var done = t.filter(function (x) { return x.status === "done"; }).length;
-      var openAttr = data.slices.length === 1 || st === "in-progress" || st === "needs-you" ? " open" : "";
-      return "<details" + openAttr + "><summary>" +
+      return '<a href="slice.html#' + esc(s.id) + '">' +
         '<span class="num">' + String(i + 1).padStart(2, "0") + "</span>" +
         '<span class="title">' + inline(s.title) + "</span>" +
-        '<span class="side">' + chip(st) + '<span class="count">' + done + "/" + t.length + "</span></span>" +
-        '<span class="purpose">' + inline(s.purpose) + "</span></summary>" +
-        '<div class="body">' + ticketList(s.tickets || []) +
-        (s.summary ? '<a href="slice.html#' + esc(s.id) + '">Read the slice summary</a>' : '<span class="muted">No summary yet.</span>') +
-        "</div></details>";
+        '<span class="count">' + (t.length ? done + "/" + t.length : "&ndash;") + "</span>" + chip(st) +
+        '<span class="purpose">' + inline(s.purpose) + "</span></a>";
     }).join("") + "</div></section>";
+
+    if (data.intro) html += '<section><h2>About this feature</h2><div class="prose">' + md(data.intro) + "</div></section>";
+    if (data.architecture) {
+      html += '<section id="architecture"><h2>Architecture</h2>' +
+        (lead(data.architecture) ? '<div class="prose">' + md(lead(data.architecture)) + "</div>" : "") +
+        '<a href="doc.html#architecture">Read the architecture</a></section>';
+    }
 
     var decisions = data.decisions || [];
     if (decisions.length) {
-      var latest = decisions.slice(-5).reverse();
-      html += '<section id="decisions"><h2>Recent decisions</h2><ul class="list">' + latest.map(function (d) {
-        return "<li><strong>" + inline(d.title) + '</strong><span class="gist">' + inline(d.gist) + "</span></li>";
+      html += '<section id="decisions"><h2>Decisions</h2><ul class="bullets">' + decisions.map(function (d) {
+        return d.decision
+          ? "<li>" + inline(d.decision) + "</li>"
+          : "<li><strong>" + inline(d.title) + '</strong><span class="gist clip">' + inline(d.gist) + "</span></li>";
       }).join("") + "</ul>" +
-        (decisions.length > latest.length ? '<a href="doc.html#decisions">All ' + decisions.length + " decisions</a>" : "") + "</section>";
+        '<a href="doc.html#decisions">Read the explanations</a></section>';
     }
     if ((data.experiments || []).length) {
       html += '<section id="experiments"><h2>Experiments</h2><ul class="list">' + data.experiments.map(function (x) {
-        var title = x.href ? '<a href="' + esc(x.href) + '">' + inline(x.title) + "</a>" : "<strong>" + inline(x.title) + "</strong>";
-        return "<li>" + title +
-          (x.summary ? '<span class="gist">' + inline(x.summary) + "</span>" : "") +
-          (x.result ? '<span class="result"><span class="label">Result</span> ' + inline(x.result) + "</span>" : "") +
-          (!x.href && x.source ? '<span class="mono muted">' + esc(x.source) + "</span>" : "") + "</li>";
-      }).join("") + "</ul></section>";
+        return "<li>" + experimentTitle(x) +
+          (x.result ? '<span class="result"><span class="label">Result</span> ' + inline(x.result) + "</span>" : "") + "</li>";
+      }).join("") + '</ul><a href="doc.html#experiments">Experiment details</a></section>';
     }
     if ((data.links || []).length) {
       html += '<section id="links"><h2>Related</h2><ul class="list">' + data.links.map(function (l) {
@@ -232,6 +239,33 @@
           return "<li><strong>" + inline(d.title) + '</strong><span class="gist">' + inline(d.gist) + "</span></li>";
         }).join("") + "</ul>" + footer();
       document.title = "Decisions \u00b7 " + plain(data.feature);
+      return;
+    }
+    if (id === "waiting") {
+      var waiting = data.waiting || [];
+      root.innerHTML = back + '<header><span class="eyebrow">Waiting</span><h1>Waiting on you</h1></header>' +
+        (waiting.length ? '<ul class="list">' + waiting.map(function (w) {
+          return "<li><span>" + inline(w.text) + (w.href ? ' <a href="' + esc(w.href) + '">Open</a>' : "") + "</span></li>";
+        }).join("") + "</ul>" : '<p class="empty">Nothing waits on you.</p>') + footer();
+      document.title = "Waiting on you \u00b7 " + plain(data.feature);
+      return;
+    }
+    if (id === "architecture") {
+      root.innerHTML = back + '<header><span class="eyebrow">Feature</span><h1>Architecture</h1></header>' +
+        '<div class="prose">' + (data.architecture ? md(data.architecture) : '<p class="empty">No architecture yet.</p>') + "</div>" + footer();
+      document.title = "Architecture \u00b7 " + plain(data.feature);
+      drawDiagrams();
+      return;
+    }
+    if (id === "experiments") {
+      root.innerHTML = back + '<header><span class="eyebrow">Experiments</span><h1>Experiments</h1></header><ul class="list">' +
+        (data.experiments || []).map(function (x) {
+          return "<li>" + experimentTitle(x) +
+            (x.summary ? '<span class="gist">' + inline(x.summary) + "</span>" : "") +
+            (x.result ? '<span class="result"><span class="label">Result</span> ' + inline(x.result) + "</span>" : "") +
+            (!x.href && x.source ? '<span class="mono muted">' + esc(x.source) + "</span>" : "") + "</li>";
+        }).join("") + "</ul>" + footer();
+      document.title = "Experiments \u00b7 " + plain(data.feature);
       return;
     }
     var doc = (data.docs || {})[id];
