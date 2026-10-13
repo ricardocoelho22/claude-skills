@@ -1,4 +1,4 @@
-/* Layout: one reading column (~46rem); slice rows are a ruled ledger, status lives in a left-edge chip. */
+/* Layout: one reading column (~46rem); slices are a ruled table whose rows link to each slice's page, where its tickets are. */
 :root {
   --bg: #f4f6f8;
   --surface: #ffffff;
@@ -10,7 +10,6 @@
   --active: #2f62b3;
   --wait: #a35f00;
   --idle: #7a8593;
-  --wait-bg: #fff4e2;
   --code-bg: #eef1f4;
   --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
   --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
@@ -21,13 +20,13 @@
   :root:not([data-theme="light"]) {
     --bg: #12171d; --surface: #1a2129; --fg: #e3e8ee; --muted: #9aa6b4; --rule: #2c3540;
     --accent: #5fb3cf; --done: #5cc185; --active: #7fa8ee; --wait: #f0a64a; --idle: #8893a1;
-    --wait-bg: #2e2416; --code-bg: #222a33; color-scheme: dark;
+    --code-bg: #222a33; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #12171d; --surface: #1a2129; --fg: #e3e8ee; --muted: #9aa6b4; --rule: #2c3540;
   --accent: #5fb3cf; --done: #5cc185; --active: #7fa8ee; --wait: #f0a64a; --idle: #8893a1;
-  --wait-bg: #2e2416; --code-bg: #222a33; color-scheme: dark;
+  --code-bg: #222a33; color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -37,7 +36,7 @@ body {
 }
 .wrap { max-width: 46rem; margin: 0 auto; padding-inline: 16px; padding-block: 2.5rem 4rem; display: grid; gap: 2.25rem; }
 a { color: var(--accent); text-underline-offset: 2px; }
-a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+a:focus-visible, summary:focus-visible, .table-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
 h1, h2, h3 { font-family: var(--font-display); line-height: 1.2; text-wrap: balance; margin: 0; }
 h1 { font-size: 2.1rem; font-weight: 700; letter-spacing: -0.01em; }
 h2 { font-size: 1.3rem; font-weight: 650; }
@@ -57,10 +56,9 @@ header { display: grid; gap: 0.7rem; }
 .progress .in-progress { background: var(--active); }
 .progress .needs-you { background: var(--wait); }
 
-/* Waiting on you */
-.waiting { background: var(--wait-bg); border: 1px solid var(--wait); border-radius: 8px; padding: 1rem 1.1rem; display: grid; gap: 0.5rem; }
-.waiting h2 { color: var(--wait); font-size: 1.05rem; }
-.waiting ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.3rem; }
+/* Waiting on you: one line in the header that links to the list. */
+.waiting-line { justify-self: start; display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.9rem; font-weight: 600; color: var(--wait); }
+.waiting-line::before { content: ""; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: currentColor; }
 
 /* Rendered markdown */
 .prose { min-width: 0; }
@@ -75,31 +73,35 @@ code { font-family: var(--font-mono); font-size: 0.85em; background: var(--code-
 .prose pre code { background: none; padding: 0; }
 .prose pre.mermaid { background: var(--surface); border: 1px solid var(--rule); text-align: center; padding: 1rem; }
 .prose pre.mermaid svg { max-width: 100%; height: auto; }
-.prose table { border-collapse: collapse; display: block; overflow-x: auto; }
-.prose th, .prose td { border: 1px solid var(--rule); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+/* Tables: every column keeps its natural width (prose cells cap at 24rem); a table wider than the reading column scrolls. */
+.prose .table-scroll { overflow-x: auto; margin: 0 0 0.8rem; }
+.prose table { border-collapse: collapse; width: max-content; min-width: 100%; }
+.prose th, .prose td { border: 1px solid var(--rule); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; max-width: 24rem; }
+.prose th { white-space: nowrap; }
 .prose blockquote { margin: 0 0 0.8rem; padding-left: 0.9rem; border-left: 3px solid var(--rule); color: var(--muted); }
 .prose .dead-link { border-bottom: 1px dotted var(--muted); }
 
 
 /* Status chip */
-.chip { display: inline-flex; align-items: center; gap: 0.35rem; font: 600 0.7rem/1 var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; padding: 0.3rem 0.5rem; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
-.chip::before { content: ""; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: currentColor; }
-.chip.done { color: var(--done); }
-.chip.in-progress { color: var(--active); }
-.chip.needs-you { color: var(--wait); }
-.chip.open, .chip.not-started, .chip.no-tickets, .chip.planned, .chip.deferred, .chip.dropped { color: var(--idle); }
+.chip { display: inline-flex; align-items: center; gap: 0.35rem; font: 600 0.7rem/1 var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; padding: 0.3rem 0.5rem; border-radius: 999px; color: var(--c); border: 1px solid currentColor; white-space: nowrap; }
+.chip::before { content: ""; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--c); }
+.chip { --c: var(--idle); }
+.chip.done { --c: var(--done); }
+.chip.in-progress { --c: var(--active); }
+.chip.needs-you { --c: var(--wait); }
 
-/* Slice ledger */
-.ledger { border-top: 1px solid var(--rule); }
-.ledger > details { border-bottom: 1px solid var(--rule); }
-.ledger > details > summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 2.2rem minmax(0, 1fr) auto; gap: 0.2rem 0.8rem; align-items: start; padding: 0.85rem 0.2rem; }
-.ledger > details > summary::-webkit-details-marker { display: none; }
-.ledger .num { font: 600 0.82rem/1.9 var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+/* Slice ledger: a table of slices. Every row shares the same fixed columns, so they line up, and links to the slice's page. */
+.ledger { border-top: 1px solid var(--rule); --cols: 2.2rem minmax(0, 1fr) 3rem 8.5rem; }
+.ledger-head, .ledger > a { display: grid; grid-template-columns: var(--cols); gap: 0.15rem 0.8rem; align-items: baseline; padding-inline: 0.2rem; }
+.ledger-head { padding-block: 0.5rem; border-bottom: 1px solid var(--rule); font: 600 0.68rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.ledger-head .r { text-align: right; }
+.ledger > a { padding-block: 0.75rem; border-bottom: 1px solid var(--rule); color: inherit; text-decoration: none; }
+.ledger > a:hover .title { text-decoration: underline; text-underline-offset: 2px; }
+.ledger .num { font: 600 0.82rem var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
 .ledger .title { font-weight: 650; }
 .ledger .purpose { grid-column: 2; color: var(--muted); font-size: 0.93rem; }
-.ledger .count { grid-column: 3; justify-self: end; font: 0.78rem var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
-.ledger .side { display: grid; justify-items: end; gap: 0.35rem; grid-row: span 2; }
-.ledger .body { padding: 0 0.2rem 1rem 3rem; display: grid; gap: 0.6rem; }
+.ledger .count { text-align: right; font: 0.8rem var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.ledger .chip { justify-self: start; }
 .tickets { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; }
 .tickets li { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr) auto; gap: 0.6rem; align-items: baseline; font-size: 0.93rem; }
 .tickets .tnum { font: 0.8rem var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -110,7 +112,10 @@ code { font-family: var(--font-mono); font-size: 0.85em; background: var(--code-
 /* Decisions, experiments, and links */
 .list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
 .list li { display: grid; gap: 0.1rem; }
-.list .gist { color: var(--muted); font-size: 0.93rem; }
+.bullets { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.3rem; }
+.bullets li::marker { color: var(--muted); }
+.gist { color: var(--muted); font-size: 0.93rem; }
+.gist.clip { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .list .result { font-size: 0.93rem; }
 .list .result .label { font: 600 0.68rem/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--done); margin-right: 0.3rem; }
 .list .mono { font-size: 0.78rem; }
@@ -121,6 +126,9 @@ footer { border-top: 1px solid var(--rule); padding-top: 1rem; color: var(--mute
 
 @media (max-width: 30rem) {
   h1 { font-size: 1.7rem; }
-  .ledger .body { padding-left: 0.2rem; }
+  .ledger { --cols: 2.2rem minmax(0, 1fr) auto; }
+  .ledger-head { display: none; }
+  .ledger .chip { grid-area: 1 / 3; justify-self: end; }
+  .ledger .count { grid-area: 2 / 3; }
 }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }

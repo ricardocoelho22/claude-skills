@@ -32,7 +32,7 @@ Find the features root (see *Features root* in the layout), then the feature fol
 
 1. **Gather** from the files:
    - **Slices**: from `## Slices` in `overview.md`, in that order. A slice's tickets are the files in its `issues/` folder that start with `# NN: <title>`; each ticket's state comes from its `Status:` line, mapped as *Ticket status* in the layout says. A `manual-test-NN-*.md` file is that ticket's manual-checks guide: reference the page links from the ticket, with its checks assumed done, so it adds nothing to the ticket's state or to what waits on the user.
-   - **Decisions**: each line under *Decisions so far* in `wayfinder/map.md`: the linked ticket title, and the gist cut to its first sentence. None when there is no map.
+   - **Decisions**: each line under *Decisions so far* in `wayfinder/map.md`: the linked ticket title, the gist cut to its first sentence, and the decision. The decision is one line of at most 15 words that states what was decided, not the topic ("Free tier runs on Haiku, paid on Sonnet", not "Model choice per tier"). Write it from the gist and say nothing the gist does not. None when there is no map.
    - **Experiments**: each entry under `## Experiments` in `overview.md`, in that order.
    - **Related**: the links under `## Related` in `overview.md`. When `delivery-tickets/` holds markdown files, add one more line with no link: "Delivery tickets: N drafts in delivery-tickets/".
 2. **Find what waits on the user.** Each finding is one line, in the writing rule's style:
@@ -82,7 +82,7 @@ Build in `<scratchpad>/feature-artifact/<feature>/`, starting from an empty fold
     }
   ],
   "waiting": [ { "text": "One line.", "href": "slice.html#<id> or doc.html#<id> or null" } ],
-  "decisions": [ { "title": "Ticket title", "gist": "First sentence of the gist." } ],
+  "decisions": [ { "title": "Ticket title", "decision": "One line that states what was decided.", "gist": "First sentence of the gist." } ],
   "experiments": [ { "title": "From the ### heading", "result": "From Result:", "summary": "Its sentences, copied as they are", "source": "From Source:", "href": "doc.html#<id> or src/proto/<name>.html or null" } ],
   "links": [ { "title": "From Related", "note": "Its one line", "href": "doc.html#<id> or src/proto/<name>.html or null" } ],
   "docs": { "<id>": { "title": "Page title", "kind": "Manual checks | Experiment | Research | Notes", "src": "src/docs/<id>.md" } },
