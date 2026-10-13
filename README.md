@@ -38,12 +38,12 @@ back to its Claude agent.
 | Tests, then implement | `impl-tdd` | `gpt-6-sol` medium | sonnet medium |
 | Review | `impl-reviewer` via `/code-review` | — | opus medium |
 | Fix (one round) | `impl-fixer` | `gpt-6-sol` high | sonnet high |
-| Manual checklist | follows `manual-checklist` | `gpt-6-luna` low | haiku |
+| Manual checks | follows `manual-checklist` | `gpt-6-luna` low | haiku |
 | Trim tests | `impl-trimmer` | `gpt-6-sol` medium | haiku medium |
 
 Flow: recon → BASE test failures recorded → plan → **Gate A** (optional: only
 when the plan has open questions) → per ticket: cycles (tests → implement) →
-review → fix → manual checklist → trim → **Gate B** (required: a short report to
+review → fix → manual checks → trim → **Gate B** (required: a short report to
 read before committing) → cross-ticket review for multi-ticket runs.
 
 Review runs `/code-review` with its reviewers spawned as `impl-reviewer`, so the
@@ -66,7 +66,8 @@ verifies against a snapshot that only tests were removed and everything stays gr
 
 At most 10 one-line hand checks (`do this → see this`) for a diff: only what a
 human must verify by looking (visual states, flows, timing, real external
-services). Also the rule set orchestrate's checklist executor follows.
+services). The list is a guide in plain bullets: its checks are assumed done and
+never wait on anyone. Also the rule set orchestrate's manual-checks executor follows.
 
 ### `diff-tour`
 
