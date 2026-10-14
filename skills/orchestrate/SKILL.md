@@ -78,11 +78,11 @@ Sandbox is `workspace-write` unless the cast says `read-only`. Launch it with Ba
 
 **Claude call.** The Agent tool with `subagent_type: <role>` and the same brief. Sub-agents already run in the background.
 
-**Checkpoint.** Before every executor call, snapshot each repo's working tree without touching it (`<run-dir>` as an absolute path), and record the tree hash with the call in the run file:
+**Checkpoint.** Before every executor call, snapshot each repo's working tree without touching it (`<run-dir>` as an absolute path), and record the tree hash with the call in the run file. The snapshot holds tracked files plus the untracked files earlier executors created (already intent-to-add, see *New files*); other untracked files stay out of it:
 
 ```
 cp "$(git -C <repo> rev-parse --path-format=absolute --git-path index)" <run-dir>/snap.idx
-GIT_INDEX_FILE=<run-dir>/snap.idx git -C <repo> add -A && GIT_INDEX_FILE=<run-dir>/snap.idx git -C <repo> write-tree
+GIT_INDEX_FILE=<run-dir>/snap.idx git -C <repo> add -u && GIT_INDEX_FILE=<run-dir>/snap.idx git -C <repo> write-tree
 ```
 
 `git -C <repo> diff <tree>` is then that call's delta, and `git -C <repo> restore --source=<tree> --worktree -- <file>` puts one file back as it was before the call (delete a file the call created).
