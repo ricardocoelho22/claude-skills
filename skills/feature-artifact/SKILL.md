@@ -12,6 +12,8 @@ Read [`feature-layout.md`](feature-layout.md) first. It defines the tree, the ti
 
 **Single writer.** Only the main session publishes. A sub-agent, a codex executor, or a session in a worktree never publishes; it reports to the main session, which runs the refresh.
 
+**Delegated build.** The main session can hand everything except the publish to one sub-agent. The sub-agent runs *Create* steps 1 and 2 (with the review waived) or *Refresh* steps 1 and 2, then *Build and publish* steps 1 to 3 in the build folder it is given. It returns the build folder, the list of files in it, and the waiting lines. The main session then runs *Build and publish* step 4 and the rest of *Create* or *Refresh*: the publish, the `Artifact:` line, and the report.
+
 ## Locate the feature
 
 Find the features root (see *Features root* in the layout), then the feature folder: the one the user or the calling skill named, or the only feature with open tickets. When more than one fits, ask.
@@ -23,9 +25,9 @@ Find the features root (see *Features root* in the layout), then the feature fol
 
 1. **Read the feature.** Read `wayfinder/map.md`, every `specs/<slice>/spec.md`, and the title and status of every ticket. In an older tree, read whatever specs, maps, and tickets the folder holds.
 2. **Draft `overview.md`** in the layout's format, following its writing rule. Every claim comes from a file you read: the destination from the map or the spec, the architecture and the slice summaries from the specs, the experiments from resolved wayfinder `prototype` and `research` tickets and from experiment files in `scratchpad/`. When the feature has one spec that covers several slices, propose the slices and say which tickets go in each. Set each `Summary checked` to today.
-3. **Review with the user.** Show the draft and change it until the user approves it. The user reviews the overview once, here; later refreshes only read it. Write the approved file.
+3. **Review with the user.** Show the draft and change it until the user approves it. The user reviews the overview once, here; later refreshes only read it. Write the approved file. When the calling skill says the review is waived (`orchestrate` does), write the draft as it is and say in your report that `overview.md` is new and unreviewed.
 
-   Done when: the user has approved `overview.md` and it is on disk.
+   Done when: `overview.md` is on disk, approved by the user or with the review waived.
 4. **Build and publish** (below). On this first publish, pass `icon: "map"`. Write the new URL on the `Artifact:` line of `overview.md`.
 
 ## Refresh
