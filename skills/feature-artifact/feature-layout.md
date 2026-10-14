@@ -48,7 +48,7 @@ The root is untracked by default. To keep history, the user can make it a privat
 
 ## Ticket status
 
-Read the first word or term after `Status:`. Ignore bold markers and case, and treat spaces and underscores as hyphens (`Needs info` is `needs-info`). Any text after that term is a note and does not change the state. The repo's `triage-labels.md` can add status words; map each one to the state it means.
+Read the first word or term after `Status:`. Ignore bold markers and case, and treat spaces and underscores as hyphens (`Needs info` is `needs-info`). Any text after that term is a note and does not change the state. A repo the feature's specs name can add status words in its `docs/agents/triage-labels.md`, next to its tracker doc; map each one to the state it means. Read only those repos' files.
 
 | State | Status words | On the feature page |
 |---|---|---|

@@ -113,7 +113,9 @@ git -C <repo> status --porcelain             # must be clean, or ask the user
 
 A workspace can span several independent repos, so check for them and pin a separate BASE per repo.
 
-**Open the run file.** Create `.scratch/orchestrate/<slug>.md` (the run dir is `.scratch/orchestrate/<slug>/`). It holds: spec path, backend, each repo's BASE and branch, BASE failures, the plan, and a per-cycle landing log. You are the only writer. Confirm `.scratch/` is gitignored first; if not, use the session scratchpad directory and put its path in every brief.
+**Find the feature.** The feature folder is the folder in the features root that holds the spec or tickets (tree and features root: `~/.claude/skills/feature-artifact/feature-layout.md`). Work that sits outside a features root has no feature folder: the run then has no feature page, and every *refresh the page* below is skipped.
+
+**Open the run file.** Create `<feature>/runs/<slug>.md` (the run dir is `<feature>/runs/<slug>/`). It holds: spec path, feature folder, backend, each repo's BASE and branch, BASE failures, the plan, and a per-cycle landing log. You are the only writer. Without a feature folder, use `.scratch/orchestrate/<slug>.md` in the repo: confirm `.scratch/` is gitignored first; if not, use the session scratchpad directory and put its path in every brief.
 
 **Run the backend check.**
 
@@ -129,9 +131,19 @@ A workspace can span several independent repos, so check for them and pin a sepa
 - **Commands**: verified from config: single test file, full suite, typecheck, lint. Name the package manager.
 - **Risks**: shared state, generated code, env vars, the BASE failures.
 
-**Track status** the way the repo's issue tracker records it: `in-progress` when a ticket's first cycle starts, resolved the way the tracker closes work when Gate B's commit lands, `needs-info` when escalated to the user mid-work.
+**Open the feature page.** Refresh the page (below); when the feature has no page yet, the refresh creates it. Record the page URL in the run file.
 
-Done when: the run file holds the backend, BASE per repo, BASE failures, and a plan with seams for every cycle.
+**Refresh the page** means a delegated build (`~/.claude/skills/feature-artifact/SKILL.md`, *Delegated build*), then the publish yourself:
+
+- **Build.** Spawn a general-purpose sub-agent in the background: `model: haiku` for a refresh, `model: sonnet` for a create, since it drafts `overview.md` that nobody reviews. Brief it to read that skill and run a delegated build for the feature folder, with the review waived, in the build folder `<session scratchpad>/feature-artifact/<feature>/` (an absolute path: the publish takes files only from the scratchpad or the working directory).
+- **Publish.** When it returns, run *Build and publish* step 4 with the Artifact tool. On a refresh, your first publish of the run needs a `read` of the page URL first. On a create, pass `icon: "map"` and write the new URL on the `Artifact:` line of `overview.md`.
+- **One at a time.** The page is a view of the feature's files, so a refresh starts after the file change it must show. When a status changes while a refresh runs, start one more refresh after it lands; it reads the latest files, so it covers every change since.
+
+**Track status** the way the repo's issue tracker records it: `in-progress` when a ticket's first cycle starts, resolved the way the tracker closes work when Gate B's commit lands, `needs-info` when escalated to the user mid-work. After every status change, refresh the page.
+
+**Keep `overview.md` true.** When the run changes a `spec.md` or adds a slice, update that slice's entry in the feature's `overview.md` in the layout's format, and set its `Summary checked` to today, before the next refresh. A refresh reports drift; it never repairs it.
+
+Done when: the run file holds the backend, BASE per repo, BASE failures, and a plan with seams for every cycle, and the feature page URL when the run has a feature folder.
 
 ## Gate A — The plan 🚦 (optional)
 
@@ -144,7 +156,7 @@ When you stop, invoke `/grilling` with two adaptations:
 
 ## Phase 1 — Per ticket
 
-Record `TICKET_BASE` (HEAD per repo) in the run file, then run steps 1–5.
+Record `TICKET_BASE` (HEAD per repo) in the run file, set the ticket `in-progress`, refresh the page, then run steps 1–5.
 
 ### 1. Cycles
 
@@ -214,7 +226,7 @@ A ❌ replaces a ✅ when a check fails, and the real failing output goes below 
 
 Batch same-rung requests into one brief. Verify as in step 3; a local-code return that touched a test file was sized wrong, so restore that test file from the checkpoint and re-run the request as within-seams. A request rejected at rung 4 is too big for a Gate B change: take it to the user as a new cycle or ticket. When behavior changed, update the manual-checks guide. Then re-show Gate B: after a within-seams change, the full report with a fresh `/diff-tour`; otherwise, the title line, one line per change, and `Commit?`.
 
-On approval, commit per repo on the current branch in the project's commit style. Start the next ticket at Phase 1. Re-open Gate A only when a ticket needs seams the plan does not cover.
+On approval, commit per repo on the current branch in the project's commit style, resolve the ticket, and refresh the page. Start the next ticket at Phase 1. Re-open Gate A only when a ticket needs seams the plan does not cover.
 
 ## Phase 2 — Cross-ticket review (multi-ticket runs only)
 
@@ -222,7 +234,7 @@ Each ticket was reviewed on its own. Once all are committed, invoke `/code-revie
 
 ## Finish
 
-Run the full test suite once per repo, yourself, plus lint and build if the project defines a combined gate. Compare failures against the BASE failures; a new failure goes to the user before you report. Report: tickets landed, commits per repo, guide paths, deferred findings, codex fallbacks taken, step-ups (role, cycle, from and to rung), any test, typecheck, lint, or build you could not run.
+Run the full test suite once per repo, yourself, plus lint and build if the project defines a combined gate. Compare failures against the BASE failures; a new failure goes to the user before you report. Refresh the page. Report: tickets landed, commits per repo, the feature page URL, guide paths, deferred findings, codex fallbacks taken, step-ups (role, cycle, from and to rung), any test, typecheck, lint, or build you could not run.
 
 Then offer `/retro` while this session is still in context. The run file is its primary source: fallbacks, blocked executors, fix rounds, and deferred findings are where the environment cost the run.
 

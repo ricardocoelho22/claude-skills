@@ -82,7 +82,9 @@ vertical slices with their ticket status, and what waits on the user. The page i
 view of the feature's files and is never edited by hand. `create` drafts the
 feature's `overview.md` for one review, then publishes. `refresh` rebuilds the page
 from the files and republishes it to the same URL, flagging drift (for example, a
-spec that changed after its summary was written). The page is fixed templates in
+spec that changed after its summary was written). `orchestrate` runs it: it
+opens the page in Phase 0 and refreshes it after every ticket status change and at
+Finish. The page is fixed templates in
 `page/` that read a generated `data.json`, so it looks the same on every refresh.
 
 `feature-layout.md` is the shared convention for where feature files live: a
