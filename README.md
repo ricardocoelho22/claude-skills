@@ -55,6 +55,18 @@ fallback), and the third-party `tdd`, `code-review`, and `grilling` skills.
 This is the main driver for all implementation work; it does not hand off to
 `/implement` or `/implement-spec`.
 
+### `experiment`
+
+Orchestrated measurement for a ticket whose deliverable is a finding, not code (a
+cost or quality experiment, a spike). Reuses orchestrate's executor mechanics.
+Flow: design → **Gate A** (required: claim, arms, metric, n, budget cap, stop rule)
+→ harness + smoke run (`impl-experimenter`) → adversarial design review
+(`impl-reviewer`, asked what makes the measurement not measure the claim, with
+`confounds.md` as a floor) → freeze the harness at a commit → full run →
+**Gate B** (accept the results). The harness stays on an unmerged
+`experiment/<slug>` branch; the output is a research file in the feature's
+`scratchpad/` plus an *Experiments* entry in `overview.md`.
+
 ### `trim-tests`
 
 Cuts freshly written tests down to the ones that earn their place: deletes and
@@ -121,8 +133,9 @@ sub-agent, and `orchestrate` briefs codex to read the same file.
 | `impl-explorer` | Read-only recon: files in scope, reuse, seams, commands | `orchestrate` |
 | `impl-tdd` | One test-first cycle: test-writer or implementer mode | `orchestrate` |
 | `impl-trimmer` | Deletes or merges redundant tests, one reason each | `trim-tests`, `orchestrate` |
-| `impl-reviewer` | Thin opus shell that follows the review brief it's given | `orchestrate` |
+| `impl-reviewer` | Thin opus shell that follows the review brief it's given | `orchestrate`, `experiment` |
 | `impl-fixer` | Applies a triaged set of review findings, one round | `orchestrate` |
+| `impl-experimenter` | Builds an experiment harness + smoke run, or runs the frozen harness | `experiment` |
 
 ## Third-party skills (reinstalled, not vendored)
 

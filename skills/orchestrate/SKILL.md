@@ -103,6 +103,8 @@ cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh resume --last -o <run-d
 
 Read the spec or tickets yourself, in full, fetching ticket references through the repo's issue tracker (`docs/agents/issue-tracker.md`). This reading is your ground: the source of truth you judge every return against.
 
+**Route experiments.** An **experiment ticket** is one whose deliverable is a finding, not code: it asks for a measurement (cost, quality, latency) or a spike, and is done when a number or verdict exists. A wayfinder `prototype` or `research` ticket that needs a harness and a measured run is one. When every ticket is an experiment, hand the run to `~/.claude/skills/experiment/SKILL.md` now and follow it instead of this skill. When only some are, the plan marks them (see *Write the plan*).
+
 **Pin the ground.** For each git repo the work touches:
 
 ```
@@ -126,6 +128,7 @@ A workspace can span several independent repos, so check for them and pin a sepa
 **Write the plan** into the run file yourself: mistakes here fan out into every later step.
 
 - **Ticket order**, derived from blocking edges.
+- **Experiment tickets** (see *Route experiments*) get no cycles. Mark each `experiment`. In its place in the order, run it through `~/.claude/skills/experiment/SKILL.md` instead of Phase 1: it keeps its own run file and gates, and ends back on the working branch. Phase 2 leaves it out.
 - **Per ticket:** its test-first cycles in sequence; for each cycle, the seams it tests (one line on why each earns a test), its acceptance criteria, and a `mechanical` or `design-heavy` mark when it sits off the norm (see *Rungs*).
 - **Reuse**: helpers and fixtures executors must call instead of reimplementing.
 - **Commands**: verified from config: single test file, full suite, typecheck, lint. Name the package manager.
@@ -135,8 +138,8 @@ A workspace can span several independent repos, so check for them and pin a sepa
 
 **Refresh the page** means a delegated build (`~/.claude/skills/feature-artifact/SKILL.md`, *Delegated build*), then the publish yourself:
 
-- **Build.** Spawn a general-purpose sub-agent in the background: `model: haiku` for a refresh, `model: sonnet` for a create, since it drafts `overview.md` that nobody reviews. Brief it to read that skill and run a delegated build for the feature folder, with the review waived, in the build folder `<session scratchpad>/feature-artifact/<feature>/` (an absolute path: the publish takes files only from the scratchpad or the working directory).
-- **Publish.** When it returns, run *Build and publish* step 4 with the Artifact tool. On a refresh, your first publish of the run needs a `read` of the page URL first. On a create, pass `icon: "map"` and write the new URL on the `Artifact:` line of `overview.md`.
+- **Build.** Spawn a general-purpose sub-agent in the background: `model: haiku` for a refresh, `model: sonnet` for a create, since it drafts `overview.md` that nobody reviews. Brief it to read that skill and run a delegated build for the feature folder, with the review waived, in the build folder `<session scratchpad>/feature-artifact/<feature>/` (an absolute path: the publish takes files only from the scratchpad or the working directory). It returns the build folder, every file in it, and the waiting lines; the publish's `files` comes from that list.
+- **Publish.** When it returns, run *Build and publish* steps 4 and 5 with the Artifact tool. On a refresh, your first publish of the run needs a `read` of the page URL first. On a create, pass `icon: "map"` and write the new URL on the `Artifact:` line of `overview.md`.
 - **One at a time.** The page is a view of the feature's files, so a refresh starts after the file change it must show. When a status changes while a refresh runs, start one more refresh after it lands; it reads the latest files, so it covers every change since.
 
 **Track status** the way the repo's issue tracker records it: `in-progress` when a ticket's first cycle starts, resolved the way the tracker closes work when Gate B's commit lands, `needs-info` when escalated to the user mid-work. After every status change, refresh the page.
