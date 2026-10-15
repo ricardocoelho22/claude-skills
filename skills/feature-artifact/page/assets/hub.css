@@ -80,6 +80,10 @@ code { font-family: var(--font-mono); font-size: 0.85em; background: var(--code-
 .prose th { white-space: nowrap; }
 .prose blockquote { margin: 0 0 0.8rem; padding-left: 0.9rem; border-left: 3px solid var(--rule); color: var(--muted); }
 .prose .dead-link { border-bottom: 1px dotted var(--muted); }
+/* TL;DR: a document's opening summary, set apart from the full read. */
+.prose .tldr { margin: 0 0 1.6rem; padding: 0.9rem 1.1rem; background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--accent); border-radius: 6px; }
+.prose .tldr .label { display: block; margin-bottom: 0.5rem; font: 600 0.68rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.prose .tldr > :last-child { margin-bottom: 0; }
 
 
 /* Status chip */

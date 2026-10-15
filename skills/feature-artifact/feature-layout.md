@@ -126,6 +126,16 @@ Result: <one line: what we learned or decided>
 
 Write all text in `overview.md`, and any other text a skill writes for the feature page, in ASD-STE100 Simplified Technical English: short sentences, one instruction or fact per sentence, active voice, and common words. Use the terms from the repo's `GLOSSARY.md` (follow `GLOSSARY-MAP.md` when a repo has more than one). Give a little context before the detail. A tired reader must understand each line on the first read.
 
+### TL;DR
+
+A document the page shows in full (research, experiment results, notes) opens with a `## TL;DR` section, right after its title. The page shows it as a callout above the full read. It sits between the one line on the overview and the full document: what the reader must know without reading on.
+
+- Three to five bullets: the conclusion, what it means for the feature, and the largest caveat or open question.
+- Say the result, not the topic: "Codex at rung 3 costs 40% less with the same pass rate", not "We compared costs".
+- It must make sense alone, and it must agree with the body. When the body changes, update it.
+
+Manual-checks guides do not get one; a checklist is read by doing it.
+
 ## Tracker doc
 
 Each repo that uses this layout has a `docs/agents/issue-tracker.md` like this one. It steers every skill that publishes to the issue tracker into the feature tree.

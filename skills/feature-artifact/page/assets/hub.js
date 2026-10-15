@@ -230,6 +230,18 @@
     drawDiagrams();
   }
 
+  // A document that opens with a "TL;DR" section shows it as a callout, everything up to the next heading.
+  function tldr(box) {
+    var head = box.firstElementChild;
+    if (!head || !/^H[23]$/.test(head.tagName) || !/^tl;?\s?dr\.?$/i.test(head.textContent.trim())) return;
+    var aside = document.createElement("aside");
+    aside.className = "tldr";
+    aside.innerHTML = '<span class="label">TL;DR</span>';
+    head.remove();
+    while (box.firstElementChild && !/^H[1-6]$/.test(box.firstElementChild.tagName)) aside.appendChild(box.firstElementChild);
+    box.insertBefore(aside, box.firstChild);
+  }
+
   function renderDoc() {
     var id = location.hash.slice(1);
     var back = '<a class="back" href="./">Back to ' + esc(data.feature) + "</a>";
@@ -277,6 +289,7 @@
       var box = document.getElementById("doc");
       box.innerHTML = md(text);
       if (box.firstElementChild && box.firstElementChild.tagName === "H1") box.firstElementChild.remove();
+      tldr(box);
       drawDiagrams();
     }).catch(function (e) { document.getElementById("doc").innerHTML = '<p class="empty">' + esc(e.message) + "</p>"; });
   }

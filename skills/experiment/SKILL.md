@@ -103,6 +103,7 @@ On acceptance, run *Finish*.
 
 `<feature>/scratchpad/<slug>.md`. Without a feature folder, put it where the repo keeps research notes, and say where. It holds:
 
+- **TL;DR**, first, as the layout's *TL;DR* rule says: the verdict with its headline numbers, what it means for the decision the ticket feeds, and the largest caveat.
 - **Question and claim**, and the verdict.
 - **Design**: arms, metric, inputs, n, price table with its date.
 - **Results**: per-arm numbers with their spread, computed from the raw rows.
