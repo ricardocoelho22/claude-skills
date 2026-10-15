@@ -10,9 +10,9 @@ The page answers three questions for a reader who may be tired: where are we, ho
 
 Read [`feature-layout.md`](feature-layout.md) first. It defines the tree, the ticket states, the `overview.md` format, and the writing rule this skill follows.
 
-**Single writer.** Only the main session publishes. A sub-agent, a codex executor, or a session in a worktree never publishes; it reports to the main session, which runs the refresh.
+**Single writer.** Only a main session publishes. A sub-agent, a codex executor, or a session in a worktree never publishes; it reports to the main session, which runs the refresh. Two main sessions can still refresh one page at the same time; the one that publishes second gets a refusal, which *Build and publish* step 5 handles.
 
-**Delegated build.** The main session can hand everything except the publish to one sub-agent. The sub-agent runs *Create* steps 1 and 2 (with the review waived) or *Refresh* steps 1 and 2, then *Build and publish* steps 1 to 3 in the build folder it is given. It returns the build folder, the list of files in it, and the waiting lines. The main session then runs *Build and publish* step 4 and the rest of *Create* or *Refresh*: the publish, the `Artifact:` line, and the report.
+**Delegated build.** The main session can hand everything except the publish to one sub-agent. The sub-agent runs *Create* steps 1 and 2 (with the review waived) or *Refresh* steps 1 and 2, then *Build and publish* steps 1 to 3 in the build folder it is given. It returns the build folder, the list of files in it, and the waiting lines. The main session then runs *Build and publish* steps 4 and 5 (a rebuild in step 5 is a new delegated build) and the rest of *Create* or *Refresh*: the publish, the `Artifact:` line, and the report.
 
 ## Locate the feature
 
@@ -60,6 +60,9 @@ Build in `<scratchpad>/feature-artifact/<feature>/`, starting from an empty fold
 2. Copy each manual-checks guide, and each markdown file named under *Experiments* or *Related*, to `src/docs/<id>.md`. Copy each HTML prototype named there to `src/proto/<name>.html`. Copy them as they are; never edit a copied file. An experiment whose source is a folder or a branch gets no copy; the page shows its path.
 3. Write `data.json` (schema below).
 4. Publish with the `Artifact` tool: `file_path` is the build folder's `index.html`, `root` is the build folder, and `files` lists every other file in it. On a refresh, pass `url` from `overview.md`; when this session has not yet read or published that artifact, read it first (`action: "read"`). The page templates already meet the artifact page contract, so a refresh needs no design pass.
+5. **Refused publish.** A refusal on an artifact you already read means another session published the page after your read. It hands you the live version. Read that version's `data.json` (`action: "read"`, `path: "data.json"`) and compare its ticket states with your build's:
+   - **Same states:** the other session already published what your refresh exists to show. Skip the publish and say so in the report.
+   - **Different states:** the files can have changed since your build read them. Rebuild from step 1, then publish with the same `url`; the refusal counts as the read. A second refusal goes to the user.
 
 ### data.json
 
