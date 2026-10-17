@@ -41,11 +41,11 @@ Resuming keeps codex's context and cache warm. Run it from the same directory, i
 
 ## Model and effort
 
-Inherited from `~/.codex/config.toml` (`gpt-6-sol`, high). Override per call:
+Inherited from `~/.codex/config.toml` (`gpt-6.1-sol`, high). Override per call:
 
-- `-m <model>`: a slug from `codex debug models`. GPT-6 tiers:
+- `-m <model>`: a slug from `codex debug models`. Tiers:
   - `gpt-6-astra`: frontier; design-heavy or judgement-heavy work.
-  - `gpt-6-sol`: workhorse; the default for implementation and review.
+  - `gpt-6.1-sol`: workhorse; the default for implementation and review.
   - `gpt-6-luna`: fast and cheap; mechanical passes, triage, quick lookups.
 - `-c model_reasoning_effort=low|medium|high|xhigh|max` (`ultra` on astra and sol).
 

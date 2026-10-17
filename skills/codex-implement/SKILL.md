@@ -40,4 +40,4 @@ Done means: tests green, typecheck clean, verdict pass, committed.
 
 ## Model
 
-Both the implement and the review runs default to `gpt-6-sol`/high from config. Step up to `-m gpt-6-astra` when the brief is design-heavy; step down to `-m gpt-6-luna` for a mechanical fix-up loop. Slugs and effort levels are listed in `codex`.
+Both the implement and the review runs default to `gpt-6.1-sol`/high from config. Step up to `-m gpt-6-astra` when the brief is design-heavy; step down to `-m gpt-6-luna` for a mechanical fix-up loop. Slugs and effort levels are listed in `codex`.

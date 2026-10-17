@@ -23,11 +23,11 @@ Your four jobs, in priority order:
 | Role | Role file | Codex route | Claude fallback |
 |---|---|---|---|
 | Orchestrator + planner | — (you) | — | session model |
-| Explorer | `impl-explorer` | `gpt-6-sol` · medium · `read-only` | `impl-explorer` |
-| Test-writer / Implementer | `impl-tdd` | `gpt-6-sol` · medium | `impl-tdd` |
-| Fixer | `impl-fixer` | `gpt-6-sol` · high | `impl-fixer` |
+| Explorer | `impl-explorer` | `gpt-6.1-sol` · medium · `read-only` | `impl-explorer` |
+| Test-writer / Implementer | `impl-tdd` | `gpt-6.1-sol` · medium | `impl-tdd` |
+| Fixer | `impl-fixer` | `gpt-6.1-sol` · high | `impl-fixer` |
 | Manual checks | — (ad hoc) | `gpt-6-luna` · low | general-purpose, `model: haiku` |
-| Test trimmer | `impl-trimmer` | `gpt-6-sol` · medium | `impl-trimmer` |
+| Test trimmer | `impl-trimmer` | `gpt-6.1-sol` · medium | `impl-trimmer` |
 | Reviewer | `impl-reviewer` | — (always Claude) | `impl-reviewer` (opus · medium) |
 
 Role files live in `~/.claude/agents/`. Both backends read the same file, so a role has one definition.
@@ -40,8 +40,8 @@ The cast sets each executor's default; the reviewer stays pinned to its cast ent
 |---|---|---|
 | 1 | `haiku` · low | `gpt-6-luna` · low |
 | 2 | `haiku` · medium | `gpt-6-luna` · medium |
-| 3 | `sonnet` · medium | `gpt-6-sol` · medium |
-| 4 | `sonnet` · high | `gpt-6-sol` · high |
+| 3 | `sonnet` · medium | `gpt-6.1-sol` · medium |
+| 4 | `sonnet` · high | `gpt-6.1-sol` · high |
 
 On a Claude call, set the Agent tool's `model` and `effort`; on a codex call, `-m` and `-c model_reasoning_effort=`. Rung 4 is the ceiling: moves never go past it. Log each call's rung, and every step-up, in the run file's landing log.
 
