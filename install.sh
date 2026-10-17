@@ -60,4 +60,29 @@ for src in "${agents[@]}"; do
   fi
 done
 
+# --- 3. Status line: symlink statusline/statusline.sh -> ~/.claude/statusline.sh ---
+# Then point settings.json's statusLine at it, unless one is already set.
+log "Linking status line …"
+src="$REPO_DIR/statusline/statusline.sh"
+target="${HOME}/.claude/statusline.sh"
+if [ -L "$target" ] && [ "$(readlink "$target")" = "$src" ]; then
+  echo "   ok   statusline.sh (already linked)"
+elif [ -e "$target" ] && [ ! -L "$target" ]; then
+  warn "$target exists and is not a symlink — leaving it untouched"
+else
+  ln -sfn "$src" "$target"
+  echo "   link statusline.sh"
+fi
+
+settings="${HOME}/.claude/settings.json"
+JQ=/usr/bin/jq; [ -x "$JQ" ] || JQ=jq
+[ -f "$settings" ] || echo '{}' > "$settings"
+if [ "$("$JQ" -r '.statusLine // empty' "$settings")" ]; then
+  echo "   ok   statusLine already set in settings.json — leaving it untouched"
+else
+  "$JQ" '.statusLine = {"type": "command", "command": "~/.claude/statusline.sh"}' "$settings" \
+    > "$settings.tmp" && mv "$settings.tmp" "$settings"
+  echo "   set  statusLine in settings.json"
+fi
+
 log "Done. Restart Claude Code to load newly linked skills/agents."

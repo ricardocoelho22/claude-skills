@@ -20,7 +20,8 @@ cd claude-skills
 | `agents/` | **My own** sub-agent definitions. Symlinked into `~/.claude/agents/`. |
 | `manifest/skills.json` | Third-party global skills I use but didn't write. Not installed by `install.sh`. |
 | `manifest/plugins.json` | Claude Code plugins + their marketplace. Not installed by `install.sh`. |
-| `install.sh` | Symlinks `skills/` and `agents/` into `~/.claude/`. |
+| `statusline/` | My status line script. Symlinked to `~/.claude/statusline.sh`. |
+| `install.sh` | Symlinks `skills/`, `agents/` and the status line into `~/.claude/`, and sets `statusLine` in `settings.json` if unset. |
 
 ## My own skills
 
@@ -136,6 +137,19 @@ sub-agent, and `orchestrate` briefs codex to read the same file.
 | `impl-reviewer` | Thin opus shell that follows the review brief it's given | `orchestrate`, `experiment` |
 | `impl-fixer` | Applies a triaged set of review findings, one round | `orchestrate` |
 | `impl-experimenter` | Builds an experiment harness + smoke run, or runs the frozen harness | `experiment` |
+
+## Status line
+
+`statusline/statusline.sh` prints `✉ <name> · <model> · ctx <n>%`:
+
+- **name**: the session's messaging name, the one peer sessions `SendMessage` it
+  by. Claude Code doesn't hand it to status lines, so the script looks the
+  `session_id` up in `~/.claude/sessions/<pid>.json`. That file is undocumented:
+  if its shape changes the name shows as `?`.
+- **ctx**: `context_window.used_percentage`, else computed from the current
+  usage; `–` when neither is there.
+
+Needs `jq` (`/usr/bin/jq` on recent macOS, else whatever is on `PATH`).
 
 ## Third-party skills (reinstalled, not vendored)
 
