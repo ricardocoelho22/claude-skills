@@ -140,7 +140,7 @@ sub-agent, and `orchestrate` briefs codex to read the same file.
 
 ## Status line
 
-`statusline/statusline.sh` prints `✉ <name> · <model> (<effort>) · ctx <n>%`:
+`statusline/statusline.sh` prints `✉ <name> · <model> (<effort>) · ⎇ <branch> · ctx <n>% · $<cost>`:
 
 - **name**: the session's messaging name, the one peer sessions `SendMessage` it
   by. Claude Code doesn't hand it to status lines, so the script looks the
@@ -148,8 +148,14 @@ sub-agent, and `orchestrate` briefs codex to read the same file.
   if its shape changes the name shows as `?`.
 - **effort**: `effort.level`, which follows `/effort` changes mid-session. The
   parenthetical is left out when the model has no effort setting.
+- **branch**: the git branch of the session's current directory, so parallel
+  worktree sessions are told apart. Left out outside a repo.
 - **ctx**: `context_window.used_percentage`, else computed from the current
   usage; `–` when neither is there.
+- **cost**: `cost.total_cost_usd`, shown only on API billing. Claude Code has no
+  billing field, so the script hides it whenever `rate_limits.five_hour` or
+  `seven_day` is present (only subscribers get those) and while it is still 0
+  (before the first response, when `rate_limits` hasn't arrived yet).
 
 Needs `jq` (`/usr/bin/jq` on recent macOS, else whatever is on `PATH`).
 
