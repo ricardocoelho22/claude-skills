@@ -80,7 +80,7 @@ JQ=/usr/bin/jq; [ -x "$JQ" ] || JQ=jq
 if [ "$("$JQ" -r '.statusLine // empty' "$settings")" ]; then
   echo "   ok   statusLine already set in settings.json — leaving it untouched"
 else
-  "$JQ" '.statusLine = {"type": "command", "command": "~/.claude/statusline.sh"}' "$settings" \
+  "$JQ" '.statusLine = {"type": "command", "command": "~/.claude/statusline.sh", "refreshInterval": 30}' "$settings" \
     > "$settings.tmp" && mv "$settings.tmp" "$settings"
   echo "   set  statusLine in settings.json"
 fi

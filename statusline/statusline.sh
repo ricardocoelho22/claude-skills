@@ -1,5 +1,5 @@
 #!/bin/bash
-# Status line: messaging name (how peer sessions reach this one) · model (effort) · git branch · context used · cost
+# Status line: messaging name (how peer sessions reach this one) · model (effort) · git branch · context used · prompt cache · cost
 # /usr/bin/jq first: an asdf jq shim with no pinned version fails here
 JQ=/usr/bin/jq; [ -x "$JQ" ] || JQ=jq
 input=$(cat)
@@ -19,6 +19,14 @@ ctx=$($JQ -r '
        else empty end))
   | floor | tostring + "%"' <<<"$input" 2>/dev/null)
 
+# Prompt cache: minutes until it goes cold, worked out from expires_at against now (the
+# settings' refreshInterval keeps it ticking while idle); hidden when no caching is seen
+cache=$($JQ -r --argjson now "$(date +%s)" '
+  .prompt_cache | select(.caching_observed == true)
+  | if .expires_at and .expires_at > $now then
+      "cache " + (((.expires_at - $now) / 60 | floor) as $m | if $m < 1 then "<1m" else "\($m)m" end)
+    else "cache cold" end' <<<"$input" 2>/dev/null)
+
 # Cost only on API billing: subscribers get rate_limits.five_hour/seven_day after the first
 # response, and before it the cost is still 0, so a subscriber never sees it
 cost=$($JQ -r '
@@ -27,4 +35,4 @@ cost=$($JQ -r '
   else empty end' <<<"$input" 2>/dev/null)
 [ -n "$cost" ] && cost=$(printf '$%.2f' "$cost")
 
-echo "✉ ${name:-?} · ${model}${effort:+ ($effort)}${branch:+ · ⎇ $branch} · ctx ${ctx:-–}${cost:+ · $cost}"
+echo "✉ ${name:-?} · ${model}${effort:+ ($effort)}${branch:+ · ⎇ $branch} · ctx ${ctx:-–}${cache:+ · $cache}${cost:+ · $cost}"

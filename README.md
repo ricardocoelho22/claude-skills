@@ -140,7 +140,7 @@ sub-agent, and `orchestrate` briefs codex to read the same file.
 
 ## Status line
 
-`statusline/statusline.sh` prints `✉ <name> · <model> (<effort>) · ⎇ <branch> · ctx <n>% · $<cost>`:
+`statusline/statusline.sh` prints `✉ <name> · <model> (<effort>) · ⎇ <branch> · ctx <n>% · cache <n>m · $<cost>`:
 
 - **name**: the session's messaging name, the one peer sessions `SendMessage` it
   by. Claude Code doesn't hand it to status lines, so the script looks the
@@ -152,6 +152,10 @@ sub-agent, and `orchestrate` briefs codex to read the same file.
   worktree sessions are told apart. Left out outside a repo.
 - **ctx**: `context_window.used_percentage`, else computed from the current
   usage; `–` when neither is there.
+- **cache**: minutes until the prompt cache goes cold, from `prompt_cache.expires_at`
+  against the clock; `cache cold` once it has, so you know the next prompt
+  re-caches the conversation. Hidden until a response reports cache tokens.
+  It only ticks while idle because `install.sh` sets `refreshInterval: 30`.
 - **cost**: `cost.total_cost_usd`, shown only on API billing. Claude Code has no
   billing field, so the script hides it whenever `rate_limits.five_hour` or
   `seven_day` is present (only subscribers get those) and while it is still 0
