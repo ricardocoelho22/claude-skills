@@ -140,12 +140,14 @@ sub-agent, and `orchestrate` briefs codex to read the same file.
 
 ## Status line
 
-`statusline/statusline.sh` prints `✉ <name> · <model> · ctx <n>%`:
+`statusline/statusline.sh` prints `✉ <name> · <model> (<effort>) · ctx <n>%`:
 
 - **name**: the session's messaging name, the one peer sessions `SendMessage` it
   by. Claude Code doesn't hand it to status lines, so the script looks the
   `session_id` up in `~/.claude/sessions/<pid>.json`. That file is undocumented:
   if its shape changes the name shows as `?`.
+- **effort**: `effort.level`, which follows `/effort` changes mid-session. The
+  parenthetical is left out when the model has no effort setting.
 - **ctx**: `context_window.used_percentage`, else computed from the current
   usage; `–` when neither is there.
 
