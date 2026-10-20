@@ -29,6 +29,7 @@
     { "name": "wizard",                       "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "writing-for-agents",           "source": "mattpocock/skills",     "group": "Matt Pocock" },
     { "name": "retro",                        "source": "mattpocock/skills",     "group": "Matt Pocock" },
-    { "name": "pr",                           "source": "mattpocock/skills",     "group": "Matt Pocock" }
+    { "name": "pr",                           "source": "mattpocock/skills",     "group": "Matt Pocock" },
+    { "name": "resolving-merge-conflicts",    "source": "mattpocock/skills",     "group": "Matt Pocock" }
   ]
 }

@@ -27,7 +27,7 @@ cd claude-skills
 
 ### `orchestrate`
 
-Orchestrated implementation of a spec or set of tickets, codex-first. The session
+Orchestrated implementation of one ticket, codex-first. The session
 model writes the plan and the briefs, holds the user gates, and verifies every
 return; codex agents execute and Claude reviews, so every change gets a
 cross-model review. When codex is unavailable (or a call fails), each step falls
@@ -42,16 +42,18 @@ back to its Claude agent.
 | Manual checks | follows `manual-checklist` | `gpt-6-luna` low | haiku |
 | Trim tests | `impl-trimmer` | `gpt-6.1-sol` medium | haiku medium |
 
-Flow: recon → BASE test failures recorded → plan → **Gate A** (optional: only
-when the plan has open questions) → per ticket: cycles (tests → implement) →
-review → fix → manual checks → trim → **Gate B** (required: a short report to
-read before committing) → cross-ticket review for multi-ticket runs.
+Flow: a branch per ticket (or a worktree, on request) → recon → BASE test
+failures recorded → plan → **Gate A** (optional: only when the plan has open
+questions) → cycles (tests → implement) → review → fix → manual checks → trim →
+**Gate B** (required: a short report to read before committing) → an offer to
+merge into the parent branch, run `/retro`, and clean up the branch or worktree.
 
 Review runs `/code-review` with its reviewers spawned as `impl-reviewer`, so the
 review method tracks upstream `code-review` while the model stays pinned.
 
 **Depends on** the `codex` skill and CLI (optional: missing codex triggers the
-fallback), and the third-party `tdd`, `code-review`, and `grilling` skills.
+fallback), and the third-party `tdd`, `code-review`, `grilling`, `retro`, and
+`resolving-merge-conflicts` skills.
 
 This is the main driver for all implementation work; it does not hand off to
 `/implement` or `/implement-spec`.
@@ -204,6 +206,7 @@ path references in `impl-tdd` and the `$tdd` / `$code-review` calls codex makes.
 | `writing-for-agents` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `retro` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 | `pr` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
+| `resolving-merge-conflicts` | [`mattpocock/skills`](https://github.com/mattpocock/skills) |
 
 These are installer-managed (`~/.agents/.skill-lock.json`) — **never edit them in
 place**, the installer overwrites on update. Fork or write your own alongside, which

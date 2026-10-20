@@ -1,8 +1,8 @@
 ---
 name: orchestrate
-description: "Implement a spec or set of tickets as an orchestrator, with codex agents as the executors and Claude agents as the fallback."
+description: "Implement one ticket as an orchestrator, with codex agents as the executors and Claude agents as the fallback."
 disable-model-invocation: true
-argument-hint: "path to the spec or ticket(s)"
+argument-hint: "path to the ticket"
 ---
 
 # Orchestrated implementation, codex-first
@@ -70,7 +70,7 @@ It runs in the foreground, since it takes seconds. Exit 0 → backend `codex`. A
 
 ```
 cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh -s <sandbox> -m <model> -c model_reasoning_effort=<effort> \
-  -o <run-dir>/<ticket>-<cycle>-<role>.md \
+  -o <run-dir>/<cycle>-<role>.md \
   "Your role is defined in ~/.claude/agents/<role>.md: read it and follow it, ignoring its frontmatter. <brief>"
 ```
 
@@ -92,7 +92,7 @@ GIT_INDEX_FILE=<run-dir>/snap.idx git -C <repo> add -u && GIT_INDEX_FILE=<run-di
 **Session hygiene.** Start a fresh codex session per role per cycle. Re-briefing the same executor on the same cycle at the same rung resumes instead, keeping its context and cache warm; a step-up is always a fresh call:
 
 ```
-cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh resume --last -o <run-dir>/<ticket>-<cycle>-<role>-2.md "<follow-up brief>"
+cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh resume --last -o <run-dir>/<cycle>-<role>-2.md "<follow-up brief>"
 ```
 
 **New files.** After every executor return, run `git add -N` on the files it created, so every `git diff` below shows them.
@@ -101,35 +101,42 @@ cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh resume --last -o <run-d
 
 ## Phase 0 — Recon and plan
 
-Read the spec or tickets yourself, in full, fetching ticket references through the repo's issue tracker (`docs/agents/issue-tracker.md`). This reading is your ground: the source of truth you judge every return against.
+Read the ticket and the spec it belongs to yourself, in full, fetching ticket references through the repo's issue tracker (`docs/agents/issue-tracker.md`). This reading is your ground: the source of truth you judge every return against.
 
-**Route experiments.** An **experiment ticket** is one whose deliverable is a finding, not code: it asks for a measurement (cost, quality, latency) or a spike, and is done when a number or verdict exists. A wayfinder `prototype` or `research` ticket that needs a harness and a measured run is one. When every ticket is an experiment, hand the run to `~/.claude/skills/experiment/SKILL.md` now and follow it instead of this skill. When only some are, the plan marks them (see *Write the plan*).
+**Route experiments.** An **experiment ticket** is one whose deliverable is a finding, not code: it asks for a measurement (cost, quality, latency) or a spike, and is done when a number or verdict exists. A wayfinder `prototype` or `research` ticket that needs a harness and a measured run is one. When the ticket is an experiment, hand the run to `~/.claude/skills/experiment/SKILL.md` now and follow it instead of this skill.
 
 **Pin the ground.** For each git repo the work touches:
 
 ```
-git -C <repo> rev-parse --abbrev-ref HEAD    # branch
+git -C <repo> rev-parse --abbrev-ref HEAD    # parent branch — record it
 git -C <repo> rev-parse HEAD                 # BASE — record it
 git -C <repo> status --porcelain             # must be clean, or ask the user
 ```
 
 A workspace can span several independent repos, so check for them and pin a separate BASE per repo.
 
-**Find the feature.** The feature folder is the folder in the features root that holds the spec or tickets (tree and features root: `~/.claude/skills/feature-artifact/feature-layout.md`). Work that sits outside a features root has no feature folder: the run then has no feature page, and every *refresh the page* below is skipped.
+**Branch off.** `<slug>` is the ticket's name in kebab-case; the run file uses it too. In each repo, create the run's branch from BASE:
 
-**Open the run file.** Create `<feature>/runs/<slug>.md` (the run dir is `<feature>/runs/<slug>/`). It holds: spec path, feature folder, backend, each repo's BASE and branch, BASE failures, the plan, and a per-cycle landing log. You are the only writer. Without a feature folder, use `.scratch/orchestrate/<slug>.md` in the repo: confirm `.scratch/` is gitignored first; if not, use the session scratchpad directory and put its path in every brief.
+```
+git -C <repo> switch -c <slug>                                # default
+git -C <repo> worktree add -b <slug> ../<repo-name>-<slug>    # when the user asks for a worktree
+```
+
+Stay on the current branch only when the user says so. When `<slug>` already exists, ask the user. After a worktree add, every `<repo>` below means the worktree, and so does the feature folder when it sits inside the repo; only the wrap-up in *Finish* goes back to the original checkout.
+
+**Find the feature.** The feature folder is the folder in the features root that holds the ticket (tree and features root: `~/.claude/skills/feature-artifact/feature-layout.md`). Work that sits outside a features root has no feature folder: the run then has no feature page, and every *refresh the page* below is skipped.
+
+**Open the run file.** Create `<feature>/runs/<slug>.md` (the run dir is `<feature>/runs/<slug>/`). It holds: ticket path, spec path, feature folder, backend, each repo's BASE, parent branch, run branch, and worktree path if any, BASE failures, the plan, and a per-cycle landing log. You are the only writer. Without a feature folder, use `.scratch/orchestrate/<slug>.md` in the repo: confirm `.scratch/` is gitignored first; if not, use the session scratchpad directory and put its path in every brief.
 
 **Run the backend check.**
 
-**Explore.** Brief the explorer with the spec path, the repo roots, and the feature in your own words. Save its report as `<run-dir>/recon.md` (a codex explorer's `-o` file already is). Spot-check it: open every file it names as in scope and every reuse candidate. Its report is a claim.
+**Explore.** Brief the explorer with the ticket and spec paths, the repo roots, and the ticket in your own words. Save its report as `<run-dir>/recon.md` (a codex explorer's `-o` file already is). Spot-check it: open every file it names as in scope and every reuse candidate. Its report is a claim.
 
 **Record BASE failures.** Run the full test suite once per repo. Write every failing test into the run file. A later failure on this list is pre-existing; a failure off it belongs to this run.
 
 **Write the plan** into the run file yourself: mistakes here fan out into every later step.
 
-- **Ticket order**, derived from blocking edges.
-- **Experiment tickets** (see *Route experiments*) get no cycles. Mark each `experiment`. In its place in the order, run it through `~/.claude/skills/experiment/SKILL.md` instead of Phase 1: it keeps its own run file and gates, and ends back on the working branch. Phase 2 leaves it out.
-- **Per ticket:** its test-first cycles in sequence; for each cycle, the seams it tests (one line on why each earns a test), its acceptance criteria, and a `mechanical` or `design-heavy` mark when it sits off the norm (see *Rungs*).
+- **Cycles**: the ticket's test-first cycles in sequence; for each cycle, the seams it tests (one line on why each earns a test), its acceptance criteria, and a `mechanical` or `design-heavy` mark when it sits off the norm (see *Rungs*).
 - **Reuse**: helpers and fixtures executors must call instead of reimplementing.
 - **Commands**: verified from config: single test file, full suite, typecheck, lint. Name the package manager.
 - **Risks**: shared state, generated code, env vars, the BASE failures.
@@ -142,24 +149,24 @@ A workspace can span several independent repos, so check for them and pin a sepa
 - **Publish.** When it returns, run *Build and publish* steps 4 and 5 with the Artifact tool. On a refresh, your first publish of the run needs a `read` of the page URL first. On a create, pass `icon: "map"` and write the new URL on the `Artifact:` line of `overview.md`.
 - **One at a time.** The page is a view of the feature's files, so a refresh starts after the file change it must show. When a status changes while a refresh runs, start one more refresh after it lands; it reads the latest files, so it covers every change since.
 
-**Track status** the way the repo's issue tracker records it: `in-progress` when a ticket's first cycle starts, resolved the way the tracker closes work when Gate B's commit lands, `needs-info` when escalated to the user mid-work. After every status change, refresh the page.
+**Track status** the way the repo's issue tracker records it: `in-progress` when Phase 1 starts, resolved the way the tracker closes work when Gate B's commit lands, `needs-info` when escalated to the user mid-work. After every status change, refresh the page.
 
 **Keep `overview.md` true.** When the run changes a `spec.md` or adds a slice, update that slice's entry in the feature's `overview.md` in the layout's format, and set its `Summary checked` to today, before the next refresh. A refresh reports drift; it never repairs it.
 
-Done when: the run file holds the backend, BASE per repo, BASE failures, and a plan with seams for every cycle, and the feature page URL when the run has a feature folder.
+Done when: the run file holds the backend, BASE and the run's branch per repo, BASE failures, and a plan with seams for every cycle, and the feature page URL when the run has a feature folder.
 
 ## Gate A — The plan 🚦 (optional)
 
-Stop only when the plan has open questions the user must resolve: seam candidates you cannot choose between, spec ambiguities with real downstream cost, unknowns that force a re-do if wrong. Otherwise state the ticket order and proceed.
+Stop only when the plan has open questions the user must resolve: seam candidates you cannot choose between, spec ambiguities with real downstream cost, unknowns that force a re-do if wrong. Otherwise state the cycles and proceed.
 
 When you stop, invoke `/grilling` with two adaptations:
 
 - **Root:** the open questions above, not the whole spec. Grill only what hangs off them; decisions the spec already settles are out of bounds.
 - **Exit:** once the user confirms shared understanding, write each answer into the plan in the run file, then proceed.
 
-## Phase 1 — Per ticket
+## Phase 1 — Build
 
-Record `TICKET_BASE` (HEAD per repo) in the run file, set the ticket `in-progress`, refresh the page, then run steps 1–5.
+Set the ticket `in-progress`, refresh the page, then run steps 1–5.
 
 ### 1. Cycles
 
@@ -179,18 +186,18 @@ Append what landed to the run file.
 
 Invoke `/code-review` and follow its steps with two adaptations:
 
-- **Diff:** use `git diff <TICKET_BASE>` (working tree against the ticket's base) and the fixed point `TICKET_BASE`. The ticket is uncommitted, so the skill's `...HEAD` form would show nothing.
+- **Diff:** use `git diff <BASE>` (working tree against BASE) and the fixed point BASE. The ticket is uncommitted, so the skill's `...HEAD` form would show nothing.
 - **Reviewers:** where it spawns the Standards and Spec sub-agents, spawn each as `subagent_type: impl-reviewer`, with the prompt the skill specifies.
 
 Triage the findings against your own reading of the code: fix now, deferred (logged in the run file with a reason), or rejected. A finding that a test is redundant, mock-only, off-seam, or tautological goes to the trim in step 5, not the fixer.
 
 ### 3. Fix
 
-Send the fix-now set to `impl-fixer` as one brief, quoting each finding with your triage decision and listing every test file in `git diff --stat <TICKET_BASE>`. Verify with typecheck and the single test file command for every one of those test files, not only the ones the fixer touched. Cap at **one fix round**; a second means a structural problem: take it to the user.
+Send the fix-now set to `impl-fixer` as one brief, quoting each finding with your triage decision and listing every test file in `git diff --stat <BASE>`. Verify with typecheck and the single test file command for every one of those test files, not only the ones the fixer touched. Cap at **one fix round**; a second means a structural problem: take it to the user.
 
 ### 4. Manual checks
 
-Brief the manual-checks executor to read `~/.claude/skills/manual-checklist/SKILL.md` and follow it, with the ticket path, base `TICKET_BASE`, and the output path `manual-test-<NN>-<slug>.md` next to the ticket.
+Brief the manual-checks executor to read `~/.claude/skills/manual-checklist/SKILL.md` and follow it, with the ticket path, BASE as the base, and the output path `manual-test-<NN>-<slug>.md` next to the ticket.
 
 Verify: the file exists and every item is a plain-bullet hand check.
 
@@ -198,13 +205,13 @@ The file is a **guide** for the user, reference like the diff-tour. Assume its c
 
 ### 5. Trim
 
-Trim runs last, once the ticket's tests are final, so no fixer time goes into tests that are about to be cut. Brief `impl-trimmer` with the ticket's test files (from `git diff --stat <TICKET_BASE>`), the plan's seams for the ticket, the commands, and the test findings routed here in step 2.
+Trim runs last, once the ticket's tests are final, so no fixer time goes into tests that are about to be cut. Brief `impl-trimmer` with the ticket's test files (from `git diff --stat <BASE>`), the plan's seams for the ticket, the commands, and the test findings routed here in step 2.
 
 Verify: the diff since the trimmer started only removes or merges test code, the tests stay green, and every removal carries a reason in its return. Put the removals in the run file for Gate B.
 
 ## Gate B — Ready to commit 🚦 (required)
 
-The user reads the code here to stay grounded and catch quirks. Hand them a report that makes that fast: the `/diff-tour` of the ticket against `TICKET_BASE`, with the test and typecheck status on its title line and the run's lines appended, around 25 lines in all:
+The user reads the code here to stay grounded and catch quirks. Hand them a report that makes that fast: the `/diff-tour` of the ticket against BASE, with the test and typecheck status on its title line and the run's lines appended, around 25 lines in all:
 
 ```
 ## Ticket <NN> — <title>        ✅ tests · ✅ typecheck
@@ -229,17 +236,19 @@ A ❌ replaces a ✅ when a check fails, and the real failing output goes below 
 
 Batch same-rung requests into one brief. Verify as in step 3; a local-code return that touched a test file was sized wrong, so restore that test file from the checkpoint and re-run the request as within-seams. A request rejected at rung 4 is too big for a Gate B change: take it to the user as a new cycle or ticket. When behavior changed, update the manual-checks guide. Then re-show Gate B: after a within-seams change, the full report with a fresh `/diff-tour`; otherwise, the title line, one line per change, and `Commit?`.
 
-On approval, commit per repo on the current branch in the project's commit style, resolve the ticket, and refresh the page. Start the next ticket at Phase 1. Re-open Gate A only when a ticket needs seams the plan does not cover.
-
-## Phase 2 — Cross-ticket review (multi-ticket runs only)
-
-Each ticket was reviewed on its own. Once all are committed, invoke `/code-review` with fixed point BASE, reviewers spawned as `impl-reviewer`, and add to the brief: **per-ticket review is done; report only issues that span tickets** (duplicated helpers, inconsistent naming, contracts that drifted between tickets). Triage and fix as in steps 2–3, then run the full test suite once per repo and compare failures against the BASE failures. Show the fixes at a Gate B (the report's title line, the review line, one line per fix, and `Commit?`) and commit on approval.
+On approval, commit per repo on the run's branch in the project's commit style, resolve the ticket, and refresh the page.
 
 ## Finish
 
-Run the full test suite once per repo, yourself, plus lint and build if the project defines a combined gate. Compare failures against the BASE failures; a new failure goes to the user before you report. Refresh the page. Report: tickets landed, commits per repo, the feature page URL, guide paths, deferred findings, codex fallbacks taken, step-ups (role, cycle, from and to rung), any test, typecheck, lint, or build you could not run.
+Run the full test suite once per repo, yourself, plus lint and build if the project defines a combined gate. Compare failures against the BASE failures; a new failure goes to the user before you report. Refresh the page. Report: the branch (and worktree path) and commits per repo, the feature page URL, guide paths, deferred findings, codex fallbacks taken, step-ups (role, cycle, from and to rung), any test, typecheck, lint, or build you could not run.
 
-Then offer `/retro` while this session is still in context. The run file is its primary source: fallbacks, blocked executors, fix rounds, and deferred findings are where the environment cost the run.
+Then offer to wrap up: **Merge into `<parent>`, retro, and clean up?** The user may take all three or name a subset; run what they take, in this order. Merge and cleanup run from each repo's original checkout, `<origin>` below (the repo itself when the run made no worktree).
+
+1. **Merge.** Per repo: `git -C <origin> switch <parent>`, then `git -C <origin> merge <slug>`. On a conflict, invoke `/resolving-merge-conflicts`. When the merge was not a fast-forward, run the full test suite again and compare against the BASE failures; a new failure goes to the user. The merge stays local: pushing is the user's call.
+2. **Retro.** Invoke `/retro` while this session is still in context. The run file is its primary source: fallbacks, blocked executors, fix rounds, and deferred findings are where the environment cost the run. It runs before cleanup because a worktree removal can take the run file with it.
+3. **Clean up.** Per repo: `git -C <origin> worktree remove <worktree-path>` when the run made one, then `git -C <origin> branch -d <slug>`. When either refuses (untracked files, unmerged commits), show the user why and leave the rest to them.
+
+Done when every step the user took has run, or has been handed back to them with the reason it stopped.
 
 ---
 
