@@ -245,7 +245,7 @@ Run the full test suite once per repo, yourself, plus lint and build if the proj
 Then offer to wrap up: **Merge into `<parent>`, retro, and clean up?** The user may take all three or name a subset; run what they take, in this order. Merge and cleanup run from each repo's original checkout, `<origin>` below (the repo itself when the run made no worktree).
 
 1. **Merge.** Per repo: `git -C <origin> switch <parent>`, then `git -C <origin> merge <slug>`. On a conflict, invoke `/resolving-merge-conflicts`. When the merge was not a fast-forward, run the full test suite again and compare against the BASE failures; a new failure goes to the user. The merge stays local: pushing is the user's call.
-2. **Retro.** Invoke `/retro` while this session is still in context. The run file is its primary source: fallbacks, blocked executors, fix rounds, and deferred findings are where the environment cost the run. It runs before cleanup because a worktree removal can take the run file with it.
+2. **Retro.** Call the Skill tool with `session-retro` yourself (don't ask the user to run it) while this session is still in context. The run file is its primary source: fallbacks, blocked executors, fix rounds, and deferred findings are where the environment cost the run. It runs before cleanup because a worktree removal can take the run file with it.
 3. **Clean up.** Per repo: `git -C <origin> worktree remove <worktree-path>` when the run made one, then `git -C <origin> branch -d <slug>`. When either refuses (untracked files, unmerged commits), show the user why and leave the rest to them.
 
 Done when every step the user took has run, or has been handed back to them with the reason it stopped.
