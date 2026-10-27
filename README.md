@@ -25,7 +25,7 @@ cd claude-skills
 
 ## My own skills
 
-### `orchestrate`
+### `rc-orchestrate`
 
 Orchestrated implementation of one ticket, codex-first. The session
 model writes the plan and the briefs, holds the user gates, and verifies every
@@ -35,69 +35,69 @@ back to its Claude agent.
 
 | Step | Role | Codex route | Claude fallback |
 |------|------|-------------|-----------------|
-| Recon | `impl-explorer` | `gpt-6.1-sol` medium, read-only | haiku medium |
-| Tests, then implement | `impl-tdd` | `gpt-6.1-sol` medium | sonnet medium |
-| Review | `impl-reviewer` via `/code-review` | — | opus medium |
-| Fix (one round) | `impl-fixer` | `gpt-6.1-sol` high | sonnet high |
-| Manual checks | follows `manual-checklist` | `gpt-6-luna` low | haiku |
-| Trim tests | `impl-trimmer` | `gpt-6.1-sol` medium | haiku medium |
+| Recon | `rc-explorer` | `gpt-6.1-sol` medium, read-only | haiku medium |
+| Tests, then implement | `rc-tdd` | `gpt-6.1-sol` medium | sonnet medium |
+| Review | `rc-reviewer` via `/code-review` | — | opus medium |
+| Fix (one round) | `rc-fixer` | `gpt-6.1-sol` high | sonnet high |
+| Manual checks | follows `rc-manual-checks` | — | haiku |
+| Trim tests | `rc-trimmer` | `gpt-6.1-sol` medium | haiku medium |
 
 Flow: a branch per ticket (or a worktree, on request) → recon → BASE test
 failures recorded → plan → **Gate A** (optional: only when the plan has open
 questions) → cycles (tests → implement) → review → fix → manual checks → trim →
 **Gate B** (required: a short report to read before committing) → an offer to
-merge into the parent branch, run `/retro`, and clean up the branch or worktree.
+merge into the parent branch, run `/rc-retro`, and clean up the branch or worktree.
 
-Review runs `/code-review` with its reviewers spawned as `impl-reviewer`, so the
+Review runs `/code-review` with its reviewers spawned as `rc-reviewer`, so the
 review method tracks upstream `code-review` while the model stays pinned.
 
-**Depends on** the `codex` skill and CLI (optional: missing codex triggers the
-fallback), and the third-party `tdd`, `code-review`, `grilling`, `retro`, and
+**Depends on** the `rc-codex` skill and CLI (optional: missing codex triggers the
+fallback), and the third-party `tdd`, `code-review`, `grilling`, and
 `resolving-merge-conflicts` skills.
 
 This is the main driver for all implementation work; it does not hand off to
 `/implement` or `/implement-spec`.
 
-### `experiment`
+### `rc-experiment`
 
 Orchestrated measurement for a ticket whose deliverable is a finding, not code (a
-cost or quality experiment, a spike). Reuses orchestrate's executor mechanics.
+cost or quality experiment, a spike). Reuses rc-orchestrate's executor mechanics.
 Flow: design → **Gate A** (required: claim, arms, metric, n, budget cap, stop rule)
-→ harness + smoke run (`impl-experimenter`) → adversarial design review
-(`impl-reviewer`, asked what makes the measurement not measure the claim, with
+→ harness + smoke run (`rc-experimenter`) → adversarial design review
+(`rc-reviewer`, asked what makes the measurement not measure the claim, with
 `confounds.md` as a floor) → freeze the harness at a commit → full run →
 **Gate B** (accept the results). The harness stays on an unmerged
 `experiment/<slug>` branch; the output is a research file in the feature's
 `scratchpad/` plus an *Experiments* entry in `overview.md`.
 
-### `trim-tests`
+### `rc-trim-tests`
 
 Cuts freshly written tests down to the ones that earn their place: deletes and
 merges only, each removal tagged duplicate, mock-only, off-seam, or tautological. Scopes to
-test files changed since a base, confirms the seams, runs `impl-trimmer`, then
+test files changed since a base, confirms the seams, runs `rc-trimmer`, then
 verifies against a snapshot that only tests were removed and everything stays green.
 
-### `manual-checklist`
+### `rc-manual-checks`
 
 At most 10 one-line hand checks (`do this → see this`) for a diff: only what a
 human must verify by looking (visual states, flows, timing, real external
 services). The list is a guide in plain bullets: its checks are assumed done and
-never wait on anyone. Also the rule set orchestrate's manual-checks executor follows.
+never wait on anyone. Also the rule set rc-orchestrate's manual-checks executor follows.
 
-### `diff-tour`
+### `rc-diff-tour`
 
 A ~15-line reading guide to a diff: read order with reasons, key changes,
 decisions (reasons only when recorded), and what to watch for. Orientation, not
-judgment. Orchestrate's Gate B report is a diff-tour plus the run's lines.
+judgment. rc-orchestrate's Gate B report is an rc-diff-tour plus the run's lines.
 
-### `feature-artifact`
+### `rc-feature-page`
 
 A feature's page, published as a claude.ai artifact: destination, architecture,
 vertical slices with their ticket status, and what waits on the user. The page is a
 view of the feature's files and is never edited by hand. `create` drafts the
 feature's `overview.md` for one review, then publishes. `refresh` rebuilds the page
 from the files and republishes it to the same URL, flagging drift (for example, a
-spec that changed after its summary was written). `orchestrate` runs it: it
+spec that changed after its summary was written). `rc-orchestrate` runs it: it
 opens the page in Phase 0 and refreshes it after every ticket status change and at
 Finish. The page is fixed templates in
 `page/` that read a generated `data.json`, so it looks the same on every refresh.
@@ -106,7 +106,7 @@ Finish. The page is fixed templates in
 features root above the repos, `specs/<slice>/` per vertical slice, and a tracker
 doc template that steers `wayfinder`, `to-spec`, and `to-tickets` into that tree.
 
-### `codex`
+### `rc-codex`
 
 Routing mechanics for handing a single task to the [codex CLI](https://github.com/openai/codex).
 Every call goes through `scripts/codex-run.sh`, a `codex exec` wrapper that closes
@@ -116,29 +116,19 @@ instead of the caller's context, and turns codex's silent failures into exit cod
 covers sandbox flags, model/effort overrides, session resume, and taking delivery
 (the `-o` file plus the git diff).
 
-### `codex-implement`
-
-Implement → review → verify pipeline on top of `codex`, for a single task. Agrees
-seams with the user, has codex implement with `$tdd`, runs a second read-only
-codex on `$code-review` returning a JSON verdict (schema in
-`verdict.schema.json`), then verifies tests and typecheck locally before committing.
-
-**Depends on** the `codex` CLI being installed and configured (`~/.codex/config.toml`),
-and on `tdd` / `code-review` being available to codex via `~/.agents/skills`.
-
 ## My own sub-agents
 
 Each role file is the single definition of that role: Claude spawns it as a
-sub-agent, and `orchestrate` briefs codex to read the same file.
+sub-agent, and `rc-orchestrate` briefs codex to read the same file.
 
 | Agent | Role | Used by |
 |-------|------|---------|
-| `impl-explorer` | Read-only recon: files in scope, reuse, seams, commands | `orchestrate` |
-| `impl-tdd` | One test-first cycle: test-writer or implementer mode | `orchestrate` |
-| `impl-trimmer` | Deletes or merges redundant tests, one reason each | `trim-tests`, `orchestrate` |
-| `impl-reviewer` | Thin opus shell that follows the review brief it's given | `orchestrate`, `experiment` |
-| `impl-fixer` | Applies a triaged set of review findings, one round | `orchestrate` |
-| `impl-experimenter` | Builds an experiment harness + smoke run, or runs the frozen harness | `experiment` |
+| `rc-explorer` | Read-only recon: files in scope, reuse, seams, commands | `rc-orchestrate` |
+| `rc-tdd` | One test-first cycle: test-writer or implementer mode | `rc-orchestrate` |
+| `rc-trimmer` | Deletes or merges redundant tests, one reason each | `rc-trim-tests`, `rc-orchestrate` |
+| `rc-reviewer` | Thin opus shell that follows the review brief it's given | `rc-orchestrate`, `rc-experiment` |
+| `rc-fixer` | Applies a triaged set of review findings, one round | `rc-orchestrate` |
+| `rc-experimenter` | Builds an experiment harness + smoke run, or runs the frozen harness | `rc-experiment` |
 
 ## Status line
 
@@ -173,7 +163,7 @@ Needs `jq` (`/usr/bin/jq` on recent macOS, else whatever is on `PATH`).
 Matt also ships these as a self-updating Claude Code plugin (`mattpocock-skills`).
 They stay on the Skills CLI here because the plugin would namespace them
 (`mattpocock-skills:tdd`) and move them out of `~/.agents/skills`, which breaks the
-path references in `impl-tdd` and the `$tdd` / `$code-review` calls codex makes.
+path references in `rc-tdd` and the `$tdd` / `$code-review` calls codex makes.
 
 | Skill | Source |
 |-------|--------|
@@ -210,7 +200,7 @@ path references in `impl-tdd` and the `$tdd` / `$code-review` calls codex makes.
 
 These are installer-managed (`~/.agents/.skill-lock.json`) — **never edit them in
 place**, the installer overwrites on update. Fork or write your own alongside, which
-is exactly why `orchestrate` lives in `skills/` rather than patching `implement`.
+is exactly why `rc-orchestrate` lives in `skills/` rather than patching `implement`.
 
 ## Plugins
 

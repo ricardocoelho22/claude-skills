@@ -1,9 +1,9 @@
 ---
-name: trim-tests
-description: Trim freshly written tests down to the ones that earn their place, deleting and merging only. Use when the user wants tests trimmed, pruned, or de-duplicated, or after test-first work (`/tdd`, `codex-implement`) has over-produced tests.
+name: rc-trim-tests
+description: Trim freshly written tests down to the ones that earn their place, deleting and merging only. Use when the user wants tests trimmed, pruned, or de-duplicated, or after test-first work (`/tdd`) has over-produced tests.
 ---
 
-Test-first agents over-produce tests; this skill cuts the ones that pin nothing new. The trim rule and the removal reasons live in `~/.claude/agents/impl-trimmer.md`; the `impl-trimmer` agent applies them, and you set the scope and verify.
+Test-first agents over-produce tests; this skill cuts the ones that pin nothing new. The trim rule and the removal reasons live in `~/.claude/agents/rc-trimmer.md`; the `rc-trimmer` agent applies them, and you set the scope and verify.
 
 ## 1. Scope
 
@@ -30,7 +30,7 @@ Copy every in-scope test file into a scratch dir, and save `git diff --stat <bas
 
 ## 4. Trim
 
-Spawn `subagent_type: impl-trimmer` with a self-contained brief: the test file paths, the seams verbatim, the single-test-file command (verified from the project's config), and the package manager.
+Spawn `subagent_type: rc-trimmer` with a self-contained brief: the test file paths, the seams verbatim, the single-test-file command (verified from the project's config), and the package manager.
 
 ## 5. Verify
 

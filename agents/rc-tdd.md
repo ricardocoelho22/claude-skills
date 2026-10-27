@@ -1,6 +1,6 @@
 ---
-name: impl-tdd
-description: Executes one test-first cycle of an implementation, at seams that were already agreed with the user. Invoked by the orchestrate skill with a self-contained brief; not for open-ended feature work.
+name: rc-tdd
+description: Executes one test-first cycle of an implementation, at seams that were already agreed with the user. Invoked by the rc-orchestrate skill with a self-contained brief; not for open-ended feature work.
 model: sonnet
 effort: medium
 ---

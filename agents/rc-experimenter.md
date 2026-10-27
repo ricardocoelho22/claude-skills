@@ -1,6 +1,6 @@
 ---
-name: impl-experimenter
-description: Builds and runs the measurement harness for one experiment, against a design that was already agreed with the user. Invoked by the experiment skill with a self-contained brief; not for open-ended research.
+name: rc-experimenter
+description: Builds and runs the measurement harness for one experiment, against a design that was already agreed with the user. Invoked by the rc-experiment skill with a self-contained brief; not for open-ended research.
 model: sonnet
 effort: medium
 ---

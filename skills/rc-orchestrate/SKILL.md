@@ -1,5 +1,5 @@
 ---
-name: orchestrate
+name: rc-orchestrate
 description: "Implement one ticket as an orchestrator, with codex agents as the executors and Claude agents as the fallback."
 disable-model-invocation: true
 argument-hint: "path to the ticket"
@@ -23,12 +23,12 @@ Your four jobs, in priority order:
 | Role | Role file | Codex route | Claude fallback |
 |---|---|---|---|
 | Orchestrator + planner | — (you) | — | session model |
-| Explorer | `impl-explorer` | `gpt-6.1-sol` · medium · `read-only` | `impl-explorer` |
-| Test-writer / Implementer | `impl-tdd` | `gpt-6.1-sol` · medium | `impl-tdd` |
-| Fixer | `impl-fixer` | `gpt-6.1-sol` · high | `impl-fixer` |
+| Explorer | `rc-explorer` | `gpt-6.1-sol` · medium · `read-only` | `rc-explorer` |
+| Test-writer / Implementer | `rc-tdd` | `gpt-6.1-sol` · medium | `rc-tdd` |
+| Fixer | `rc-fixer` | `gpt-6.1-sol` · high | `rc-fixer` |
 | Manual checks | — (ad hoc) | — (always Claude: its file lands outside the repo, where codex writes go missing) | general-purpose, `model: haiku` |
-| Test trimmer | `impl-trimmer` | `gpt-6.1-sol` · medium | `impl-trimmer` |
-| Reviewer | `impl-reviewer` | — (always Claude) | `impl-reviewer` (opus · medium) |
+| Test trimmer | `rc-trimmer` | `gpt-6.1-sol` · medium | `rc-trimmer` |
+| Reviewer | `rc-reviewer` | — (always Claude) | `rc-reviewer` (opus · medium) |
 
 Role files live in `~/.claude/agents/`. Both backends read the same file, so a role has one definition.
 
@@ -60,21 +60,21 @@ Executors run one at a time, since two executors touching one working tree colli
 **Backend check** (once, in Phase 0):
 
 ```
-~/.claude/skills/codex/scripts/codex-run.sh -m gpt-6-luna -c model_reasoning_effort=low -s read-only \
+~/.claude/skills/rc-codex/scripts/codex-run.sh -m gpt-6-luna -c model_reasoning_effort=low -s read-only \
   -o <run-dir>/probe.md "Reply with OK."
 ```
 
 It runs in the foreground, since it takes seconds. Exit 0 → backend `codex`. Anything else → backend `claude` for the whole run. Record the backend in the run file.
 
-**Codex call.** Through the `codex` skill's wrapper, from the repo root so session lookup by cwd works:
+**Codex call.** Through the `rc-codex` skill's wrapper, from the repo root so session lookup by cwd works:
 
 ```
-cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh -s <sandbox> -m <model> -c model_reasoning_effort=<effort> \
+cd <repo> && ~/.claude/skills/rc-codex/scripts/codex-run.sh -s <sandbox> -m <model> -c model_reasoning_effort=<effort> \
   -o <run-dir>/<cycle>-<role>.md \
   "Your role is defined in ~/.claude/agents/<role>.md: read it and follow it, ignoring its frontmatter. <brief>"
 ```
 
-Sandbox is `workspace-write` unless the cast says `read-only`; with `workspace-write`, add `-c sandbox_workspace_write.network_access=true`, without which tests that bind a loopback port (in-memory databases, local test servers) fail with `listen EPERM`. Launch it with Bash `run_in_background: true`. Mechanics (flags, exit codes, background runs, delivery) are in the `codex` skill.
+Sandbox is `workspace-write` unless the cast says `read-only`; with `workspace-write`, add `-c sandbox_workspace_write.network_access=true`, without which tests that bind a loopback port (in-memory databases, local test servers) fail with `listen EPERM`. Launch it with Bash `run_in_background: true`. Mechanics (flags, exit codes, background runs, delivery) are in the `rc-codex` skill.
 
 **Claude call.** The Agent tool with `subagent_type: <role>` and the same brief. Sub-agents already run in the background.
 
@@ -92,7 +92,7 @@ GIT_INDEX_FILE=<run-dir>/snap.idx git -C <repo> add -u && GIT_INDEX_FILE=<run-di
 **Session hygiene.** Start a fresh codex session per role per cycle. Re-briefing the same executor on the same cycle at the same rung resumes instead, keeping its context and cache warm; a step-up is always a fresh call:
 
 ```
-cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh resume --last -o <run-dir>/<cycle>-<role>-2.md "<follow-up brief>"
+cd <repo> && ~/.claude/skills/rc-codex/scripts/codex-run.sh resume --last -o <run-dir>/<cycle>-<role>-2.md "<follow-up brief>"
 ```
 
 **New files.** After every executor return, run `git add -N` on the files it created, so every `git diff` below shows them.
@@ -103,7 +103,7 @@ cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh resume --last -o <run-d
 
 Read the ticket and the spec it belongs to yourself, in full, fetching ticket references through the repo's issue tracker (`docs/agents/issue-tracker.md`). This reading is your ground: the source of truth you judge every return against.
 
-**Route experiments.** An **experiment ticket** is one whose deliverable is a finding, not code: it asks for a measurement (cost, quality, latency) or a spike, and is done when a number or verdict exists. A wayfinder `prototype` or `research` ticket that needs a harness and a measured run is one. When the ticket is an experiment, hand the run to `~/.claude/skills/experiment/SKILL.md` now and follow it instead of this skill.
+**Route experiments.** An **experiment ticket** is one whose deliverable is a finding, not code: it asks for a measurement (cost, quality, latency) or a spike, and is done when a number or verdict exists. A wayfinder `prototype` or `research` ticket that needs a harness and a measured run is one. When the ticket is an experiment, hand the run to `~/.claude/skills/rc-experiment/SKILL.md` now and follow it instead of this skill.
 
 **Pin the ground.** For each git repo the work touches:
 
@@ -124,7 +124,7 @@ git -C <repo> worktree add -b <slug> <worktree-path>         # when the user ask
 
 `<worktree-path>` is absolute, since `-C` makes a relative path resolve inside the repo: the location the workspace's `CLAUDE.md` names, else `<repo>/../<repo-name>-<slug>`. Stay on the current branch only when the user says so. When `<slug>` already exists, ask the user. After a worktree add, run the workspace's worktree setup script when its `CLAUDE.md` names one; from then on, every `<repo>` below means the worktree, and so does the feature folder when it sits inside the repo; only the wrap-up in *Finish* goes back to the original checkout.
 
-**Find the feature.** The feature folder is the folder in the features root that holds the ticket (tree and features root: `~/.claude/skills/feature-artifact/feature-layout.md`). Work that sits outside a features root has no feature folder: the run then has no feature page, and every *refresh the page* below is skipped.
+**Find the feature.** The feature folder is the folder in the features root that holds the ticket (tree and features root: `~/.claude/skills/rc-feature-page/feature-layout.md`). Work that sits outside a features root has no feature folder: the run then has no feature page, and every *refresh the page* below is skipped.
 
 **Open the run file.** Create `<feature>/runs/<slug>.md` (the run dir is `<feature>/runs/<slug>/`). It holds: ticket path, spec path, feature folder, backend, each repo's BASE, parent branch, run branch, and worktree path if any, BASE failures, the plan, a per-cycle landing log, and the review log (step 2). You are the only writer. Without a feature folder, create `runs/<slug>.md` in the folder that holds the ticket: the run file must outlive the session, since a continued session gets a fresh scratchpad.
 
@@ -143,9 +143,9 @@ git -C <repo> worktree add -b <slug> <worktree-path>         # when the user ask
 
 **Open the feature page.** Refresh the page (below); when the feature has no page yet, the refresh creates it. Record the page URL in the run file.
 
-**Refresh the page** means a delegated build (`~/.claude/skills/feature-artifact/SKILL.md`, *Delegated build*), then the publish yourself:
+**Refresh the page** means a delegated build (`~/.claude/skills/rc-feature-page/SKILL.md`, *Delegated build*), then the publish yourself:
 
-- **Build.** Spawn a general-purpose sub-agent in the background: `model: haiku` for a refresh, `model: sonnet` for a create, since it drafts `overview.md` that nobody reviews. Brief it to read that skill and run a delegated build for the feature folder, with the review waived, in the build folder `<session scratchpad>/feature-artifact/<feature>/` (an absolute path: the publish takes files only from the scratchpad or the working directory). It returns the build folder, every file in it, and the waiting lines; the publish's `files` comes from that list.
+- **Build.** Spawn a general-purpose sub-agent in the background: `model: haiku` for a refresh, `model: sonnet` for a create, since it drafts `overview.md` that nobody reviews. Brief it to read that skill and run a delegated build for the feature folder, with the review waived, in the build folder `<session scratchpad>/rc-feature-page/<feature>/` (an absolute path: the publish takes files only from the scratchpad or the working directory). It returns the build folder, every file in it, and the waiting lines; the publish's `files` comes from that list.
 - **Publish.** When it returns, run *Build and publish* steps 4 and 5 with the Artifact tool. On a refresh, your first publish of the run needs a `read` of the page URL first. On a create, pass `icon: "map"` and write the new URL on the `Artifact:` line of `overview.md`.
 - **One at a time.** The page is a view of the feature's files, so a refresh starts after the file change it must show. When a status changes while a refresh runs, start one more refresh after it lands; it reads the latest files, so it covers every change since.
 
@@ -172,11 +172,11 @@ Set the ticket `in-progress`, refresh the page, then run steps 1–5.
 
 Each cycle runs two executors in sequence. Complete both before starting the next cycle.
 
-**1a — Tests.** Brief `impl-tdd` in test-writer mode: the cycle's seams from the plan, the commands, the paths, and the boundary: **write failing tests only; return before writing production code.**
+**1a — Tests.** Brief `rc-tdd` in test-writer mode: the cycle's seams from the plan, the commands, the paths, and the boundary: **write failing tests only; return before writing production code.**
 
 Verify: the call's delta (`git -C <repo> diff --stat <tree>`, then `git -C <repo> diff <tree>`), then the single test file command. Every changed file is a test file. Every test is red for a behavioral reason, not an import error or missing fixture. Typecheck errors are expected only where a test calls API the cycle has not built yet. A test green before any production code means the seam is wrong: take it to the user.
 
-**1b — Implement.** Brief `impl-tdd` in implementer mode: the red test files, the commands, the paths, and the boundary: **make the red tests green; write no new tests and nothing speculative.**
+**1b — Implement.** Brief `rc-tdd` in implementer mode: the red test files, the commands, the paths, and the boundary: **make the red tests green; write no new tests and nothing speculative.**
 
 Verify: the call's delta (against its checkpoint) touches production files only, typecheck is clean, the single test file is green. A blocked implementer gets a tighter brief, resumed on the same session.
 
@@ -187,8 +187,8 @@ Append what landed to the run file.
 Invoke `/code-review` and follow its steps with two adaptations:
 
 - **Diff:** use `git diff <BASE>` (working tree against BASE) and the fixed point BASE. The ticket is uncommitted, so the skill's `...HEAD` form would show nothing.
-- **Reviewers:** where it spawns the Standards and Spec sub-agents, spawn each as `subagent_type: impl-reviewer`, with the prompt the skill specifies.
-- **Bugs axis:** spawn a third `impl-reviewer` alongside them, with the diff command, the ticket path, and this brief: "Find defects the diff introduces or exposes: logic errors, unhandled error paths, edge cases (empty, null, boundary, concurrent), callers of changed code that now break, leaked resources, and security holes (injection, missing authorization, secrets). For a bug fix, check that it fixes the root cause. Style and spec conformance belong to other reviewers. Under 400 words." Report it under `## Bugs`, after the other two.
+- **Reviewers:** where it spawns the Standards and Spec sub-agents, spawn each as `subagent_type: rc-reviewer`, with the prompt the skill specifies.
+- **Bugs axis:** spawn a third `rc-reviewer` alongside them, with the diff command, the ticket path, and this brief: "Find defects the diff introduces or exposes: logic errors, unhandled error paths, edge cases (empty, null, boundary, concurrent), callers of changed code that now break, leaked resources, and security holes (injection, missing authorization, secrets). For a bug fix, check that it fixes the root cause. Style and spec conformance belong to other reviewers. Under 400 words." Report it under `## Bugs`, after the other two.
 
 Triage the findings against your own reading of the code: fix now, deferred (with a reason), or rejected. A `Pre-existing` finding is deferred, never fixed now: it is outside the ticket. A finding that a test is redundant, mock-only, off-seam, or tautological goes to the trim in step 5, not the fixer.
 
@@ -196,29 +196,29 @@ Triage the findings against your own reading of the code: fix now, deferred (wit
 
 ### 3. Fix
 
-Send the fix-now set to `impl-fixer` as one brief, quoting each finding (every instance of its class) with your triage decision and listing every test file in `git diff --stat <BASE>`. Verify with typecheck and the single test file command for every one of those test files, not only the ones the fixer touched. Cap at **one fix round**; a second means a structural problem: take it to the user.
+Send the fix-now set to `rc-fixer` as one brief, quoting each finding (every instance of its class) with your triage decision and listing every test file in `git diff --stat <BASE>`. Verify with typecheck and the single test file command for every one of those test files, not only the ones the fixer touched. Cap at **one fix round**; a second means a structural problem: take it to the user.
 
 ### 4. Manual checks
 
-Brief the manual-checks executor to read `~/.claude/skills/manual-checklist/SKILL.md` and follow it, with the ticket path, BASE as the base, and the output path `manual-test-<NN>-<slug>.md` next to the ticket.
+Brief the manual-checks executor to read `~/.claude/skills/rc-manual-checks/SKILL.md` and follow it, with the ticket path, BASE as the base, and the output path `manual-test-<NN>-<slug>.md` next to the ticket.
 
 Verify: the file exists and every item is a plain-bullet hand check.
 
-The file is a **guide** for the user, reference like the diff-tour. Assume its checks done: the ticket's status, Gate B's approval, and every report treat the ticket as verified by the tests and typecheck alone.
+The file is a **guide** for the user, reference like the rc-diff-tour. Assume its checks done: the ticket's status, Gate B's approval, and every report treat the ticket as verified by the tests and typecheck alone.
 
 ### 5. Trim
 
-Trim runs last, once the ticket's tests are final, so no fixer time goes into tests that are about to be cut. Brief `impl-trimmer` with the ticket's test files (from `git diff --stat <BASE>`), the plan's seams for the ticket, the commands, and the test findings routed here in step 2.
+Trim runs last, once the ticket's tests are final, so no fixer time goes into tests that are about to be cut. Brief `rc-trimmer` with the ticket's test files (from `git diff --stat <BASE>`), the plan's seams for the ticket, the commands, and the test findings routed here in step 2.
 
 Verify: the diff since the trimmer started only removes or merges test code, the tests stay green, and every removal carries a reason in its return. Put the removals in the run file for Gate B.
 
 ## Gate B — Ready to commit 🚦 (required)
 
-The user reads the code here to stay grounded and catch quirks. Hand them a report that makes that fast: the `/diff-tour` of the ticket against BASE, with the test and typecheck status on its title line and the run's lines appended, around 25 lines in all:
+The user reads the code here to stay grounded and catch quirks. Hand them a report that makes that fast: the `/rc-diff-tour` of the ticket against BASE, with the test and typecheck status on its title line and the run's lines appended, around 25 lines in all:
 
 ```
 ## Ticket <NN> — <title>        ✅ tests · ✅ typecheck
-<the diff-tour body: Read first … Watch for>
+<the rc-diff-tour body: Read first … Watch for>
 
 Review:     <n> fixed · <n> deferred (<reason>) · <n> rejected
 Trimmed:    <test name> — <reason>   (one line each, or "none")
@@ -236,14 +236,14 @@ Size each request by the first size that fits, in this order. Each size names th
 
 1. **Seam-changing**: a new seam or a changed contract. Add it to the plan as a new cycle and run steps 1–5 for it, then return here. Take it to the user first when it conflicts with a decision recorded in the plan.
 2. **Within seams**: a test is added or edited, but only at seams the plan already names. Run it as a cycle (step 1: tests red first, then the implementation) at rung 3, then the round review below.
-3. **Local code** (a refactor, a symbol rename): the ticket's existing tests still describe the result, so no test is added or edited. Brief `impl-fixer` at rung 2, then the round review below.
-4. **Text only** (docs, comments, a diagram): brief `impl-fixer` at rung 1. No review.
+3. **Local code** (a refactor, a symbol rename): the ticket's existing tests still describe the result, so no test is added or edited. Brief `rc-fixer` at rung 2, then the round review below.
+4. **Text only** (docs, comments, a diagram): brief `rc-fixer` at rung 1. No review.
 
 Batch same-size requests into one round. Verify as in step 3; a local-code return that touched a test file was sized wrong, so restore that test file from the checkpoint and re-run the request as within-seams. A request rejected at rung 4 is too big for a Gate B change: take it to the user as a new cycle or ticket.
 
-**Round review.** Review only the round's delta (`git diff <tree>` against the round's first checkpoint): one `impl-reviewer` with the Bugs brief from step 2, plus the review log's findings as already reported. For a local-code round, add: "This change is meant to preserve behavior; flag every behavior change as Important." Triage and log as in step 2, and send a fix-now set through one fix round as in step 3. When a request fixed a bug the step 2 review missed, log it as `escaped · <axis that should have caught it> · <file:line> · <what>`.
+**Round review.** Review only the round's delta (`git diff <tree>` against the round's first checkpoint): one `rc-reviewer` with the Bugs brief from step 2, plus the review log's findings as already reported. For a local-code round, add: "This change is meant to preserve behavior; flag every behavior change as Important." Triage and log as in step 2, and send a fix-now set through one fix round as in step 3. When a request fixed a bug the step 2 review missed, log it as `escaped · <axis that should have caught it> · <file:line> · <what>`.
 
-When behavior changed, update the manual-checks guide. Then re-show Gate B: after a within-seams change, the full report with a fresh `/diff-tour`; otherwise, the title line, one line per change, the round review's findings by outcome, and `Commit?`. Before a fourth round of change requests, ask the user whether the approach itself needs rethinking.
+When behavior changed, update the manual-checks guide. Then re-show Gate B: after a within-seams change, the full report with a fresh `/rc-diff-tour`; otherwise, the title line, one line per change, the round review's findings by outcome, and `Commit?`. Before a fourth round of change requests, ask the user whether the approach itself needs rethinking.
 
 On approval, commit per repo on the run's branch in the project's commit style, resolve the ticket, and refresh the page.
 
@@ -254,7 +254,7 @@ Run the full test suite once per repo, yourself, plus lint and build if the proj
 Then offer to wrap up: **Merge into `<parent>`, retro, and clean up?** The user may take all three or name a subset; run what they take, in this order. Merge and cleanup run from each repo's original checkout, `<origin>` below (the repo itself when the run made no worktree).
 
 1. **Merge.** Per repo: `git -C <origin> switch <parent>`, then `git -C <origin> merge <slug>`. On a conflict, invoke `/resolving-merge-conflicts`. When the merge was not a fast-forward, run the full test suite again and compare against the BASE failures; a new failure goes to the user. The merge stays local: pushing is the user's call.
-2. **Retro.** Call the Skill tool with `session-retro` yourself (don't ask the user to run it) while this session is still in context. The run file is its primary source: fallbacks, blocked executors, fix rounds, and deferred findings are where the environment cost the run. It runs before cleanup because a worktree removal can take the run file with it.
+2. **Retro.** Call the Skill tool with `rc-retro` yourself (don't ask the user to run it) while this session is still in context. The run file is its primary source: fallbacks, blocked executors, fix rounds, and deferred findings are where the environment cost the run. It runs before cleanup because a worktree removal can take the run file with it.
 3. **Clean up.** Per repo: `git -C <origin> worktree remove <worktree-path>` when the run made one, then `git -C <origin> branch -d <slug>`. When either refuses (untracked files, unmerged commits), show the user why and leave the rest to them.
 
 Done when every step the user took has run, or has been handed back to them with the reason it stopped.

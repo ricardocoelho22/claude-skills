@@ -1,16 +1,16 @@
 ---
-name: codex
+name: rc-codex
 description: Route a single task to the codex CLI and capture the result. Use when the user wants work handed to codex ("have codex do X", "run codex on this", "delegate this to codex"), or when another skill needs the mechanics of invoking codex.
 ---
 
-Codex is a peer agent you drive non-interactively with `codex exec`. This skill is the routing mechanics: hand it one task, get the result back. It carries no methodology; for the code implement → review → verify pipeline, see `codex-implement`.
+Codex is a peer agent you drive non-interactively with `codex exec`. This skill is the routing mechanics: hand it one task, get the result back. It carries no methodology; for the full implement → review → verify pipeline, see `rc-orchestrate`.
 
 Codex shares this machine's skill library (`.agents/skills`), so a brief can name `$tdd`, `$code-review`, `$research` and codex loads that skill itself. The codex side has no `$implement`.
 
 ## Invoke
 
 ```
-~/.claude/skills/codex/scripts/codex-run.sh -C <dir> -s workspace-write \
+~/.claude/skills/rc-codex/scripts/codex-run.sh -C <dir> -s workspace-write \
   -o <scratch>/codex-<label>.md \
   "<brief>"
 ```
@@ -36,7 +36,7 @@ A background call re-invokes you when it exits, carrying the wrapper's status li
 Resuming keeps codex's context and cache warm. Run it from the same directory, in the background as above:
 
 ```
-~/.claude/skills/codex/scripts/codex-run.sh resume --last -o <scratch>/codex-<label>-2.md "<follow-up>"
+~/.claude/skills/rc-codex/scripts/codex-run.sh resume --last -o <scratch>/codex-<label>-2.md "<follow-up>"
 ```
 
 ## Model and effort

@@ -1,5 +1,5 @@
 ---
-name: experiment
+name: rc-experiment
 description: "Run a measurement ticket (a spike, a cost or quality experiment) as an orchestrator: agreed design, harness, smoke run, adversarial review, full run, research file."
 disable-model-invocation: true
 argument-hint: "path to the experiment ticket"
@@ -9,20 +9,20 @@ argument-hint: "path to the experiment ticket"
 
 A finding the user can trust, backed by raw data and a harness anyone can re-run. The deliverable is a **research file**, not code: the harness is evidence, kept on a throwaway branch, and nothing merges into the working branch.
 
-**You are the orchestrator,** in the sense `~/.claude/skills/orchestrate/SKILL.md` defines: you hold the gates, write the briefs, verify every return, and carry the thread. Read that file first. This skill reuses its *Executors* section (checkpoints, new files, session hygiene, fallback), its *Rungs* (step up on a rejected return), *Refresh the page*, *Track status*, and *Writing a brief*, and names only what differs.
+**You are the orchestrator,** in the sense `~/.claude/skills/rc-orchestrate/SKILL.md` defines: you hold the gates, write the briefs, verify every return, and carry the thread. Read that file first. This skill reuses its *Executors* section (checkpoints, new files, session hygiene, fallback), its *Rungs* (step up on a rejected return), *Refresh the page*, *Track status*, and *Writing a brief*, and names only what differs.
 
 ## The cast
 
 | Role | Role file | Route |
 |---|---|---|
 | Orchestrator + designer | — (you) | session model |
-| Explorer (optional) | `impl-explorer` | as in orchestrate's cast |
-| Experimenter | `impl-experimenter` | always Claude, rung 3 by default: its runs call paid APIs over the network, which codex's sandbox blocks |
-| Reviewer | `impl-reviewer` | always Claude (opus · medium) |
+| Explorer (optional) | `rc-explorer` | as in rc-orchestrate's cast |
+| Experimenter | `rc-experimenter` | always Claude, rung 3 by default: its runs call paid APIs over the network, which codex's sandbox blocks |
+| Reviewer | `rc-reviewer` | always Claude (opus · medium) |
 
 ## Phase 0 — Ground and design
 
-Read the ticket yourself, in full. Then, as orchestrate's Phase 0 says: **pin the ground** (BASE and branch per repo; the tree must be clean), **find the feature**, and **open the run file** in `<feature>/runs/<slug>.md`. Run the backend check and **explore** only when the harness must call the repo's own code (a prompt builder, a client); spot-check the report as orchestrate says.
+Read the ticket yourself, in full. Then, as rc-orchestrate's Phase 0 says: **pin the ground** (BASE and branch per repo; the tree must be clean), **find the feature**, and **open the run file** in `<feature>/runs/<slug>.md`. Run the backend check and **explore** only when the harness must call the repo's own code (a prompt builder, a client); spot-check the report as rc-orchestrate says.
 
 **Branch off.** In each repo the harness touches, create and check out `experiment/<slug>` from BASE. The harness lives there; the working branch never sees it.
 
@@ -49,7 +49,7 @@ Every field of the design is a decision the user pays for. Invoke `/grilling`, a
 
 ## Phase 1 — Harness and smoke run
 
-Brief `impl-experimenter` in **harness mode**: the design (by path), the harness path, the raw-output path, the smoke size, and the boundary: **build the harness, run the smoke run only, and return before any full run.**
+Brief `rc-experimenter` in **harness mode**: the design (by path), the harness path, the raw-output path, the smoke size, and the boundary: **build the harness, run the smoke run only, and return before any full run.**
 
 Verify:
 
@@ -60,11 +60,11 @@ Verify:
 
 ## Phase 2 — Design review
 
-Brief `impl-reviewer` to attack the measurement. The brief gives: the design (by path), the harness diff (`git diff <BASE>` on `experiment/<slug>`), the smoke raw rows, and [`confounds.md`](confounds.md) as a floor, not the scope. It asks one question: **what makes this measurement not measure the claim?** Each finding names the confound, its evidence in the harness or the rows, and a severity: `invalidates` (the result would be wrong), `weakens` (the result needs a caveat), or `note`.
+Brief `rc-reviewer` to attack the measurement. The brief gives: the design (by path), the harness diff (`git diff <BASE>` on `experiment/<slug>`), the smoke raw rows, and [`confounds.md`](confounds.md) as a floor, not the scope. It asks one question: **what makes this measurement not measure the claim?** Each finding names the confound, its evidence in the harness or the rows, and a severity: `invalidates` (the result would be wrong), `weakens` (the result needs a caveat), or `note`.
 
 Triage each finding against your own reading:
 
-- **Fix**: an `invalidates` finding, or a `weakens` finding that is cheap to fix. Brief `impl-experimenter` in harness mode with the findings quoted, then verify and re-run the smoke as in Phase 1.
+- **Fix**: an `invalidates` finding, or a `weakens` finding that is cheap to fix. Brief `rc-experimenter` in harness mode with the findings quoted, then verify and re-run the smoke as in Phase 1.
 - **Caveat**: a `weakens` finding you accept. It goes into the research file's limitations.
 - **Rejected**: with a reason, in the run file.
 
@@ -74,7 +74,7 @@ Cap at **one fix round**. A finding that needs a design change, or a second `inv
 
 ## Phase 3 — Full run
 
-Brief `impl-experimenter` in **run mode**: the frozen commit, the full size, the raw-output path, the cap, and the stop rule.
+Brief `rc-experimenter` in **run mode**: the frozen commit, the full size, the raw-output path, the cap, and the stop rule.
 
 Verify: the call's delta against its checkpoint is empty; every call has a row, failed calls included; spend is at or under the cap; and recompute the per-arm numbers yourself from the raw rows. Your numbers are the result. The experimenter's are a claim.
 
@@ -112,7 +112,7 @@ On acceptance, run *Finish*.
 
 ## Finish
 
-1. **Record it.** Add an `## Experiments` entry to `overview.md` in the layout's format (`~/.claude/skills/feature-artifact/feature-layout.md`), with `Source:` pointing at the research file. When the ticket is a wayfinder ticket, resolve it as the tracker doc's *Resolve* says: the answer under `## Answer`, then the gist and link in the map. Otherwise resolve it the way the repo's tracker closes work.
+1. **Record it.** Add an `## Experiments` entry to `overview.md` in the layout's format (`~/.claude/skills/rc-feature-page/feature-layout.md`), with `Source:` pointing at the research file. When the ticket is a wayfinder ticket, resolve it as the tracker doc's *Resolve* says: the answer under `## Answer`, then the gist and link in the map. Otherwise resolve it the way the repo's tracker closes work.
 2. **Return.** Check out the working branch again in every repo. `experiment/<slug>` stays, unmerged.
 3. **Refresh the page.**
 4. **Report**: the verdict, the research file path, the harness branch and commit, spend against the cap, and the page URL.

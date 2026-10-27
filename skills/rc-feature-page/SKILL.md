@@ -1,5 +1,5 @@
 ---
-name: feature-artifact
+name: rc-feature-page
 description: Build or refresh a feature's page, a claude.ai artifact that shows the feature's architecture, slices, ticket status, and what waits on the user. Use when the user wants a feature page created, refreshed, or shared, or when another skill changes a feature's files and the page must follow.
 argument-hint: "create | refresh  [feature folder]"
 ---
@@ -25,7 +25,7 @@ Find the features root (see *Features root* in the layout), then the feature fol
 
 1. **Read the feature.** Read `wayfinder/map.md`, every `specs/<slice>/spec.md`, and the title and status of every ticket. In an older tree, read whatever specs, maps, and tickets the folder holds.
 2. **Draft `overview.md`** in the layout's format, following its writing rule. Every claim comes from a file you read: the destination from the map or the spec, the architecture and the slice summaries from the specs, the experiments from resolved wayfinder `prototype` and `research` tickets and from experiment files in `scratchpad/`. When the feature has one spec that covers several slices, propose the slices and say which tickets go in each. Set each `Summary checked` to today.
-3. **Review with the user.** Show the draft and change it until the user approves it. The user reviews the overview once, here; later refreshes only read it. Write the approved file. When the calling skill says the review is waived (`orchestrate` does), write the draft as it is and say in your report that `overview.md` is new and unreviewed.
+3. **Review with the user.** Show the draft and change it until the user approves it. The user reviews the overview once, here; later refreshes only read it. Write the approved file. When the calling skill says the review is waived (`rc-orchestrate` does), write the draft as it is and say in your report that `overview.md` is new and unreviewed.
 
    Done when: `overview.md` is on disk, approved by the user or with the review waived.
 4. **Build and publish** (below). On this first publish, pass `icon: "map"`. Write the new URL on the `Artifact:` line of `overview.md`.
@@ -54,7 +54,7 @@ Done when: the publish succeeded and every finding from step 2 is on the page.
 
 ## Build and publish
 
-Build in `<scratchpad>/feature-artifact/<feature>/`, starting from an empty folder each time.
+Build in `<scratchpad>/rc-feature-page/<feature>/`, starting from an empty folder each time.
 
 1. Copy everything in this skill's `page/` folder into the build folder. In `index.html`, replace the text of `<title>` with the feature name.
 2. Copy each manual-checks guide, and each markdown file named under *Experiments* or *Related*, to `src/docs/<id>.md`. Copy each HTML prototype named there to `src/proto/<name>.html`. Copy them as they are; never edit a copied file. An experiment whose source is a folder or a branch gets no copy; the page shows its path.

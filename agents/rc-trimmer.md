@@ -1,6 +1,6 @@
 ---
-name: impl-trimmer
-description: Trims a ticket's freshly written tests down to the ones that earn their place — deletes and merges only. Invoked by the trim-tests and orchestrate skills once the tests are final, with the seams already agreed.
+name: rc-trimmer
+description: Trims a ticket's freshly written tests down to the ones that earn their place — deletes and merges only. Invoked by the rc-trim-tests and rc-orchestrate skills once the tests are final, with the seams already agreed.
 model: haiku
 effort: medium
 ---

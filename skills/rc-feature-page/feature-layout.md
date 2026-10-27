@@ -1,6 +1,6 @@
 # Feature layout
 
-Where a feature's planning and tracking files live. `feature-artifact` reads this tree to build the feature page, and `orchestrate` writes its run files into it. Third-party skills (`wayfinder`, `to-spec`, `to-tickets`) reach it through each repo's tracker doc (see *Tracker doc*).
+Where a feature's planning and tracking files live. `rc-feature-page` reads this tree to build the feature page, and `rc-orchestrate` writes its run files into it. Third-party skills (`wayfinder`, `to-spec`, `to-tickets`) reach it through each repo's tracker doc (see *Tracker doc*).
 
 ## Features root
 
@@ -34,12 +34,12 @@ The root is untracked by default. To keep history, the user can make it a privat
           assets/                    images and files the tickets link
     delivery-tickets/    drafts of tickets for the team's tracker (Linear, Jira)
       assets/
-    runs/                orchestrate run files
+    runs/                rc-orchestrate run files
     scratchpad/          experiments, assets, prototypes
     archive/             old material kept for reference
 ```
 
-- A **slice** is a vertical slice of the feature: a piece that delivers something on its own, such as "users CRUD" or "connect the page to the API". Each slice has its own spec and tickets. (`orchestrate` splits one ticket into test-first **cycles**; a cycle is not a slice.)
+- A **slice** is a vertical slice of the feature: a piece that delivers something on its own, such as "users CRUD" or "connect the page to the API". Each slice has its own spec and tickets. (`rc-orchestrate` splits one ticket into test-first **cycles**; a cycle is not a slice.)
 - Every slice has a folder under `specs/`, also when the feature has only one slice. The tree has one shape, so no skill has to guess.
 - Ticket numbers are unique within a slice. Each slice numbers its tickets from `01`. To name a ticket outside its slice, give the slice too ("ticket 03 in users CRUD").
 - A ticket file starts with `# NN: <title>` and has a `Status:` line (bold markers allowed) and a `Blocked by:` line. Any other file in `issues/` is not a ticket, even when its name starts with a number (for example a handoff note).
@@ -63,7 +63,7 @@ A word that is in neither list counts as `open`, and the page lists it under *Wa
 
 ## overview.md
 
-The one file that says what the feature is. People and skills write it; `feature-artifact refresh` only reads it.
+The one file that says what the feature is. People and skills write it; `rc-feature-page refresh` only reads it.
 
 ```markdown
 Artifact: <the feature page URL; empty until the first publish>
@@ -143,7 +143,7 @@ Each repo that uses this layout has a `docs/agents/issue-tracker.md` like this o
 ```markdown
 # Issue tracker: Local Markdown
 
-Issues and specs live as markdown files in the features root, outside this repo. The layout is in `~/.claude/skills/feature-artifact/feature-layout.md`.
+Issues and specs live as markdown files in the features root, outside this repo. The layout is in `~/.claude/skills/rc-feature-page/feature-layout.md`.
 
 ## Conventions
 

@@ -1,5 +1,5 @@
 ---
-name: manual-checklist
+name: rc-manual-checks
 description: Write the short guide of hand checks for trying out a change. Use when the user wants a manual test checklist, QA steps, or "what should I click through" for a branch, PR, or ticket.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: diff-tour
+name: rc-diff-tour
 description: Write a short reading guide to a diff, saying which files to read first, what changed, and which decisions were made. Use when the user wants to be walked through a branch, PR, or set of changes before reading or reviewing it.
 ---
 
