@@ -26,7 +26,7 @@ Your four jobs, in priority order:
 | Explorer | `impl-explorer` | `gpt-6.1-sol` · medium · `read-only` | `impl-explorer` |
 | Test-writer / Implementer | `impl-tdd` | `gpt-6.1-sol` · medium | `impl-tdd` |
 | Fixer | `impl-fixer` | `gpt-6.1-sol` · high | `impl-fixer` |
-| Manual checks | — (ad hoc) | `gpt-6-luna` · low | general-purpose, `model: haiku` |
+| Manual checks | — (ad hoc) | — (always Claude: its file lands outside the repo, where codex writes go missing) | general-purpose, `model: haiku` |
 | Test trimmer | `impl-trimmer` | `gpt-6.1-sol` · medium | `impl-trimmer` |
 | Reviewer | `impl-reviewer` | — (always Claude) | `impl-reviewer` (opus · medium) |
 
@@ -74,7 +74,7 @@ cd <repo> && ~/.claude/skills/codex/scripts/codex-run.sh -s <sandbox> -m <model>
   "Your role is defined in ~/.claude/agents/<role>.md: read it and follow it, ignoring its frontmatter. <brief>"
 ```
 
-Sandbox is `workspace-write` unless the cast says `read-only`. Launch it with Bash `run_in_background: true`. Mechanics (flags, exit codes, background runs, delivery) are in the `codex` skill.
+Sandbox is `workspace-write` unless the cast says `read-only`; with `workspace-write`, add `-c sandbox_workspace_write.network_access=true`, without which tests that bind a loopback port (in-memory databases, local test servers) fail with `listen EPERM`. Launch it with Bash `run_in_background: true`. Mechanics (flags, exit codes, background runs, delivery) are in the `codex` skill.
 
 **Claude call.** The Agent tool with `subagent_type: <role>` and the same brief. Sub-agents already run in the background.
 
@@ -119,14 +119,14 @@ A workspace can span several independent repos, so check for them and pin a sepa
 
 ```
 git -C <repo> switch -c <slug>                                # default
-git -C <repo> worktree add -b <slug> ../<repo-name>-<slug>    # when the user asks for a worktree
+git -C <repo> worktree add -b <slug> <worktree-path>         # when the user asks for a worktree
 ```
 
-Stay on the current branch only when the user says so. When `<slug>` already exists, ask the user. After a worktree add, every `<repo>` below means the worktree, and so does the feature folder when it sits inside the repo; only the wrap-up in *Finish* goes back to the original checkout.
+`<worktree-path>` is absolute, since `-C` makes a relative path resolve inside the repo: the location the workspace's `CLAUDE.md` names, else `<repo>/../<repo-name>-<slug>`. Stay on the current branch only when the user says so. When `<slug>` already exists, ask the user. After a worktree add, run the workspace's worktree setup script when its `CLAUDE.md` names one; from then on, every `<repo>` below means the worktree, and so does the feature folder when it sits inside the repo; only the wrap-up in *Finish* goes back to the original checkout.
 
 **Find the feature.** The feature folder is the folder in the features root that holds the ticket (tree and features root: `~/.claude/skills/feature-artifact/feature-layout.md`). Work that sits outside a features root has no feature folder: the run then has no feature page, and every *refresh the page* below is skipped.
 
-**Open the run file.** Create `<feature>/runs/<slug>.md` (the run dir is `<feature>/runs/<slug>/`). It holds: ticket path, spec path, feature folder, backend, each repo's BASE, parent branch, run branch, and worktree path if any, BASE failures, the plan, and a per-cycle landing log. You are the only writer. Without a feature folder, use `.scratch/orchestrate/<slug>.md` in the repo: confirm `.scratch/` is gitignored first; if not, use the session scratchpad directory and put its path in every brief.
+**Open the run file.** Create `<feature>/runs/<slug>.md` (the run dir is `<feature>/runs/<slug>/`). It holds: ticket path, spec path, feature folder, backend, each repo's BASE, parent branch, run branch, and worktree path if any, BASE failures, the plan, a per-cycle landing log, and the review log (step 2). You are the only writer. Without a feature folder, create `runs/<slug>.md` in the folder that holds the ticket: the run file must outlive the session, since a continued session gets a fresh scratchpad.
 
 **Run the backend check.**
 
@@ -188,12 +188,15 @@ Invoke `/code-review` and follow its steps with two adaptations:
 
 - **Diff:** use `git diff <BASE>` (working tree against BASE) and the fixed point BASE. The ticket is uncommitted, so the skill's `...HEAD` form would show nothing.
 - **Reviewers:** where it spawns the Standards and Spec sub-agents, spawn each as `subagent_type: impl-reviewer`, with the prompt the skill specifies.
+- **Bugs axis:** spawn a third `impl-reviewer` alongside them, with the diff command, the ticket path, and this brief: "Find defects the diff introduces or exposes: logic errors, unhandled error paths, edge cases (empty, null, boundary, concurrent), callers of changed code that now break, leaked resources, and security holes (injection, missing authorization, secrets). For a bug fix, check that it fixes the root cause. Style and spec conformance belong to other reviewers. Under 400 words." Report it under `## Bugs`, after the other two.
 
-Triage the findings against your own reading of the code: fix now, deferred (logged in the run file with a reason), or rejected. A finding that a test is redundant, mock-only, off-seam, or tautological goes to the trim in step 5, not the fixer.
+Triage the findings against your own reading of the code: fix now, deferred (with a reason), or rejected. A `Pre-existing` finding is deferred, never fixed now: it is outside the ticket. A finding that a test is redundant, mock-only, off-seam, or tautological goes to the trim in step 5, not the fixer.
+
+**Review log.** Write each finding into the run file's review log, one line each: `<axis> · <tag> · <file:line> · <outcome>`, where the outcome is `fixed`, `deferred (<reason>)`, `rejected: wrong`, `rejected: intentional`, or `rejected: irrelevant`. The retro reads this log to tune the reviewer briefs.
 
 ### 3. Fix
 
-Send the fix-now set to `impl-fixer` as one brief, quoting each finding with your triage decision and listing every test file in `git diff --stat <BASE>`. Verify with typecheck and the single test file command for every one of those test files, not only the ones the fixer touched. Cap at **one fix round**; a second means a structural problem: take it to the user.
+Send the fix-now set to `impl-fixer` as one brief, quoting each finding (every instance of its class) with your triage decision and listing every test file in `git diff --stat <BASE>`. Verify with typecheck and the single test file command for every one of those test files, not only the ones the fixer touched. Cap at **one fix round**; a second means a structural problem: take it to the user.
 
 ### 4. Manual checks
 
@@ -227,14 +230,20 @@ Commit?
 
 A ❌ replaces a ✅ when a check fails, and the real failing output goes below the report. Everything else stays in the run file.
 
-**Change requests.** When the user asks for changes instead of approving, size each one by the first size that fits, in this order, and brief `impl-fixer` at its rung with the ticket's test files listed as in step 3. Each brief is its own round.
+**Change requests.** Any reply other than approval is a change request, however casually it is phrased, and it goes through the flow below. It needs no ticket. Every change goes to an executor, so it gets the same tests and review as the rest of the run.
+
+Size each request by the first size that fits, in this order. Each size names the steps it runs:
 
 1. **Seam-changing**: a new seam or a changed contract. Add it to the plan as a new cycle and run steps 1–5 for it, then return here. Take it to the user first when it conflicts with a decision recorded in the plan.
-2. **Within seams**: a test is added or edited, but only at seams the plan already names: rung 3.
-3. **Local code** (a refactor, a symbol rename): the ticket's existing tests still describe the result, so no test is added or edited: rung 2.
-4. **Text only** (docs, comments, a diagram): rung 1.
+2. **Within seams**: a test is added or edited, but only at seams the plan already names. Run it as a cycle (step 1: tests red first, then the implementation) at rung 3, then the round review below.
+3. **Local code** (a refactor, a symbol rename): the ticket's existing tests still describe the result, so no test is added or edited. Brief `impl-fixer` at rung 2, then the round review below.
+4. **Text only** (docs, comments, a diagram): brief `impl-fixer` at rung 1. No review.
 
-Batch same-rung requests into one brief. Verify as in step 3; a local-code return that touched a test file was sized wrong, so restore that test file from the checkpoint and re-run the request as within-seams. A request rejected at rung 4 is too big for a Gate B change: take it to the user as a new cycle or ticket. When behavior changed, update the manual-checks guide. Then re-show Gate B: after a within-seams change, the full report with a fresh `/diff-tour`; otherwise, the title line, one line per change, and `Commit?`.
+Batch same-size requests into one round. Verify as in step 3; a local-code return that touched a test file was sized wrong, so restore that test file from the checkpoint and re-run the request as within-seams. A request rejected at rung 4 is too big for a Gate B change: take it to the user as a new cycle or ticket.
+
+**Round review.** Review only the round's delta (`git diff <tree>` against the round's first checkpoint): one `impl-reviewer` with the Bugs brief from step 2, plus the review log's findings as already reported. For a local-code round, add: "This change is meant to preserve behavior; flag every behavior change as Important." Triage and log as in step 2, and send a fix-now set through one fix round as in step 3. When a request fixed a bug the step 2 review missed, log it as `escaped · <axis that should have caught it> · <file:line> · <what>`.
+
+When behavior changed, update the manual-checks guide. Then re-show Gate B: after a within-seams change, the full report with a fresh `/diff-tour`; otherwise, the title line, one line per change, the round review's findings by outcome, and `Commit?`. Before a fourth round of change requests, ask the user whether the approach itself needs rethinking.
 
 On approval, commit per repo on the run's branch in the project's commit style, resolve the ticket, and refresh the page.
 
@@ -261,6 +270,7 @@ An executor has no access to this conversation, the spec, or the user's answers.
 - **Exact commands** and the package manager.
 - **Paths**: the run file, the spec, the repo root, the files in scope.
 - **The boundary**: what is out of scope, and the instruction to stop and report rather than expand.
+- **Every check runs**: a check the sandbox blocks is reported, and the brief's other checks still run.
 - **What to return**, concretely.
 
 Quote what lives only in this conversation (decisions, the user's answers): "as discussed" and "the usual pattern" do not resolve inside an executor. Point at what lives in a file (the spec, `recon.md`, the plan in the run file, commits) by path instead of pasting it; the executor reads it itself.
