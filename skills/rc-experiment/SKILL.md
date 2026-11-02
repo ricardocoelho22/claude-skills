@@ -1,7 +1,6 @@
 ---
 name: rc-experiment
-description: "Run a measurement ticket (a spike, a cost or quality experiment) as an orchestrator: agreed design, harness, smoke run, adversarial review, full run, research file."
-disable-model-invocation: true
+description: "Run a measurement ticket (a spike, a cost or quality experiment) as an orchestrator: agreed design, harness, smoke run, adversarial review, full run, research file. Use when the user wants an experiment or spike ticket run, or a measurement taken (cost, quality, latency) against a ticket."
 argument-hint: "path to the experiment ticket"
 ---
 

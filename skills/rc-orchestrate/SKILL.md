@@ -1,7 +1,6 @@
 ---
 name: rc-orchestrate
-description: "Implement one ticket as an orchestrator, with codex agents as the executors and Claude agents as the fallback."
-disable-model-invocation: true
+description: "Implement one ticket as an orchestrator, with codex agents as the executors and Claude agents as the fallback. Use when the user wants a ticket implemented or built, or hands over a ticket path to work on."
 argument-hint: "path to the ticket"
 ---
 
