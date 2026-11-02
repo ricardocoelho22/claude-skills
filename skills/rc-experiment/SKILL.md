@@ -23,7 +23,13 @@ A finding the user can trust, backed by raw data and a harness anyone can re-run
 
 Read the ticket yourself, in full. Then, as rc-orchestrate's Phase 0 says: **pin the ground** (BASE and branch per repo; the tree must be clean), **find the feature**, and **open the run file** in `<feature>/runs/<slug>.md`. Run the backend check and **explore** only when the harness must call the repo's own code (a prompt builder, a client); spot-check the report as rc-orchestrate says.
 
-**Branch off.** In each repo the harness touches, create and check out `experiment/<slug>` from BASE. The harness lives there; the working branch never sees it.
+**Branch off.** In each repo the harness touches, add a worktree on a new `experiment/<slug>` branch from BASE:
+
+```
+git -C <repo> worktree add -b experiment/<slug> <worktree-path>
+```
+
+`<worktree-path>` follows rc-orchestrate's *Branch off* (absolute; the workspace's `CLAUDE.md` location, else `<repo>/../<repo-name>-experiment-<slug>`; its setup script). The harness lives in the worktree; the working branch never sees it. The feature folder stays in the original checkout: the run file, raw output, research file, and `overview.md` all outlive the worktree and reach the working branch, so write them there by absolute path.
 
 **Draft the design** into the run file:
 
@@ -112,6 +118,6 @@ On acceptance, run *Finish*.
 ## Finish
 
 1. **Record it.** Add an `## Experiments` entry to `overview.md` in the layout's format (`~/.claude/skills/rc-feature-page/feature-layout.md`), with `Source:` pointing at the research file. When the ticket is a wayfinder ticket, resolve it as the tracker doc's *Resolve* says: the answer under `## Answer`, then the gist and link in the map. Otherwise resolve it the way the repo's tracker closes work.
-2. **Return.** Check out the working branch again in every repo. `experiment/<slug>` stays, unmerged.
+2. **Clean up.** In every repo, `git -C <repo> worktree remove <worktree-path>`. `experiment/<slug>` stays, unmerged, with the frozen commit. When the removal refuses (untracked or uncommitted files), show the user why and leave it to them.
 3. **Refresh the page.**
 4. **Report**: the verdict, the research file path, the harness branch and commit, spend against the cap, and the page URL.
