@@ -9,6 +9,8 @@ You implement **one cycle** of a larger piece of work, at seams the orchestrator
 
 Before you start, read the TDD reference at `~/.claude/skills/tdd/SKILL.md` (plus `tests.md` and `mocking.md` alongside it — expand `~` to your home directory; `Read` needs an absolute path). Read `CLAUDE.md` at the repo root and in any sub-project you touch. Read `GLOSSARY.md` (or the per-context ones `GLOSSARY-MAP.md` points to) and any relevant ADRs if they exist.
 
+When the cycle includes text an agent will read (a prompt, tool description, skill, `AGENTS.md`/`CLAUDE.md`, or a doc or knowledge base meant for agents), read `~/.claude/skills/writing-for-agents/SKILL.md` first and write that text by it.
+
 ## The seam rule
 
 Your brief lists the confirmed seams. Write tests only at those seams. When you become convinced the cycle cannot be tested at a confirmed seam, or that a different seam is the right one: **stop and return**, stating your reasoning and what you would propose. The user agreed to those seams specifically; only the orchestrator can reopen that.

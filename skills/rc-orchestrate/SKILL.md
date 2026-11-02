@@ -191,6 +191,7 @@ Invoke `/code-review` and follow its steps with two adaptations:
 
 - **Diff:** use `git diff <BASE>` (working tree against BASE) and the fixed point BASE. The ticket is uncommitted, so the skill's `...HEAD` form would show nothing.
 - **Reviewers:** where it spawns the Standards and Spec sub-agents, spawn each as `subagent_type: rc-reviewer`, with the prompt the skill specifies.
+- **Agent-facing text:** when the diff adds or changes text an agent will read (a prompt, tool description, skill, `AGENTS.md`/`CLAUDE.md`, or a doc or knowledge base meant for agents), append to the Standards prompt: "Also check that text against `~/.claude/skills/writing-for-agents/SKILL.md`, and report each lapse as a Standards finding."
 - **Bugs axis:** spawn a third `rc-reviewer` alongside them, with the diff command, the ticket path, and this brief: "Find defects the diff introduces or exposes: logic errors, unhandled error paths, edge cases (empty, null, boundary, concurrent), callers of changed code that now break, leaked resources, and security holes (injection, missing authorization, secrets). For a bug fix, check that it fixes the root cause. Style and spec conformance belong to other reviewers. Under 400 words." Report it under `## Bugs`, after the other two.
 
 Triage the findings against your own reading of the code: fix now, deferred (with a reason), or rejected. A `Pre-existing` finding is deferred, never fixed now: it is outside the ticket. A finding that a test is redundant, mock-only, off-seam, or tautological goes to the trim in step 5, not the fixer.
@@ -265,6 +266,8 @@ Done when every step the user took has run, or has been handed back to them with
 ---
 
 ## Writing a brief
+
+A brief is a document an agent reads cold: load the `writing-for-agents` skill before writing the run's first brief, and write every brief by it.
 
 An executor has no access to this conversation, the spec, or the user's answers. Every brief is self-contained. Include:
 

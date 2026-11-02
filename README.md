@@ -52,8 +52,10 @@ Review runs `/code-review` with its reviewers spawned as `rc-reviewer`, so the
 review method tracks upstream `code-review` while the model stays pinned.
 
 **Depends on** the `rc-codex` skill and CLI (optional: missing codex triggers the
-fallback), and the third-party `tdd`, `code-review`, `grilling`, and
-`resolving-merge-conflicts` skills.
+fallback), and the third-party `tdd`, `code-review`, `grilling`,
+`resolving-merge-conflicts`, and `writing-for-agents` skills (`rc-tdd`,
+`rc-fixer`, and the Standards review read the last one when a ticket touches
+text meant for agents).
 
 This is the main driver for all implementation work; it does not hand off to
 `/implement` or `/implement-spec`.
