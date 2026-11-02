@@ -59,11 +59,11 @@ Executors run one at a time, since two executors touching one working tree colli
 **Backend check** (once, in Phase 0):
 
 ```
-~/.claude/skills/rc-codex/scripts/codex-run.sh -m gpt-6-luna -c model_reasoning_effort=low -s read-only \
+cd <repo> && ~/.claude/skills/rc-codex/scripts/codex-run.sh -m gpt-6-luna -c model_reasoning_effort=low -s read-only \
   -o <run-dir>/probe.md "Reply with OK."
 ```
 
-It runs in the foreground, since it takes seconds. Exit 0 → backend `codex`. Anything else → backend `claude` for the whole run. Record the backend in the run file.
+`<repo>` is a git repo root (the worktree, when the run made one): codex refuses a folder outside a git repo. It runs in the foreground, since it takes seconds. Exit 0 → backend `codex`. Anything else → backend `claude` for the whole run. Record the backend in the run file.
 
 **Codex call.** Through the `rc-codex` skill's wrapper, from the repo root so session lookup by cwd works:
 
@@ -143,9 +143,11 @@ git -C <repo> worktree add -b <slug> <worktree-path>         # when the user ask
 - **Commands**: verified from config: single test file, full suite, typecheck, lint. Name the package manager.
 - **Risks**: shared state, generated code, env vars, the BASE failures.
 
-**Open the feature page.** Refresh the page (below); when the feature has no page yet, the refresh creates it. Record the page URL in the run file.
+**Open the feature page.** When the feature has a page, record its URL in the run file; the first status change refreshes it. When it has none, create it with a full build (below) and record the new URL.
 
-**Refresh the page** means a delegated build (`~/.claude/skills/rc-feature-page/SKILL.md`, *Delegated build*), then the publish yourself:
+**Refresh the page** means a **status refresh** (`~/.claude/skills/rc-feature-page/SKILL.md`, *Status refresh*), run yourself: every refresh this skill triggers follows a ticket status change or a new manual-checks guide. It keeps the live page's ids, so concurrent sessions on one feature patch the same page instead of rebuilding over each other. When it prints `NEW` or `MISSING`, say so in your next report.
+
+**Full build**, for a create or when the user asks for a full refresh: a delegated build (same skill, *Delegated build*), then the publish yourself:
 
 - **Build.** Spawn a general-purpose sub-agent in the background: `model: haiku` for a refresh, `model: sonnet` for a create, since it drafts `overview.md` that nobody reviews. Brief it to read that skill and run a delegated build for the feature folder, with the review waived, in the build folder `<session scratchpad>/rc-feature-page/<feature>/` (an absolute path: the publish takes files only from the scratchpad or the working directory). It returns the build folder, every file in it, and the waiting lines; the publish's `files` comes from that list.
 - **Publish.** When it returns, run *Build and publish* steps 4 and 5 with the Artifact tool. On a refresh, your first publish of the run needs a `read` of the page URL first. On a create, pass `icon: "map"` and write the new URL on the `Artifact:` line of `overview.md`.
@@ -153,7 +155,7 @@ git -C <repo> worktree add -b <slug> <worktree-path>         # when the user ask
 
 **Track status** the way the repo's issue tracker records it: `in-progress` when Phase 1 starts, resolved the way the tracker closes work when Gate B's commit lands, `needs-info` when escalated to the user mid-work. After every status change, refresh the page.
 
-**Keep `overview.md` true.** When the run changes a `spec.md` or adds a slice, update that slice's entry in the feature's `overview.md` in the layout's format, and set its `Summary checked` to today, before the next refresh. A refresh reports drift; it never repairs it.
+**Keep `overview.md` true.** When the run changes a `spec.md` or adds a slice, update that slice's entry in the feature's `overview.md` in the layout's format, and set its `Summary checked` to today; the next refresh is then a full build, since a status refresh shows only ticket states. A refresh reports drift; it never repairs it.
 
 Done when: the run file holds the backend, BASE and the run's branch per repo, BASE failures, and a plan with seams for every cycle, and the feature page URL when the run has a feature folder.
 
@@ -192,10 +194,13 @@ Invoke `/code-review` and follow its steps with two adaptations:
 - **Reviewers:** where it spawns the Standards and Spec sub-agents, spawn each as `subagent_type: rc-reviewer`, with the prompt the skill specifies.
 - **Agent-facing text:** when the diff adds or changes text an agent will read (a prompt, tool description, skill, `AGENTS.md`/`CLAUDE.md`, or a doc or knowledge base meant for agents), append to the Standards prompt: "Also check that text against `~/.claude/skills/writing-for-agents/SKILL.md`, and report each lapse as a Standards finding."
 - **Bugs axis:** spawn a third `rc-reviewer` alongside them, with the diff command, the ticket path, and this brief: "Find defects the diff introduces or exposes: logic errors, unhandled error paths, edge cases (empty, null, boundary, concurrent), callers of changed code that now break, leaked resources, and security holes (injection, missing authorization, secrets). For a bug fix, check that it fixes the root cause. Style and spec conformance belong to other reviewers. Under 400 words." Report it under `## Bugs`, after the other two.
+- **Not run:** a reviewer that fails or returns no report has not reviewed, which is different from finding nothing. Re-run it once; when it fails again, log `<axis> · not run` and carry `<axis> not run` onto Gate B's `Review:` line.
 
 Triage the findings against your own reading of the code: fix now, deferred (with a reason), or rejected. A `Pre-existing` finding is deferred, never fixed now: it is outside the ticket. A finding that a test is redundant, mock-only, off-seam, or tautological goes to the trim in step 5, not the fixer.
 
 **Review log.** Write each finding into the run file's review log, one line each: `<axis> · <tag> · <file:line> · <outcome>`, where the outcome is `fixed`, `deferred (<reason>)`, `rejected: wrong`, `rejected: intentional`, or `rejected: irrelevant`. The retro reads this log to tune the reviewer briefs.
+
+**Intent needs a source.** A `rejected: intentional` names where the intent is written, in a place the reviewer could read: the ticket, the spec, an ADR, a pattern in the code, or a plan line that records the user's answer. A plan call you made alone is your own wish, not evidence: such a finding goes on Gate B's `Your call:` line, and the user's answer becomes its source.
 
 ### 3. Fix
 
@@ -224,6 +229,7 @@ The user reads the code here to stay grounded and catch quirks. Hand them a repo
 <the rc-diff-tour body: Read first … Watch for>
 
 Review:     <n> fixed · <n> deferred (<reason>) · <n> rejected
+Your call:  <finding> — <the behavior it changes>   (one line each, or omit)
 Trimmed:    <test name> — <reason>   (one line each, or "none")
 Deviations: <from the plan, or "none">
 Guide:      <path> (manual checks, for reference)

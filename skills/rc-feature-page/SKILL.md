@@ -18,6 +18,7 @@ Read [`feature-layout.md`](feature-layout.md) first. It defines the tree, the ti
 
 Find the features root (see *Features root* in the layout), then the feature folder: the one the user or the calling skill named, or the only feature with open tickets. When more than one fits, ask.
 
+- `overview.md` with a URL, and the change since the last publish is ticket statuses or a new manual-checks guide only: run **status refresh**.
 - `overview.md` with a URL on its `Artifact:` line: run **refresh**.
 - No `overview.md`, or an empty `Artifact:` line: run **create**.
 
@@ -51,6 +52,17 @@ Find the features root (see *Features root* in the layout), then the feature fol
 4. **Report** the URL and the waiting lines to the user.
 
 Done when: the publish succeeded and every finding from step 2 is on the page.
+
+## Status refresh
+
+A **patch**: the live page keeps every id, slice, doc and decision, and only ticket states, checklist links and `builtAt` change. The main session runs it itself, with no sub-agent, and it is the refresh other skills use after a status change.
+
+1. Read the live `data.json` (`action: "read"`, `url` from `overview.md`, `path: "data.json"`).
+2. Run `scripts/patch-status.py <saved data.json> <feature folder> <scratchpad>/rc-feature-page/<feature>-patch/`. It prints each `STATUS` and `GUIDE` change and the `FILES` list.
+3. Publish: `file_path` is the out folder's `index.html`, `root` is the out folder, `files` is the printed list. A refusal hands you a newer live version: go back to step 1 with it; the files left out of `files` stay as they are.
+4. Report the URL and the changes. A `NEW` or `MISSING` line means the page's structure is out of date: report it, and run a full **refresh** when the user wants it.
+
+Done when: the publish succeeded, or the script printed no change.
 
 ## Build and publish
 
