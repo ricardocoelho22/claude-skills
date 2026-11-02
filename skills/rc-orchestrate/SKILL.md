@@ -120,11 +120,11 @@ A workspace can span several independent repos, so check for them and pin a sepa
 **Branch off.** `<slug>` is the ticket's name in kebab-case; the run file uses it too. In each repo, create the run's branch from BASE:
 
 ```
-git -C <repo> switch -c <slug>                                # default
-git -C <repo> worktree add -b <slug> <worktree-path>         # when the user asks for a worktree
+git -C <repo> worktree add -b <slug> <worktree-path>         # default
+git -C <repo> switch -c <slug>                                # when the user asks for a plain branch
 ```
 
-`<worktree-path>` is absolute, since `-C` makes a relative path resolve inside the repo: the location the workspace's `CLAUDE.md` names, else `<repo>/../<repo-name>-<slug>`. Stay on the current branch only when the user says so. When `<slug>` already exists, ask the user. After a worktree add, run the workspace's worktree setup script when its `CLAUDE.md` names one; from then on, every `<repo>` below means the worktree, and so does the feature folder when it sits inside the repo; only the wrap-up in *Finish* goes back to the original checkout.
+`<worktree-path>` is absolute, since `-C` makes a relative path resolve inside the repo: the location the workspace's `CLAUDE.md` names, else `<repo>/../<repo-name>-<slug>`. Work in the original checkout (a plain branch, or the current branch) only when the user says so. When `<slug>` already exists, ask the user. After a worktree add, run the workspace's worktree setup script when its `CLAUDE.md` names one; from then on, every `<repo>` below means the worktree, and so does the feature folder when it sits inside the repo; only the wrap-up in *Finish* goes back to the original checkout.
 
 **Find the feature.** The feature folder is the folder in the features root that holds the ticket (tree and features root: `~/.claude/skills/rc-feature-page/feature-layout.md`). Work that sits outside a features root has no feature folder: the run then has no feature page, and every *refresh the page* below is skipped.
 

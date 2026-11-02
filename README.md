@@ -42,7 +42,7 @@ back to its Claude agent.
 | Manual checks | follows `rc-manual-checks` | — | haiku |
 | Trim tests | `rc-trimmer` | `gpt-6.1-sol` medium | haiku medium |
 
-Flow: a branch per ticket (or a worktree, on request) → recon → BASE test
+Flow: a worktree per ticket (or a plain branch, on request) → recon → BASE test
 failures recorded → plan → **Gate A** (optional: only when the plan has open
 questions) → cycles (tests → implement) → review → fix → manual checks → trim →
 **Gate B** (required: a short report to read before committing) → an offer to
