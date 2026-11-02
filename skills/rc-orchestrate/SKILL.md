@@ -92,8 +92,11 @@ GIT_INDEX_FILE=<run-dir>/snap.idx git -C <repo> add -u && GIT_INDEX_FILE=<run-di
 **Session hygiene.** Start a fresh codex session per role per cycle. Re-briefing the same executor on the same cycle at the same rung resumes instead, keeping its context and cache warm; a step-up is always a fresh call:
 
 ```
-cd <repo> && ~/.claude/skills/rc-codex/scripts/codex-run.sh resume --last -o <run-dir>/<cycle>-<role>-2.md "<follow-up brief>"
+cd <repo> && ~/.claude/skills/rc-codex/scripts/codex-run.sh resume --last -c sandbox_workspace_write.network_access=true \
+  -o <run-dir>/<cycle>-<role>-2.md "<follow-up brief>"
 ```
+
+A resumed session keeps the sandbox mode but not `-c` overrides, so the network flag is passed again.
 
 **New files.** After every executor return, run `git add -N` on the files it created, so every `git diff` below shows them.
 
