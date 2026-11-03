@@ -1,0 +1,66 @@
+{
+ "ticket": "28",
+ "condition": "seeded",
+ "keys": [
+  {
+   "id": "S1",
+   "kind": "synthetic",
+   "key": "src/evals/agent/assertions.ts:163 \u00b7 extractWords \u00b7 text.match(/\\p{L}+/gu)! is null for text with no letters, so spreading it throws on an empty assistant reply; runAttempt turns that into driver_error and discards the transcript \u00b7 reached via src/evals/agent/runner.ts:71 (checkTranscript -> detectReplyLanguage(turn.assistantText) with assistantText '')"
+  },
+  {
+   "id": "S2",
+   "kind": "synthetic",
+   "key": "src/evals/agent/assertions.ts:201 \u00b7 detectReplyLanguage \u00b7 a reply with one English stopword returns classifyLanguage(1, spanish) (undefined) before the Spanish content, accent and punctuation evidence is counted, so a short Spanish reply passes the language check \u00b7 reached via src/evals/agent/assertions.ts:307 (a Spanish assistantText with one English stopword, in a case expecting English)"
+  }
+ ],
+ "findings": [
+  {
+   "review": "B-28-seeded-r1",
+   "file": "src/evals/agent/assertions.ts",
+   "line": 162,
+   "tag": "Important",
+   "effect": "`extractWords` spreads `null` when text has no letters, causing a TypeError. Failed turns with empty assistant text crash `checkTranscript` instead of being recorded as `turn_error`, and user messages containing only digits or emoji also crash.",
+   "quote": "return new Set([...text.match(/\\p{L}+/gu)!])",
+   "fid": "F01",
+   "hit_seed": "S1",
+   "verdict": "hit",
+   "reason": "Names assertions.ts, locates extractWords at the seeded line and quotes the seeded code, and describes the null-spread crash on empty assistant text."
+  },
+  {
+   "review": "A-28-seeded-r1",
+   "file": "src/evals/agent/assertions.ts",
+   "line": 162,
+   "tag": "Important",
+   "effect": "When text has no letters, match returns null and spreading it throws a TypeError. This crashes grading for failed turns with empty assistant text instead of reporting turn_error, and also crashes transcript checking for letterless user messages.",
+   "quote": "return new Set([...text.match(/\\p{L}+/gu)!])",
+   "fid": "F02",
+   "hit_seed": "S1",
+   "verdict": "hit",
+   "reason": "Names the seed file, quotes the seeded expression near line 163, and describes the crash caused by letterless text."
+  },
+  {
+   "review": "A-28-seeded-r1",
+   "file": "assertions.ts",
+   "line": 201,
+   "tag": "Nit",
+   "effect": "Any single English stopword turns off the new Spanish evidence, so shared words such as me can cause short Spanish replies to receive an undefined language classification and pass. Content words and accents never get counted, leaving part of the ticket's goal of catching short Spanish replies unmet.",
+   "quote": "if (english >= 1) return classifyLanguage(english, spanish)",
+   "fid": "F03",
+   "hit_seed": "S2",
+   "verdict": "hit",
+   "reason": "Names assertions.ts at line 201, quotes the seeded early return, and explains how one English stopword lets short Spanish replies pass."
+  },
+  {
+   "review": "B-28-seeded-r1",
+   "file": "src/evals/agent/assertions.ts",
+   "line": 201,
+   "tag": "Nit",
+   "effect": "A single English stopword causes the language heuristic to discard all new Spanish content-word, accent and punctuation evidence. Because the English list includes words common in Spanish, such as `me`, short Spanish replies can pass when English is expected.",
+   "quote": "if (english >= 1) return classifyLanguage(english, spanish)",
+   "fid": "F04",
+   "hit_seed": "S2",
+   "verdict": "hit",
+   "reason": "Names the seed file and exact line, quotes the early return, and describes Spanish evidence being skipped so Spanish replies can pass when English is expected."
+  }
+ ]
+}

@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "src/evals/agent/assertions.ts",
+   "line": 162,
+   "tag": "Important",
+   "effect": "When text has no letters, match returns null and spreading it throws a TypeError. This crashes grading for failed turns with empty assistant text instead of reporting turn_error, and also crashes transcript checking for letterless user messages.",
+   "quote": "return new Set([...text.match(/\\p{L}+/gu)!])"
+  },
+  {
+   "file": "assertions.ts",
+   "line": 201,
+   "tag": "Nit",
+   "effect": "Any single English stopword turns off the new Spanish evidence, so shared words such as me can cause short Spanish replies to receive an undefined language classification and pass. Content words and accents never get counted, leaving part of the ticket's goal of catching short Spanish replies unmet.",
+   "quote": "if (english >= 1) return classifyLanguage(english, spanish)"
+  }
+ ]
+}

@@ -1,0 +1,43 @@
+{
+ "ticket": "28",
+ "condition": "clean",
+ "keys": [],
+ "findings": [
+  {
+   "review": "B-28-clean-r1",
+   "file": "assertions.ts",
+   "line": 105,
+   "tag": "Nit",
+   "effect": "English loanwords with accents count as Spanish orthography. Two lowercase accented loanwords and fewer than two English stopwords are enough to classify a reply as Spanish.",
+   "quote": "SPANISH_ACCENTS = /[\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1]/u",
+   "fid": "F01",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "An English reply such as \u201cSaved caf\u00e9 r\u00e9sum\u00e9.\u201d contributes two distinct accented words and zero English stopwords, so detectReplyLanguage incorrectly classifies it as Spanish."
+  },
+  {
+   "review": "A-28-clean-r1",
+   "file": "src/evals/agent/assertions.ts",
+   "line": 205,
+   "tag": "Nit",
+   "effect": "Spanish content words count even when capitalized because the text is lowercased and the content-word check has no proper-noun guard. English replies containing Spanish names or addresses can therefore be classified as Spanish and fail when English is expected.",
+   "quote": "countWordMatches(words, SPANISH_CONTENT_WORDS)",
+   "fid": "F02",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "Capitalized names are lowercased before content-word matching, so an English reply such as \u201cSaved El Perfil.\u201d gains enough Spanish evidence to fail the English language check."
+  },
+  {
+   "review": "B-28-clean-r1",
+   "file": "assertions.ts",
+   "line": 197,
+   "tag": "Important",
+   "effect": "Capitalized proper nouns count as Spanish content words because the text is lowercased before content-word matching, without a capitalization guard. One Spanish stopword plus one capitalized content word reaches the threshold, causing English replies containing Spanish names or addresses to fail.",
+   "quote": "countWordMatches(words, SPANISH_CONTENT_WORDS)",
+   "fid": "F03",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "The new content-word evidence makes \u201cSaved El Perfil.\u201d reach the Spanish threshold through the stopword \u201cel\u201d and capitalized name \u201cPerfil,\u201d incorrectly failing an English reply."
+  }
+ ]
+}

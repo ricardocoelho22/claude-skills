@@ -1,0 +1,52 @@
+{
+ "ticket": "29",
+ "condition": "seeded",
+ "keys": [
+  {
+   "id": "S1",
+   "kind": "real",
+   "key": "src/seeds/contacts.seed.ts:66-70 \u00b7 seedContacts \u00b7 the idempotency check uses deletedAt: { $exists: false }, which misses contacts that carry an explicit deletedAt: null (imported ones), so a re-run creates duplicates"
+  },
+  {
+   "id": "S2",
+   "kind": "real",
+   "key": "src/seeds/pro-microsites.seed.ts:63-89 \u00b7 seedProMicrosites \u00b7 the slug-taken skip is gone, so a slug held by another account makes create() throw a duplicate-key error and aborts the whole seed run"
+  },
+  {
+   "id": "S3",
+   "kind": "synthetic",
+   "key": "src/modules/contacts/contacts.repo.ts:51 \u00b7 listPaginated \u00b7 the search words are capped at the first two (split(/\\s+/, 2)), so a three-word search such as \"Maria Alvarez Denver\" ignores the third word and returns contacts that do not match it \u00b7 reached via src/modules/contacts/contacts.controller.ts:27 (the ?search= query reaches listPaginated unchanged; listContactsQuerySchema, contacts.dto.ts:78, only trims and requires min(1))"
+  },
+  {
+   "id": "S4",
+   "kind": "synthetic",
+   "key": "src/seeds/journey-invitations.seed.ts:87 \u00b7 seedJourneyInvitations \u00b7 journeys are listed across all owners (first 100) instead of the consumer's, so the invitation can attach to another owner's journey with the same template key \u00b7 reached via src/seeds/run-seeds.ts:151 (the seed runner calls it with the real journeysService)"
+  }
+ ],
+ "findings": [
+  {
+   "review": "A-29-seeded-r1",
+   "file": "src/modules/contacts/contacts.repo.ts",
+   "line": 127,
+   "tag": "Nit",
+   "effect": "Multi-word contact search silently drops every word after the second, producing broader results without telling the user. Phrases that previously matched exactly against address.street now match each word in any field.",
+   "quote": "params.search.trim().split(/\\s+/, 2)",
+   "fid": "F01",
+   "hit_seed": "S3",
+   "verdict": "hit",
+   "reason": "Names the seeded file, quotes the seeded split(/\\s+/, 2) code, and describes how dropping words after the second broadens search results."
+  },
+  {
+   "review": "B-29-seeded-r1",
+   "file": "src/modules/contacts/contacts.repo.ts",
+   "line": 51,
+   "tag": "Important",
+   "effect": "Contact search discards every word after the second, so queries with three or more words return contacts that do not match the remaining words. This affects both the agent's list_contacts tool and the contacts endpoint.",
+   "quote": "const words: string[] = params.search.trim().split(/\\s+/, 2)",
+   "fid": "F02",
+   "hit_seed": "S3",
+   "verdict": "hit",
+   "reason": "Names the seeded file and line, quotes the seeded code, and correctly describes three-word searches returning contacts that do not match the remaining words."
+  }
+ ]
+}

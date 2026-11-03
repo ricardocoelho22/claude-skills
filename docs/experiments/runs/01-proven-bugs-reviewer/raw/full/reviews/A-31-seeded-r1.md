@@ -1,0 +1,14 @@
+**2 Important, 0 Nit, 0 Pre-existing.** I didn't check the frontend side, which would render the en/es message, because it isn't in this worktree.
+
+**1. Important: a cut-off turn that already has parts is still silent, so the "never silent" goal is missed.**
+- **Evidence:** `src/modules/agent/agent-turn.service.ts:296` reads `truncated = event.truncated && assistantParts.length === 0`.
+- **Why it fails:** The flag is only set when the turn has no parts at all. Two common cut-offs still give the pro no message:
+  - **A complete tool call followed by a `length` finish.** The new spec `agent-model-client.truncation.spec.ts` ("does not execute a complete tool call followed by a length finish") shows the SDK still emits a `tool-call` event in that case. `applyModelEvent` turns it into a `dynamic-tool` part (`agent-turn.service.ts:436-443`). Now `assistantParts.length > 0`, so `truncated` is `false`. `finalizeAssistantParts` then quietly marks the part `output-error` / `turn_interrupted` (`:133-136`), and the user gets no truncation notice.
+  - **Cut-offs after earlier output.** The same happens to any multi-step turn where an earlier step produced parts: for example `get_journey` in step 1, then the `edit_journey` JSON cut off in step 2. It also covers turn 1 from the ticket, where prose used up the budget.
+- **Root cause:** The condition should key on the finish reason alone. The ticket says "when a model call stops for length, the pro gets a visible message".
+
+**2. Important: a model failure that happens before any output now loses its error and saves a silent empty turn.**
+- **Evidence:** `agent-turn.service.ts:260` reads `...(fatalError && assistantParts.length > 0 ? { error: fatalError } : {})`.
+- **Why it fails:** Before this change, every `fatalError` was saved as `metadata.error`. Now it is dropped whenever the turn has no parts. That covers a stream rejection, or an `error` part arriving before any text: the model client yields `{ type: 'error' }` with nothing before it (`agent-model-client.service.ts:271-273`), and `applyModelEvent` only emits the error, it adds no part (`:478-480`). The live SSE `error` event still fires. But the saved message is `parts: []` with no `error`, and the projection (`agent-conversation.projection.ts:55`) has nothing to send. On reload the pro sees an empty assistant reply with no error, which is the same silent-turn defect this ticket is fixing.
+- **Coverage:** No spec covers this path. The existing error specs (`agent.controller.spec.ts:239`, `agent-conversation-lifecycle.spec.ts:373`) all stream text before the error, so they still pass.
+- **Fix:** Nothing in the ticket asks for this change. The `truncated` path never sets `fatalError`, so the condition can go back to plain `fatalError ? …`.

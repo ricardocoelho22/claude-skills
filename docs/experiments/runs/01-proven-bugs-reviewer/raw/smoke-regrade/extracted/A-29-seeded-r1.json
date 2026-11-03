@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 81,
+   "tag": "Nit",
+   "effect": "The unused consumer-profile check skips the only invitation with just a warning if Ricardo has no consumer profile, even though the invitation is sent by the professional actor.",
+   "quote": "if (!consumerProfile) { ... skipped += 1; continue }"
+  },
+  {
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 88,
+   "tag": "Nit",
+   "effect": "The journey lookup searches platform-wide without scoping to the owner and reads only the first 100 journeys, so it can miss home-seller-v1 and skip the invitation without an error. It can also pick another consumer's journey of that template.",
+   "quote": "const { items: journeys } = await journeysService.listPaginated({ page: 1, limit: 100 })\nconst journey = journeys.find((item) => item.templateKey === invitation.journeyTemplateKey)"
+  }
+ ]
+}

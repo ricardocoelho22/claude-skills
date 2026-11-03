@@ -1,0 +1,16 @@
+{
+ "findings": [
+  {
+   "file": "journey-invitations.seed.ts",
+   "line": 80,
+   "tag": "Nit",
+   "effect": "The invitation seeder looks up the sender's consumer profile but never uses it, instead taking the first journey with the matching template from an unfiltered page of 100 journeys. A local database with other matching journeys or more than 100 journeys could attach the invitation to the wrong owner's journey or find none."
+  },
+  {
+   "file": "contacts.repo.ts",
+   "line": 51,
+   "tag": "Nit",
+   "effect": "A whitespace-only search produces an empty word list and sets filter.$and to an empty array, which MongoDB rejects. Current callers trim and require a minimum length, but a future caller that skips that validation could trigger the failure."
+  }
+ ]
+}

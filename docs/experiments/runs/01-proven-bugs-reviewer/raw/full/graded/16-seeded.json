@@ -1,0 +1,42 @@
+{
+ "ticket": "16",
+ "condition": "seeded",
+ "keys": [
+  {
+   "id": "S1",
+   "kind": "synthetic",
+   "key": "src/modules/notifications/listeners/milestone-detection.listener.ts:65 \u00b7 handleTimelineBatchApplied \u00b7 beforeStep! is undefined for a step the batch added, so reading .status throws, the catch logs it, and section celebrations earned in that batch are suppressed \u00b7 reached via src/modules/journeys/journeys.service.ts:695 (any applied batch holding an add_step operation)"
+  },
+  {
+   "id": "S2",
+   "kind": "synthetic",
+   "key": "src/modules/notifications/listeners/timeline-batch-notification.listener.ts:28 \u00b7 handleTimelineBatchApplied \u00b7 .catch(() => null) turns a failed professional lookup into no sender exclusion, so the approving professional is notified of their own batch \u00b7 reached via src/modules/journeys/journeys.service.ts:693 (a batch applied with a professionalId while findByJourneyAndActor rejects, e.g. a transient database error)"
+  }
+ ],
+ "findings": [
+  {
+   "review": "A-16-seeded-r1",
+   "file": "src/modules/notifications/listeners/milestone-detection.listener.ts",
+   "line": null,
+   "tag": "Important",
+   "effect": "When an approved batch adds a step, beforeSteps.get(step.id) returns undefined and accessing beforeStep!.status throws a TypeError, stopping milestone detection. If the batch also completes a section or journey, its completion notifications are silently dropped because per-step handling returns early for batch-stamped events.",
+   "quote": "beforeStep!.status",
+   "fid": "F01",
+   "hit_seed": "S1",
+   "verdict": "hit",
+   "reason": "It names the seeded file, quotes beforeStep!.status, and correctly describes how added steps cause an exception that suppresses batch milestone celebrations."
+  },
+  {
+   "review": "B-16-seeded-r1",
+   "file": "src/modules/notifications/listeners/milestone-detection.listener.ts",
+   "line": null,
+   "tag": "Important",
+   "effect": "A step added by a batch has no entry in the old timeline, so accessing beforeStep.status throws a TypeError that the method's try/catch swallows. The entire batch sends no section or journey celebrations, and the batchId early return disables the per-step fallback, so those milestones are lost.",
+   "quote": "return beforeStep!.status !== step.status && this.isStepDone(step)",
+   "fid": "F02",
+   "hit_seed": "S1",
+   "verdict": "hit",
+   "reason": "It names the seeded file, quotes the seeded expression, and correctly explains that missing before-step entries abort milestone detection while batch-stamped events bypass the fallback."
+  }
+ ]
+}

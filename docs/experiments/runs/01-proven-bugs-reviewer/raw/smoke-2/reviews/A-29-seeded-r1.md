@@ -1,0 +1,11 @@
+**0 Important, 1 Nit, 0 Pre-existing.** The diff has no defects that need fixing before merge.
+
+- **Nit: multi-word contact search silently drops every word after the second.** At `src/modules/contacts/contacts.repo.ts:127`, the code is `params.search.trim().split(/\s+/, 2)`. A search like `"Maria Alvarez Oakland"` filters only on `Maria` and `Alvarez`, so `Oakland` is ignored and results are broader than the user asked for. Nothing errors or tells the user. A related change in behaviour: a phrase that used to match exactly, such as `"42 Maple Avenue"` (previously one regex against `address.street`), now matches each word in any field. Either matching on every word (perhaps with a sensible cap) or noting the 2-word limit in the tool description would make this explicit.
+
+What I checked and found sound:
+- **Contact seed duplicate check** (`contacts.seed.ts`): it uses `deletedAt: { $exists: false }`, while the repo elsewhere uses `deletedAt: null`. `contact.schema.ts:95-96` gives `deletedAt` no default, so the two behave the same here. A soft-deleted seed contact gets re-created, which is fine.
+- **Which journey the invitation seed picks**: it searches all journeys for `templateKey`, but `home-seller-v1` appears only once in `journeys.seed.ts:316`, on ricardo's journey. So it picks ricardo's journey, as intended.
+- **Seed order in `run-seeds.ts`**: contacts and microsites run after professional profiles, and invitations run after journeys and participants. That order is correct.
+- **Invitation duplicate guard**: `findPendingByJourneyAndProfessional` matches on `journeyId`, `professionalId` and `status: 'pending'`. Seeding twice won't create a second invitation, and the spec's second seed run asserts this.
+- **Search input**: the code escapes each word with `escapeRegExp`, so no regex injection. Empty or whitespace-only searches skip the filter. The new `$and` doesn't overwrite any existing `$and`, because the filter has none.
+- **Ownership scoping**: every new read in the spec goes through owner-scoped service methods (`listPaginated` with `ownerAccountId`, `listForProfessional`, `getOwnByAccountId`), and the cross-owner exclusion tests cover it.

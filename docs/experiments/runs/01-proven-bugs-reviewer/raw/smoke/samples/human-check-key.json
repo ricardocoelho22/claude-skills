@@ -1,0 +1,20 @@
+[
+ {
+  "hid": "H01",
+  "fid": "F02",
+  "review": "B-29-seeded-r1",
+  "codex_verdict": "real-but-unseeded"
+ },
+ {
+  "hid": "H02",
+  "fid": "F04",
+  "review": "B-29-seeded-r1",
+  "codex_verdict": "real-but-unseeded"
+ },
+ {
+  "hid": "H03",
+  "fid": "F03",
+  "review": "A-29-seeded-r1",
+  "codex_verdict": "real-but-unseeded"
+ }
+]

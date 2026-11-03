@@ -1,0 +1,66 @@
+{
+ "ticket": "31",
+ "condition": "seeded",
+ "keys": [
+  {
+   "id": "S1",
+   "kind": "synthetic",
+   "key": "src/modules/agent/agent-turn.service.ts:260 \u00b7 runTurn \u00b7 the error marker is written only when assistantParts is non-empty, so a provider failure before any output persists an empty assistant message without its error \u00b7 reached via src/modules/agent/agent.service.ts:117 (the model stream yields an error event before any text or tool part; applyModelEvent adds no part for it)"
+  },
+  {
+   "id": "S2",
+   "kind": "synthetic",
+   "key": "src/modules/agent/agent-turn.service.ts:296 \u00b7 streamModelTurn \u00b7 truncated = event.truncated && assistantParts.length === 0, so a length-truncated response holding text or tool parts loses its truncated metadata and the SSE done warning flag \u00b7 reached via src/modules/agent/agent-model-client.service.ts:280 (any model finish with finishReason 'length' after partial text)"
+  }
+ ],
+ "findings": [
+  {
+   "review": "A-31-seeded-r1",
+   "file": "agent-turn.service.ts",
+   "line": 260,
+   "tag": "Important",
+   "effect": "A fatal model error is dropped from saved metadata whenever the turn has no assistant parts. On reload, the user sees an empty assistant reply with no error.",
+   "quote": "...(fatalError && assistantParts.length > 0 ? { error: fatalError } : {})",
+   "fid": "F01",
+   "hit_seed": "S1",
+   "verdict": "hit",
+   "reason": "Names agent-turn.service.ts, cites line 260 and the seeded condition, and describes the missing saved error for an empty assistant reply."
+  },
+  {
+   "review": "A-31-seeded-r1",
+   "file": "src/modules/agent/agent-turn.service.ts",
+   "line": 296,
+   "tag": "Important",
+   "effect": "The truncation flag is only set when the turn has no assistant parts. A length cut-off after a complete tool call or earlier output therefore gives the user no visible truncation notice.",
+   "quote": "truncated = event.truncated && assistantParts.length === 0",
+   "fid": "F02",
+   "hit_seed": "S2",
+   "verdict": "hit",
+   "reason": "Names the seed file, cites line 296 and the seeded assignment, and describes lost truncation warnings after assistant output."
+  },
+  {
+   "review": "B-31-seeded-r1",
+   "file": "agent-turn.service.ts",
+   "line": 296,
+   "tag": "Important",
+   "effect": "The truncation flag is dropped whenever the turn already has an assistant part, including prose or a tool call. A turn cut off by the length cap therefore shows no visible length message, and a complete tool call with a length finish is saved as an interrupted tool error.",
+   "quote": "truncated = event.truncated && assistantParts.length === 0",
+   "fid": "F03",
+   "hit_seed": "S2",
+   "verdict": "hit",
+   "reason": "Names agent-turn.service.ts, quotes the seeded assignment at line 296, and describes the truncation flag being dropped when assistant parts exist."
+  },
+  {
+   "review": "B-31-seeded-r1",
+   "file": "agent-turn.service.ts",
+   "line": 260,
+   "tag": "Important",
+   "effect": "A model failure before any output saves an assistant message with no parts and no metadata.error because an error event never adds a part. This triggers paid title generation for failed turns, shows an empty reply without an error on reload, and removes the evaluation driver's error fallback.",
+   "quote": "...(fatalError && assistantParts.length > 0 ? { error: fatalError } : {})",
+   "fid": "F04",
+   "hit_seed": "S1",
+   "verdict": "hit",
+   "reason": "Names agent-turn.service.ts, quotes the seeded condition at line 260, and describes a failure before output being saved without metadata.error."
+  }
+ ]
+}

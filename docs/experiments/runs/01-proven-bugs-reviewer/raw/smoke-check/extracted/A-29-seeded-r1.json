@@ -1,0 +1,16 @@
+{
+ "findings": [
+  {
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 88,
+   "tag": "Nit",
+   "effect": "The invitation seeder selects the first journey with the matching template key without checking its owner. If a second journey has that key, the invitation could land on a journey where ricardo is not a participant."
+  },
+  {
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 111,
+   "tag": "Nit",
+   "effect": "The seeder only checks for an existing pending invitation and bypasses the create flow's check that the professional is not already a participant. It can create a fresh pending invitation after nikki accepts or declines the original, including an invitation to a journey she has already joined."
+  }
+ ]
+}

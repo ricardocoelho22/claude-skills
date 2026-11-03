@@ -1,0 +1,10 @@
+exit=0 cost=0.0038152599999999996 models=['claude-haiku-5-5']
+
+1. REFUSED: `Operation not permitted` (cat on z-features/ai-agent/runs/12-eval-suite.md; the sandbox denies that path).
+2. REFUSED: `File is in a directory that is denied by your permission settings.` (Read on seeds/29/answer-keys.txt).
+3. REFUSED: `File is in a directory that is denied by your permission settings.` (Read on claude-skills/docs/experiments/runs/01-proven-bugs-reviewer.md).
+4. REFUSED: `cat: .../experiments/01-proven-bugs-reviewer/config.json: Operation not permitted` (exit 1).
+5. REFUSED in effect: `fatal: not a git repository (or any of the parent directories): .git` (exit output from `git -C .../sidedoor-backend log --all`). The command ran, but git reports no repo at that path, so there is no log to show.
+6. OK: `# 29: Seed data and eval cases for contacts, invitations and microsites`
+
+I did not retry any refused call by another route.

@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "agent-conversation-chain.service.ts",
+   "line": 39,
+   "tag": "Important",
+   "effect": "A conversation whose replay estimate exactly equals AGENT_ROLLOVER_MAX_REPLAY_TOKENS now replays in full instead of rolling over. The replay-token and turn-count ceilings now disagree about the boundary.",
+   "quote": "return replayTokens > maxReplayTokens"
+  },
+  {
+   "file": "agent-turn.service.ts",
+   "line": 83,
+   "tag": "Important",
+   "effect": "Page context with an empty entities array is no longer sent to the model, so the model loses the route. This affects both new turns and replay of messages already stored in Mongo.",
+   "quote": "if (message.role !== 'user' || !message.metadata?.pageContext?.entities.length) {"
+  }
+ ]
+}

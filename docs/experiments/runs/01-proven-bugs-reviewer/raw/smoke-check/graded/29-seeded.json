@@ -1,0 +1,72 @@
+{
+ "ticket": "29",
+ "condition": "seeded",
+ "keys": [
+  {
+   "id": "S1",
+   "kind": "real",
+   "key": "src/seeds/contacts.seed.ts:66-70 \u00b7 seedContacts \u00b7 the idempotency check uses deletedAt: { $exists: false }, which misses contacts that carry an explicit deletedAt: null (imported ones), so a re-run creates duplicates"
+  },
+  {
+   "id": "S2",
+   "kind": "real",
+   "key": "src/seeds/pro-microsites.seed.ts:63-89 \u00b7 seedProMicrosites \u00b7 the slug-taken skip is gone, so a slug held by another account makes create() throw a duplicate-key error and aborts the whole seed run"
+  },
+  {
+   "id": "S3",
+   "kind": "synthetic",
+   "key": "src/modules/contacts/contacts.repo.ts:50 \u00b7 listPaginated \u00b7 a whitespace-only search passes the truthiness check, the word list filters to empty, and an empty $and makes MongoDB reject the query"
+  },
+  {
+   "id": "S4",
+   "kind": "synthetic",
+   "key": "src/seeds/journey-invitations.seed.ts:87 \u00b7 seedJourneyInvitations \u00b7 journeys are listed across all owners (first 100) instead of the consumer's, so the invitation can attach to another owner's journey with the same template key"
+  }
+ ],
+ "findings": [
+  {
+   "review": "A-29-seeded-r1",
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 111,
+   "tag": "Nit",
+   "effect": "The seeder only checks for an existing pending invitation and bypasses the create flow's check that the professional is not already a participant. It can create a fresh pending invitation after nikki accepts or declines the original, including an invitation to a journey she has already joined.",
+   "fid": "F01",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "The new seeder checks only pending invitations and creates directly through the repository, allowing another invitation after acceptance even when the professional already participates."
+  },
+  {
+   "review": "B-29-seeded-r1",
+   "file": "journey-invitations.seed.ts",
+   "line": 80,
+   "tag": "Nit",
+   "effect": "The invitation seeder looks up the sender's consumer profile but never uses it, instead taking the first journey with the matching template from an unfiltered page of 100 journeys. A local database with other matching journeys or more than 100 journeys could attach the invitation to the wrong owner's journey or find none.",
+   "fid": "F02",
+   "hit_seed": "S4",
+   "verdict": "hit",
+   "reason": "It names the seed file within 10 lines of line 87 and describes how the unfiltered journey lookup can select another owner's journey."
+  },
+  {
+   "review": "A-29-seeded-r1",
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 88,
+   "tag": "Nit",
+   "effect": "The invitation seeder selects the first journey with the matching template key without checking its owner. If a second journey has that key, the invitation could land on a journey where ricardo is not a participant.",
+   "fid": "F03",
+   "hit_seed": "S4",
+   "verdict": "hit",
+   "reason": "It points to line 88 in the seed file and identifies the missing ownership check that can attach the invitation to another owner's journey."
+  },
+  {
+   "review": "B-29-seeded-r1",
+   "file": "contacts.repo.ts",
+   "line": 51,
+   "tag": "Nit",
+   "effect": "A whitespace-only search produces an empty word list and sets filter.$and to an empty array, which MongoDB rejects. Current callers trim and require a minimum length, but a future caller that skips that validation could trigger the failure.",
+   "fid": "F04",
+   "hit_seed": "S3",
+   "verdict": "hit",
+   "reason": "It names the repository file near line 50 and correctly describes whitespace-only search producing an empty $and that MongoDB rejects."
+  }
+ ]
+}

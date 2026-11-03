@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/contacts/contacts.repo.ts",
+   "line": 51,
+   "tag": "Important",
+   "effect": "Contact search discards every word after the second, so queries with three or more words return contacts that do not match the remaining words. This affects both the agent's list_contacts tool and the contacts endpoint.",
+   "quote": "const words: string[] = params.search.trim().split(/\\s+/, 2)"
+  }
+ ]
+}

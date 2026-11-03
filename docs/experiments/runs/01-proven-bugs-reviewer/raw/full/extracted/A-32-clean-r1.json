@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "cases/journey-write.ts",
+   "line": 84,
+   "tag": "Nit",
+   "effect": "The expectation does not check that the agent asked a question. A reply that calls get_journey and makes no proposal passes even if it incorrectly refuses removal or merely describes the section.",
+   "quote": "expect: { toolsCalled: ['get_journey'], noProposal: true }"
+  }
+ ]
+}

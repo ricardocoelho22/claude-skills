@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/contacts/contacts.repo.ts",
+   "line": 50,
+   "tag": "Nit",
+   "effect": "The per-word search has no word limit, and each word adds 8 regex clauses. Neither the query schema nor the agent tool caps the search length or word count, so long queries get much slower as query length grows.",
+   "quote": "const words: string[] = params.search.trim().split(/\\s+/)"
+  }
+ ]
+}

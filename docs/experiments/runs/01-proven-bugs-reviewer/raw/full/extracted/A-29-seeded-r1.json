@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/contacts/contacts.repo.ts",
+   "line": 51,
+   "tag": "Nit",
+   "effect": "Contact search drops every word after the second without telling the caller, producing wider results than requested. The agent's list_contacts tool treats a single match as the intended contact, so this can hand it the wrong person.",
+   "quote": "const words: string[] = params.search.trim().split(/\\s+/, 2)"
+  }
+ ]
+}

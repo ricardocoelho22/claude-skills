@@ -1,0 +1,72 @@
+{
+ "ticket": "29",
+ "condition": "seeded",
+ "keys": [
+  {
+   "id": "S1",
+   "kind": "real",
+   "key": "src/seeds/contacts.seed.ts:66-70 \u00b7 seedContacts \u00b7 the idempotency check uses deletedAt: { $exists: false }, which misses contacts that carry an explicit deletedAt: null (imported ones), so a re-run creates duplicates"
+  },
+  {
+   "id": "S2",
+   "kind": "real",
+   "key": "src/seeds/pro-microsites.seed.ts:63-89 \u00b7 seedProMicrosites \u00b7 the slug-taken skip is gone, so a slug held by another account makes create() throw a duplicate-key error and aborts the whole seed run"
+  },
+  {
+   "id": "S3",
+   "kind": "synthetic",
+   "key": "src/modules/contacts/contacts.repo.ts:50 \u00b7 listPaginated \u00b7 a whitespace-only search passes the truthiness check, the word list filters to empty, and an empty $and makes MongoDB reject the query"
+  },
+  {
+   "id": "S4",
+   "kind": "synthetic",
+   "key": "src/seeds/journey-invitations.seed.ts:87 \u00b7 seedJourneyInvitations \u00b7 journeys are listed across all owners (first 100) instead of the consumer's, so the invitation can attach to another owner's journey with the same template key"
+  }
+ ],
+ "findings": [
+  {
+   "review": "A-29-seeded-r1",
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 88,
+   "tag": "Nit",
+   "effect": "The journey lookup ignores the owner and searches only the first 100 journeys platform-wide. It can miss home-seller-v1 and skip the invitation without an error, or select another consumer's journey with that template.",
+   "fid": "F01",
+   "hit_seed": "S4",
+   "verdict": "hit",
+   "reason": "It identifies the unscoped journey lookup and wrong-owner selection in the correct file within one line of S4."
+  },
+  {
+   "review": "B-29-seeded-r1",
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 408,
+   "tag": "Nit",
+   "effect": "The sender's consumer profile is looked up but only used to skip the invitation when missing. This makes the professional invitation depend on Ricardo also having an unrelated consumer profile.",
+   "fid": "F02",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "Despite the incorrect line number, the code does unnecessarily skip professional invitations when the sender lacks an otherwise unused consumer profile."
+  },
+  {
+   "review": "A-29-seeded-r1",
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 81,
+   "tag": "Nit",
+   "effect": "An unused consumer-profile check skips the invitation with only a warning if Ricardo has no consumer profile, even though the invitation is sent by the professional actor. This causes the pending-invitations eval to fail with no clear cause.",
+   "fid": "F03",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "The unused consumer-profile guard unnecessarily blocks professional invitations, but this does not describe S4's wrong-owner journey selection."
+  },
+  {
+   "review": "B-29-seeded-r1",
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 415,
+   "tag": "Nit",
+   "effect": "The journey is picked by template key from only the first page of 100 journeys. If another home-seller-v1 journey is seeded or the list exceeds 100 journeys, the invitation will silently go to the wrong journey or be skipped.",
+   "fid": "F04",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "The journey-selection defect is real, but line 415 is outside S4's \u00b110-line window and the finding does not name seedJourneyInvitations."
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "assertions.ts",
+   "line": 251,
+   "tag": "Nit",
+   "effect": "When a proposal is expected but missing, the maxReplyWords check falls back to the full assistantText rather than the text after the card. This adds a misleading second reply_words failure that grades a different text.",
+   "quote": "turn.textAfterProposal ?? turn.assistantText"
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "journey-edits.planner.ts",
+   "line": null,
+   "tag": "Nit",
+   "effect": "Precedents are checked only at that operation's position and are not re-checked after a later step deletion, so the card can show a precedent the same batch deletes. After approval the listener strips the deleted precedent, leaving the database correct but the preview misleading.",
+   "quote": "plan.steps"
+  }
+ ]
+}

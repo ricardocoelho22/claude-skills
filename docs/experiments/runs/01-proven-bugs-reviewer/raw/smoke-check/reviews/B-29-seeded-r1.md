@@ -1,0 +1,12 @@
+**0 Important, 2 Nit, 0 Pre-existing.** Nothing here needs fixing before merge.
+
+I ran the two changed specs, `src/seeds/run-seeds.spec.ts` and `src/modules/contacts/contacts.service.spec.ts`: 25 of 25 pass. The agent-prompt spec passes 17 of 17. On the second seed run inside the spec, the contacts seeder logs `created=3, skipped=0` and then `created=0, skipped=3`, so it is idempotent.
+
+Checks that found no problem:
+- **Contact search callers:** both the HTTP route (`contacts.dto.ts:78`) and the `list_contacts` tool (`contact.tools.ts:17`) trim the search and require at least one character before it reaches the repo.
+- **Invitation sender:** the seeder records Ricardo as a `'professional'` sender. That matches what `resolveJourneyInviter` (`invitation.utils.ts:90-103`) would pick, because `journey-participants.seed.ts:34-39` makes him a professional participant on that journey.
+- **Eval matching:** `mustInclude` ignores case (`assertions.ts:244`), so `'ricardo'` still matches "Ricardo".
+
+**Nit 1: the invitation seeder picks the first journey with a matching template, from anyone.** At `journey-invitations.seed.ts:80-87` it looks up the sender's consumer profile, then never uses it. Instead it calls `journeysService.listPaginated({ page: 1, limit: 100 })` with no owner filter and takes the first journey whose `templateKey === 'home-seller-v1'`. With today's seeds only Ricardo's journey has that key (`journeys.seed.ts:313-316`), so it works. But a local dev database with other `home-seller-v1` journeys, or more than 100 journeys, could attach the invitation to the wrong owner's journey, or find none. `journey-participants.seed.ts` already filters by the consumer's `consumerOwnerId`; this seeder should do the same. I didn't run this: no seeded data triggers it.
+
+**Nit 2: whitespace-only search breaks the query at the repo level.** At `contacts.repo.ts:51-52`, a search of only spaces produces an empty word list, which sets `filter.$and = []`. MongoDB rejects an empty `$and`. Both current callers trim and require a minimum length first, so no current path reaches it, which is also why I didn't run it. A guard like `if (words.length)` would protect any future caller that skips the DTO.

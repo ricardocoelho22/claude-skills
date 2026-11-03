@@ -1,0 +1,78 @@
+{
+ "ticket": "15",
+ "condition": "seeded",
+ "keys": [
+  {
+   "id": "S1",
+   "kind": "synthetic",
+   "key": "src/modules/journeys/journeys.service.ts:619 \u00b7 updateStep \u00b7 an explicit null in a nullable field (description, plannedDurationHours, startedAt, dueAt, completedAt, gamify) is skipped like undefined instead of clearing the field, so the update silently preserves it \u00b7 reached via src/modules/journeys/journeys.controller.ts:406 (PATCH step body {\"dueAt\": null}; updateStepSchema, journeys.dto.ts:208, allows null on those fields)"
+  },
+  {
+   "id": "S2",
+   "kind": "synthetic",
+   "key": "src/modules/journeys/journey-edits.planner.ts:389 \u00b7 setStepDueDate \u00b7 the unchanged check compares toDateString() instead of getTime(), so a same-day due-time change is treated as no change and dropped from the plan \u00b7 reached via src/modules/agent/tools/journey.tools.ts:298 (an edit_journey set_step_due_date operation with the same date and a different time; the schema takes any date)"
+  }
+ ],
+ "findings": [
+  {
+   "review": "A-15-seeded-r1",
+   "file": "src/modules/journeys/journeys.service.ts",
+   "line": 617,
+   "tag": "Important",
+   "effect": "The new loop skips null values instead of adding them to unsetFields, so PATCH requests can no longer clear description, plannedDurationHours, startedAt, dueAt, completedAt, or gamify. Users receive a success response, but the old value stays.",
+   "quote": "if (value === undefined || value === null) continue",
+   "fid": "F01",
+   "hit_seed": "S1",
+   "verdict": "hit",
+   "reason": "Names the seeded service file, locates the null-skipping loop within two lines, and describes nullable fields silently retaining their values."
+  },
+  {
+   "review": "A-15-seeded-r1",
+   "file": "src/modules/journeys/journey-edits.planner.ts",
+   "line": 389,
+   "tag": "Important",
+   "effect": "Comparing calendar days drops due-date changes that only change the time, causing the whole batch to fail with no_change if that is the only operation. The comparison also uses the server's local timezone, so whether two instants count as the same day depends on where the server runs.",
+   "quote": "if (step.dueAt?.toDateString() === dueAt?.toDateString()) return",
+   "fid": "F02",
+   "hit_seed": "S2",
+   "verdict": "hit",
+   "reason": "Names the seeded planner file and exact line and describes same-day due-time changes being dropped."
+  },
+  {
+   "review": "B-15-seeded-r1",
+   "file": "src/modules/journeys/journey-edits.planner.ts",
+   "line": 389,
+   "tag": "Important",
+   "effect": "set_step_due_date compares only the calendar day in the server's local timezone, so a time change within the same day is rejected as no_change. Whether two instants count as the same day also depends on the server's timezone.",
+   "quote": "if (step.dueAt?.toDateString() === dueAt?.toDateString()) return",
+   "fid": "F03",
+   "hit_seed": "S2",
+   "verdict": "hit",
+   "reason": "Names the seeded planner file, quotes the seeded comparison, and describes same-day due-time changes being rejected as no_change."
+  },
+  {
+   "review": "B-15-seeded-r1",
+   "file": "src/modules/journeys/journeys.service.ts",
+   "line": 617,
+   "tag": "Important",
+   "effect": "The PATCH step endpoint silently ignores null instead of clearing description, plannedDurationHours, startedAt, dueAt, completedAt and gamify. Existing values remain stored, breaking the contract for clearing these fields.",
+   "quote": "if (value === undefined || value === null) continue",
+   "fid": "F04",
+   "hit_seed": "S1",
+   "verdict": "hit",
+   "reason": "Names the seeded service file, quotes the null-skipping condition, and describes PATCH requests failing to clear nullable fields."
+  },
+  {
+   "review": "B-15-seeded-r1",
+   "file": "journeys.service.ts",
+   "line": 672,
+   "tag": "Nit",
+   "effect": "Proposal and application each generate new step ids, so stepId values in add_step and add_section previews never match the ids stored. This causes trouble if the frontend or a later turn refers to those preview ids.",
+   "quote": "new Types.ObjectId()",
+   "fid": "F05",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "Proposal and application independently run the planner with fresh ObjectIds, so exposed preview stepIds do not identify the persisted steps and subsequent references to them fail."
+  }
+ ]
+}

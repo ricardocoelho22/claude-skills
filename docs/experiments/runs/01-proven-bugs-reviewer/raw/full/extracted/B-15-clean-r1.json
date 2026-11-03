@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/journeys/journeys.service.ts",
+   "line": null,
+   "tag": "Important",
+   "effect": "A batch that completes several steps emits one journey.step_updated event per changed step against the same final journey state, causing completion milestones to fire once per completed step instead of once per batch. Completing the last three steps therefore sends three journey-completed milestone events and three celebrations or notifications.",
+   "quote": "await this.eventEmitter.emitAsync('journey.step_updated', ...)"
+  }
+ ]
+}

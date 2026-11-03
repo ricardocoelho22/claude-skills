@@ -1,0 +1,16 @@
+{
+ "findings": [
+  {
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 408,
+   "tag": "Nit",
+   "effect": "The sender's consumer profile is looked up but only used to skip the invitation when missing. This makes the professional invitation depend on Ricardo also having an unrelated consumer profile."
+  },
+  {
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 415,
+   "tag": "Nit",
+   "effect": "The journey is picked by template key from only the first page of 100 journeys. If another home-seller-v1 journey is seeded or the list exceeds 100 journeys, the invitation will silently go to the wrong journey or be skipped."
+  }
+ ]
+}

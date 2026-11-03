@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "src/evals/agent/driver.ts",
+   "line": 325,
+   "tag": "Important",
+   "effect": "When there is no text after the proposal, the empty string is dropped from the turn. maxReplyWords then falls back to the whole assistant reply and grades text written before the proposal.",
+   "quote": "...(textAfterProposal ? { textAfterProposal } : {})"
+  },
+  {
+   "file": "assertions.ts",
+   "line": 250,
+   "tag": "Important",
+   "effect": "A truncated turn skips the word cap entirely, even when notTruncated is not set to report a failure. A reply exceeding maxReplyWords can therefore pass when it hits the output cap.",
+   "quote": "if (limit !== undefined && !turn.truncated)"
+  }
+ ]
+}

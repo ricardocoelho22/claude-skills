@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "journey.tools.ts",
+   "line": 170,
+   "tag": "Nit",
+   "effect": "The preview generates new step IDs, but approval plans again and generates different IDs. Links or keys using an added step's preview stepId will point at a step that never exists in the journey.",
+   "quote": "id: options.generateStepId!()"
+  },
+  {
+   "file": "accepted-offer.listener.ts",
+   "line": 178,
+   "tag": "Pre-existing",
+   "effect": "The agent can add or move ad-hoc steps into the closing section, causing later offer acceptance to skip generating closing steps. Separately, backToMarket deletes every step in that section, including steps the user moved there.",
+   "quote": "type: 'ad_hoc'"
+  }
+ ]
+}

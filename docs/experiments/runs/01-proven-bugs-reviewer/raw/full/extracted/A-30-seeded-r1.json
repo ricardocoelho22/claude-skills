@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/journeys/journey-edits.planner.ts",
+   "line": 152,
+   "tag": "Important",
+   "effect": "The cycle check returns false for the whole search when it encounters a step with no precedents, even when other paths remain on the stack. This allows real precedent cycles to be missed and saved.",
+   "quote": "if (step?.precedents.length === 0) return false"
+  },
+  {
+   "file": "src/modules/agent/tools/journey-edit-preview.ts",
+   "line": 27,
+   "tag": "Important",
+   "effect": "The proposal card omits precedents for new steps with two or more precedents, including nested steps in add_section. Those dependencies are still saved when the user approves, despite never appearing on the card.",
+   "quote": "...(precedents?.length === 1 ? { precedents: previewPrecedents(precedents) } : {}),"
+  }
+ ]
+}

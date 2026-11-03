@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/contacts/contacts.repo.ts",
+   "line": 127,
+   "tag": "Nit",
+   "effect": "Multi-word contact search silently drops every word after the second, producing broader results without telling the user. Phrases that previously matched exactly against address.street now match each word in any field.",
+   "quote": "params.search.trim().split(/\\s+/, 2)"
+  }
+ ]
+}

@@ -1,3 +1,8 @@
 .DS_Store
 *.log
 node_modules/
+
+# Experiment run artifacts kept locally: transcripts, codex logs, checkpoint indexes
+docs/experiments/runs/**/claude-json/
+docs/experiments/runs/**/codex-work/
+docs/experiments/runs/**/snap.idx

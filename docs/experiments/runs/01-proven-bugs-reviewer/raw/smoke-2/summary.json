@@ -1,0 +1,119 @@
+{
+ "A": {
+  "reviews_ok": 1,
+  "reviews_failed": 0,
+  "retries": 0,
+  "seeds_hit_real": 0,
+  "seeds_hit_synthetic": 1,
+  "seeds_hit_above_nit_real": 0,
+  "seeds_hit_above_nit_synthetic": 0,
+  "findings": 1,
+  "important": 0,
+  "nit": 1,
+  "pre_existing": 0,
+  "false_above_nit": 0,
+  "unsure_above_nit": 0,
+  "real_unseeded_above_nit": 0,
+  "false_nit": 0,
+  "median_wall_s": 34.06,
+  "wall_s": [
+   34.06
+  ],
+  "cost_usd": 0.3334,
+  "usage_sums": {
+   "input_tokens": 14,
+   "cache_creation_input_tokens": 30768,
+   "cache_read_input_tokens": 116063,
+   "output_tokens": 3199,
+   "thinking_tokens": 1049
+  },
+  "reviews": {
+   "A-29-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 4,
+     "Read": 2
+    },
+    "wall_attempts_s": [
+     34.06
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   }
+  },
+  "reviews_leak_suspect": [],
+  "reviews_model_mismatch": []
+ },
+ "B": {
+  "reviews_ok": 1,
+  "reviews_failed": 0,
+  "retries": 0,
+  "seeds_hit_real": 0,
+  "seeds_hit_synthetic": 1,
+  "seeds_hit_above_nit_real": 0,
+  "seeds_hit_above_nit_synthetic": 1,
+  "findings": 1,
+  "important": 1,
+  "nit": 0,
+  "pre_existing": 0,
+  "false_above_nit": 0,
+  "unsure_above_nit": 0,
+  "real_unseeded_above_nit": 0,
+  "false_nit": 0,
+  "median_wall_s": 55.61,
+  "wall_s": [
+   55.61
+  ],
+  "cost_usd": 0.3438,
+  "usage_sums": {
+   "input_tokens": 16,
+   "cache_creation_input_tokens": 27637,
+   "cache_read_input_tokens": 169628,
+   "output_tokens": 4435,
+   "thinking_tokens": 1227
+  },
+  "reviews": {
+   "B-29-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 6,
+     "Read": 1,
+     "Write": 1
+    },
+    "proof_runs": [
+     {
+      "command": "pnpm test -- src/seeds/run-seeds.spec.ts src/modules/contacts/contacts.service.spec.ts 2>&1 | tail -40",
+      "exit_code": 0
+     },
+     {
+      "command": "pnpm test -- src/modules/contacts/zz-review.spec.ts 2>&1 | grep -E \"total for|Expected|Received|Tests:\" ; rm src/modules/contacts/zz-review.spec.ts; git status --short",
+      "exit_code": 0
+     }
+    ],
+    "writes": [
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-29-seeded/backend/src/modules/contacts/zz-review.spec.ts"
+    ],
+    "wall_attempts_s": [
+     55.61
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   }
+  },
+  "reviews_leak_suspect": [],
+  "reviews_model_mismatch": []
+ },
+ "grader": {
+  "calls": 3,
+  "failed": 0,
+  "tokens_used": 50470,
+  "wall_s": 21.2
+ },
+ "total_cost_usd": 0.6772
+}

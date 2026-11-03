@@ -1,0 +1,31 @@
+{
+ "ticket": "32",
+ "condition": "clean",
+ "keys": [],
+ "findings": [
+  {
+   "review": "A-32-clean-r1",
+   "file": "cases/journey-write.ts",
+   "line": 84,
+   "tag": "Nit",
+   "effect": "The expectation does not check that the agent asked a question. A reply that calls get_journey and makes no proposal passes even if it incorrectly refuses removal or merely describes the section.",
+   "quote": "expect: { toolsCalled: ['get_journey'], noProposal: true }",
+   "fid": "F01",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "The new asks-first case only requires get_journey and forbids proposals, so a refusal or description can pass without the required clarifying question."
+  },
+  {
+   "review": "B-32-clean-r1",
+   "file": "assertions.ts",
+   "line": 251,
+   "tag": "Nit",
+   "effect": "When a proposal is expected but missing, the maxReplyWords check falls back to the full assistantText rather than the text after the card. This adds a misleading second reply_words failure that grades a different text.",
+   "quote": "turn.textAfterProposal ?? turn.assistantText",
+   "fid": "F02",
+   "hit_seed": null,
+   "verdict": "false",
+   "reason": "maxReplyWords explicitly checks the full reply when no proposal is present, so the fallback and an independent reply_words failure follow its documented contract."
+  }
+ ]
+}

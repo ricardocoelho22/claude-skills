@@ -1,0 +1,25 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/journeys/journeys.service.ts",
+   "line": 617,
+   "tag": "Important",
+   "effect": "The PATCH step endpoint silently ignores null instead of clearing description, plannedDurationHours, startedAt, dueAt, completedAt and gamify. Existing values remain stored, breaking the contract for clearing these fields.",
+   "quote": "if (value === undefined || value === null) continue"
+  },
+  {
+   "file": "src/modules/journeys/journey-edits.planner.ts",
+   "line": 389,
+   "tag": "Important",
+   "effect": "set_step_due_date compares only the calendar day in the server's local timezone, so a time change within the same day is rejected as no_change. Whether two instants count as the same day also depends on the server's timezone.",
+   "quote": "if (step.dueAt?.toDateString() === dueAt?.toDateString()) return"
+  },
+  {
+   "file": "journeys.service.ts",
+   "line": 672,
+   "tag": "Nit",
+   "effect": "Proposal and application each generate new step ids, so stepId values in add_step and add_section previews never match the ids stored. This causes trouble if the frontend or a later turn refers to those preview ids.",
+   "quote": "new Types.ObjectId()"
+  }
+ ]
+}
