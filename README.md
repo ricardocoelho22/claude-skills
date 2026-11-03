@@ -21,7 +21,8 @@ cd claude-skills
 | `manifest/skills.json` | Third-party global skills I use but didn't write. Not installed by `install.sh`. |
 | `manifest/plugins.json` | Claude Code plugins + their marketplace. Not installed by `install.sh`. |
 | `statusline/` | My status line script. Symlinked to `~/.claude/statusline.sh`. |
-| `install.sh` | Symlinks `skills/`, `agents/` and the status line into `~/.claude/`, and sets `statusLine` in `settings.json` if unset. |
+| `scripts/check.sh` | Checks that frontmatter names match their files, and that every skill, agent, and path the docs name exists (ours, in `manifest/skills.json`, or built in). Run by `install.sh` and the pre-commit hook in `.githooks/`. |
+| `install.sh` | Symlinks `skills/`, `agents/` and the status line into `~/.claude/`, sets `statusLine` in `settings.json` if unset, runs `scripts/check.sh`, and points `core.hooksPath` at `.githooks/` if unset. |
 
 ## My own skills
 

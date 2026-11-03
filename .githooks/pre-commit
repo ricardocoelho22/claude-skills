@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Block a commit that leaves a skill or agent reference dangling.
+exec "$(git rev-parse --show-toplevel)/scripts/check.sh"
