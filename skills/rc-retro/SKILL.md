@@ -11,7 +11,7 @@ You have been asked for a **retrospective**, by the user or by another skill. Yo
 
 2. Read the primary sources for the session the user specifies. This may mean searching through session logs on this machine. If the user doesn't specify a session, default to the current one.
 
-   When the session ran `rc-orchestrate`, also read the review log in every run file in the feature's `runs/` folder, not only this run's. Per review axis, count the outcomes. An axis whose findings are mostly `rejected` has a noisy brief. An `escaped` line is a bug the reviewer missed. Both are **Coding standards** candidates: propose the change to the axis's brief, in `rc-orchestrate` step 2 or `agents/rc-reviewer.md`.
+   When the session ran `rc-orchestrate`, also read the review log in every run file in the feature's `runs/` folder, not only this run's. Per review axis, count the outcomes. An axis whose findings are mostly `rejected` has a noisy brief. An `escaped` line is a bug the reviewer missed. A `not run` line is a reviewer that failed, counted apart from its findings. Both are **Coding standards** candidates: propose the change to the axis's brief, in `rc-orchestrate` step 2 or `agents/rc-reviewer.md`.
 
 3. Look for candidates for improvement in these categories.
 
