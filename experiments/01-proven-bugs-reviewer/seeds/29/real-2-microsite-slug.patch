@@ -1,0 +1,16 @@
+--- a/src/seeds/pro-microsites.seed.ts
++++ b/src/seeds/pro-microsites.seed.ts
+@@ -66,13 +66,6 @@
+       continue
+     }
+ 
+-    const slugHolder = await proMicrositesRepository.findBySlug(microsite.slug)
+-    if (slugHolder) {
+-      logger.warn(`Microsite slug already taken: ${microsite.slug}, skipping microsite`)
+-      skipped += 1
+-      continue
+-    }
+-
+     const profile = await professionalProfilesService.findByAccountId(accountId)
+     if (!profile) {
+       logger.warn(

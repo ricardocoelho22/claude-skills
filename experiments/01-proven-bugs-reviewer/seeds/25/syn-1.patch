@@ -1,0 +1,11 @@
+--- a/src/modules/agent/agent-turn.service.ts
++++ b/src/modules/agent/agent-turn.service.ts
+@@ -80,7 +80,7 @@
+ }
+ 
+ function withPageContextPart(message: AgentMessage, parts: AgentMessage['parts']): AgentMessage {
+-  if (message.role !== 'user' || !message.metadata?.pageContext) {
++  if (message.role !== 'user' || !message.metadata?.pageContext?.entities.length) {
+     return { ...message, parts }
+   }
+   return {

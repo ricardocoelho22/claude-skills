@@ -1,0 +1,11 @@
+--- a/src/evals/agent/assertions.ts
++++ b/src/evals/agent/assertions.ts
+@@ -198,7 +198,7 @@
+   const words: Set<string> = extractWords(normalizeText(text))
+   const english: number = countWordMatches(words, LANGUAGE_WORDS.en)
+   const spanish: number = countWordMatches(words, LANGUAGE_WORDS.es)
+-  if (english >= 2) return classifyLanguage(english, spanish)
++  if (english >= 1) return classifyLanguage(english, spanish)
+   const replyEvidence: number =
+     countWordMatches(words, SPANISH_CONTENT_WORDS) +
+     countSpanishOrthography(text) +

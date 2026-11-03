@@ -1,0 +1,11 @@
+--- a/src/evals/agent/assertions.ts
++++ b/src/evals/agent/assertions.ts
+@@ -247,7 +247,7 @@
+     failures.push({ turnIndex, check: 'not_truncated', message: 'Turn was truncated.' })
+   }
+   const limit: number | undefined = expectations.maxReplyWords
+-  if (limit !== undefined) {
++  if (limit !== undefined && !turn.truncated) {
+     const text: string = turn.textAfterProposal ?? turn.assistantText
+     const wordCount: number = text.match(/\S+/g)?.length ?? 0
+     if (wordCount > limit) {

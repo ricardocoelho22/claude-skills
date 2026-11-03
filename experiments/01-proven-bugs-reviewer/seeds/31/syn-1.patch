@@ -1,0 +1,11 @@
+--- a/src/modules/agent/agent-turn.service.ts
++++ b/src/modules/agent/agent-turn.service.ts
+@@ -257,7 +257,7 @@
+       metadata: {
+         turnId,
+         telemetry,
+-        ...(fatalError ? { error: fatalError } : {}),
++        ...(fatalError && assistantParts.length > 0 ? { error: fatalError } : {}),
+         ...(truncated ? { truncated: true } : {}),
+       },
+     }

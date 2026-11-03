@@ -1,0 +1,11 @@
+--- a/src/modules/agent/agent-turn.service.ts
++++ b/src/modules/agent/agent-turn.service.ts
+@@ -293,7 +293,7 @@
+         if (isAgentDisabledResult(event)) agentDisabled = true
+         if (event.type === 'finish') {
+           turnUsage = toTurnUsage(event.usage, event.cacheReadTokens, event.cacheWriteTokens)
+-          truncated = event.truncated
++          truncated = event.truncated && assistantParts.length === 0
+         }
+         if (agentDisabled) continue
+         if (event.type === 'error') {

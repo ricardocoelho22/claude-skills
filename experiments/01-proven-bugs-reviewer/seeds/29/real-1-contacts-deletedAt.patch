@@ -1,0 +1,11 @@
+--- a/src/seeds/contacts.seed.ts
++++ b/src/seeds/contacts.seed.ts
+@@ -66,7 +66,7 @@
+     const existing = await contactsRepository.findOne({
+       ownerAccountId,
+       email: contact.input.email,
+-      deletedAt: null,
++      deletedAt: { $exists: false },
+     })
+     if (existing) {
+       skipped += 1

@@ -1,0 +1,4 @@
+real · src/seeds/contacts.seed.ts:66-70 · seedContacts · the idempotency check uses deletedAt: { $exists: false }, which misses contacts that carry an explicit deletedAt: null (imported ones), so a re-run creates duplicates
+real · src/seeds/pro-microsites.seed.ts:63-89 · seedProMicrosites · the slug-taken skip is gone, so a slug held by another account makes create() throw a duplicate-key error and aborts the whole seed run
+synthetic · src/modules/contacts/contacts.repo.ts:50 · listPaginated · a whitespace-only search passes the truthiness check, the word list filters to empty, and an empty $and makes MongoDB reject the query
+synthetic · src/seeds/journey-invitations.seed.ts:87 · seedJourneyInvitations · journeys are listed across all owners (first 100) instead of the consumer's, so the invitation can attach to another owner's journey with the same template key

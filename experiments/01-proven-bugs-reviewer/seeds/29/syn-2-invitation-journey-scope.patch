@@ -1,0 +1,11 @@
+--- a/src/seeds/journey-invitations.seed.ts
++++ b/src/seeds/journey-invitations.seed.ts
+@@ -84,7 +84,7 @@
+       continue
+     }
+ 
+-    const journeys = await journeysService.findByConsumerOwnerId(String(consumerProfile._id))
++    const { items: journeys } = await journeysService.listPaginated({ page: 1, limit: 100 })
+     const journey = journeys.find((item) => item.templateKey === invitation.journeyTemplateKey)
+     if (!journey) {
+       logger.warn(

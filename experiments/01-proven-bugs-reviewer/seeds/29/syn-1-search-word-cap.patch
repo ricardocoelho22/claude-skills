@@ -1,0 +1,11 @@
+--- a/src/modules/contacts/contacts.repo.ts
++++ b/src/modules/contacts/contacts.repo.ts
+@@ -48,7 +48,7 @@
+     }
+ 
+     if (params.search?.trim()) {
+-      const words: string[] = params.search.trim().split(/\s+/)
++      const words: string[] = params.search.trim().split(/\s+/, 2)
+       filter.$and = words.map((word) => {
+         const regex = new RegExp(escapeRegExp(word), 'i')
+         return { $or: SEARCH_FIELDS.map((field) => ({ [field]: regex })) }

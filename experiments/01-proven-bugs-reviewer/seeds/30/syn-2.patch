@@ -1,0 +1,11 @@
+--- a/src/modules/agent/tools/journey-edit-preview.ts
++++ b/src/modules/agent/tools/journey-edit-preview.ts
+@@ -24,7 +24,7 @@
+     title: step.title,
+     ...(step.description !== undefined ? { description: step.description } : {}),
+     ...(step.dueAt !== undefined ? { dueAt: step.dueAt } : {}),
+-    ...(precedents?.length ? { precedents: previewPrecedents(precedents) } : {}),
++    ...(precedents?.length === 1 ? { precedents: previewPrecedents(precedents) } : {}),
+   }
+ }
+ 

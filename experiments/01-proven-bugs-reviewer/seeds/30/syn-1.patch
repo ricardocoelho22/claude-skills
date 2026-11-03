@@ -1,0 +1,10 @@
+--- a/src/modules/journeys/journey-edits.planner.ts
++++ b/src/modules/journeys/journey-edits.planner.ts
+@@ -149,6 +149,7 @@
+     if (visited.has(id)) continue
+     visited.add(id)
+     const step: JourneyStep | undefined = steps.find((step) => step.id === id)
++    if (step?.precedents.length === 0) return false
+     if (step) pending.push(...step.precedents)
+   }
+   return false

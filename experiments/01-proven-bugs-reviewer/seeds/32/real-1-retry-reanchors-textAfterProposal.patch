@@ -1,0 +1,69 @@
+--- a/src/evals/agent/driver.ts
++++ b/src/evals/agent/driver.ts
+@@ -6,7 +6,6 @@
+ import { AgentConversationService } from '../../modules/agent/agent.service'
+ import { AgentConversationsRepository } from '../../modules/agent/agent-conversations.repo'
+ import { AgentModelClientService } from '../../modules/agent/agent-model-client.service'
+-import { isProposedToolOutput } from '../../modules/agent/agent-proposal'
+ import { AgentUsage } from '../../modules/agent/agent-usage.schema'
+ import { AgentUsageService } from '../../modules/agent/agent-usage.service'
+ import {
+@@ -93,7 +92,7 @@
+   const parts: AgentMessage['parts'] = message?.parts ?? []
+   let lastProposalIndex: number = -1
+   for (const [index, part] of parts.entries()) {
+-    if (isToolPart(part) && part.toolName === 'edit_journey' && isProposedToolOutput(part.output)) {
++    if (isToolPart(part) && part.toolName === 'edit_journey') {
+       lastProposalIndex = index
+     }
+   }
+--- a/src/evals/agent/driver.spec.ts
++++ b/src/evals/agent/driver.spec.ts
+@@ -307,47 +307,7 @@
+       proposalCount: 1,
+       truncated: true,
+       textAfterProposal: 'Ready for your review.',
+-    })
+-  })
+-
+-  it('keeps text after the successful proposal when a second edit is rejected', async () => {
+-    if (mongoUnavailable) return
+-    streamTurnMock.mockImplementationOnce(async function* (): AsyncGenerator<AgentModelEvent> {
+-      for await (const event of proposalTurn()) {
+-        if (event.type !== 'finish') yield event
+-      }
+-      yield { type: 'text-delta', text: 'Ready for your review.' }
+-      yield {
+-        type: 'tool-call',
+-        toolCallId: 'proposal-call-2',
+-        toolName: 'edit_journey',
+-        input: { journeyId: 'journey-1', operations: [] },
+-      }
+-      yield {
+-        type: 'tool-result',
+-        toolCallId: 'proposal-call-2',
+-        toolName: 'edit_journey',
+-        output: {
+-          status: 'rejected',
+-          outcome: 'rejected_validation',
+-          error: 'proposal_already_pending_this_turn',
+-        },
+-      }
+-      yield { type: 'text-delta', text: 'Please review the proposal.' }
+-      yield {
+-        type: 'finish',
+-        truncated: false,
+-        usage: { inputTokens: 50, outputTokens: 40, totalTokens: 90 },
+-      }
+     })
+-
+-    const transcript: EvalTranscript = await driver.runCase(oneTurnCase(), 'paid')
+-
+-    expect(transcript.turns[0]).toMatchObject({
+-      assistantText: 'Ready for your review.\n\nPlease review the proposal.',
+-      proposalCount: 1,
+-      textAfterProposal: 'Ready for your review.\n\nPlease review the proposal.',
+-    })
+   })
+ 
+   it('records a plain-text turn as untruncated with no proposal text field', async () => {

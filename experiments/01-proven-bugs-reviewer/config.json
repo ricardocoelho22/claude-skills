@@ -1,0 +1,61 @@
+{
+  "backend_repo": "/Users/ricardocoelho/Code/sidedoor/sidedoor-backend",
+  "worktrees_root": "/Users/ricardocoelho/Code/sidedoor/worktrees",
+  "issues_dir": "/Users/ricardocoelho/Code/sidedoor/z-features/ai-agent/issues",
+  "setup_script": "/Users/ricardocoelho/Code/sidedoor/worktrees/setup.sh",
+  "exclude_from_diff": "evals/agent/results",
+  "budget_cap_usd": 150,
+  "max_concurrency": 2,
+  "review_model": "opus",
+  "review_effort": "medium",
+  "tickets": {
+    "15": {
+      "base": "c1a6367",
+      "commit": "6945ccf",
+      "issue_glob": "15-*.md"
+    },
+    "16": {
+      "base": "e3f49f9",
+      "commit": "73d14a2",
+      "issue_glob": "16-*.md"
+    },
+    "25": {
+      "base": "bead2cb",
+      "commit": "3e70bff",
+      "issue_glob": "25-*.md"
+    },
+    "28": {
+      "base": "bead2cb",
+      "commit": "6e0f35e",
+      "issue_glob": "28-*.md"
+    },
+    "29": {
+      "base": "1bd7048",
+      "commit": "f6d448f",
+      "issue_glob": "29-*.md"
+    },
+    "30": {
+      "base": "e3f49f9",
+      "commit": "50fe387",
+      "issue_glob": "30-*.md"
+    },
+    "31": {
+      "base": "7a6989a",
+      "commit": "3ec20e8",
+      "issue_glob": "31-*.md"
+    },
+    "32": {
+      "base": "e3f49f9",
+      "commit": "17efe12",
+      "issue_glob": "32-*.md"
+    }
+  },
+  "expected_model": "claude-opus-5-5",
+  "base_by_ticket_note": "leak_denied_paths are denied for Read (permissions.deny) and sandbox filesystem.denyRead in both arms",
+  "leak_denied_paths": [
+    "/Users/ricardocoelho/Code/sidedoor/z-features",
+    "/Users/ricardocoelho/Code/sidedoor/sidedoor-backend",
+    "/Users/ricardocoelho/Code/claude-skills/docs/experiments",
+    "/Users/ricardocoelho/Code/claude-skills-experiment-01-proven-bugs-reviewer/experiments/01-proven-bugs-reviewer"
+  ]
+}

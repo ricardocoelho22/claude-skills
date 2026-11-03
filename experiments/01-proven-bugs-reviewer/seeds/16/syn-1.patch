@@ -1,0 +1,11 @@
+--- a/src/modules/notifications/listeners/milestone-detection.listener.ts
++++ b/src/modules/notifications/listeners/milestone-detection.listener.ts
+@@ -62,7 +62,7 @@
+       const beforeSteps = new Map(event.before.steps.map((step) => [step.id, step]))
+       const triggerSteps = event.after.steps.filter((step) => {
+         const beforeStep = beforeSteps.get(step.id)
+-        return beforeStep && beforeStep.status !== step.status && this.isStepDone(step)
++        return beforeStep!.status !== step.status && this.isStepDone(step)
+       })
+       if (triggerSteps.length === 0) return
+ 

@@ -1,0 +1,11 @@
+--- a/src/modules/journeys/journey-edits.planner.ts
++++ b/src/modules/journeys/journey-edits.planner.ts
+@@ -386,7 +386,7 @@
+   const position = plan.steps.findIndex((step) => step.id === operation.stepId)
+   const step = plan.steps[position]!
+   const dueAt = operation.dueAt === null ? undefined : new Date(operation.dueAt)
+-  if (step.dueAt?.getTime() === dueAt?.getTime()) return
++  if (step.dueAt?.toDateString() === dueAt?.toDateString()) return
+   const updated = { ...step }
+   if (dueAt === undefined) delete updated.dueAt
+   else updated.dueAt = dueAt

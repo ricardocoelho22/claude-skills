@@ -1,0 +1,179 @@
+PASS 15 seeded
+  ok   git log --all --oneline | head -1 is BASE: c1a6367 Merge branch 'ai-agent-25-split-conversation-service' into ai-agent-v0 vs c1a6367; 501 commits visible
+  ok   git cat-file -t 6945ccf fails: fatal: Not a valid object name 6945ccf
+  ok   seeded: has seed patches: 2 patches
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 15 files vs 15
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+  ok   seeded numstat differs from clean numstat only on seeded files: 15 files
+PASS 15 clean
+  ok   git log --all --oneline | head -1 is BASE: c1a6367 Merge branch 'ai-agent-25-split-conversation-service' into ai-agent-v0 vs c1a6367; 501 commits visible
+  ok   git cat-file -t 6945ccf fails: fatal: Not a valid object name 6945ccf
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 15 files vs 15
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+PASS 16 seeded
+  ok   git log --all --oneline | head -1 is BASE: e3f49f9 docs(agent): point metadata type at the projection whitelist vs e3f49f9; 509 commits visible
+  ok   git cat-file -t 73d14a2 fails: fatal: Not a valid object name 73d14a2
+  ok   seeded: has seed patches: 2 patches
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 16 files vs 16
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+  ok   seeded numstat differs from clean numstat only on seeded files: 16 files
+PASS 16 clean
+  ok   git log --all --oneline | head -1 is BASE: e3f49f9 docs(agent): point metadata type at the projection whitelist vs e3f49f9; 509 commits visible
+  ok   git cat-file -t 73d14a2 fails: fatal: Not a valid object name 73d14a2
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 16 files vs 16
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+PASS 25 seeded
+  ok   git log --all --oneline | head -1 is BASE: bead2cb Merge branch 'ai-agent-12-eval-suite' into ai-agent-v0 vs bead2cb; 497 commits visible
+  ok   git cat-file -t 3e70bff fails: fatal: Not a valid object name 3e70bff
+  ok   seeded: has seed patches: 2 patches
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 13 files vs 13
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+  ok   seeded numstat differs from clean numstat only on seeded files: 13 files
+PASS 25 clean
+  ok   git log --all --oneline | head -1 is BASE: bead2cb Merge branch 'ai-agent-12-eval-suite' into ai-agent-v0 vs bead2cb; 497 commits visible
+  ok   git cat-file -t 3e70bff fails: fatal: Not a valid object name 3e70bff
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 13 files vs 13
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+PASS 28 seeded
+  ok   git log --all --oneline | head -1 is BASE: bead2cb Merge branch 'ai-agent-12-eval-suite' into ai-agent-v0 vs bead2cb; 497 commits visible
+  ok   git cat-file -t 6e0f35e fails: fatal: Not a valid object name 6e0f35e
+  ok   seeded: has seed patches: 2 patches
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 2 files vs 2
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+  ok   seeded numstat differs from clean numstat only on seeded files: 2 files
+PASS 28 clean
+  ok   git log --all --oneline | head -1 is BASE: bead2cb Merge branch 'ai-agent-12-eval-suite' into ai-agent-v0 vs bead2cb; 497 commits visible
+  ok   git cat-file -t 6e0f35e fails: fatal: Not a valid object name 6e0f35e
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 2 files vs 2
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+PASS 29 seeded
+  ok   git log --all --oneline | head -1 is BASE: 1bd7048 Merge branch 'ai-agent-28-eval-language-check' into ai-agent-v0 vs 1bd7048; 499 commits visible
+  ok   git cat-file -t f6d448f fails: fatal: Not a valid object name f6d448f
+  ok   seeded: has seed patches: 4 patches
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 11 files vs 11
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+  ok   seeded numstat differs from clean numstat only on seeded files: 11 files
+PASS 29 clean
+  ok   git log --all --oneline | head -1 is BASE: 1bd7048 Merge branch 'ai-agent-28-eval-language-check' into ai-agent-v0 vs 1bd7048; 499 commits visible
+  ok   git cat-file -t f6d448f fails: fatal: Not a valid object name f6d448f
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 11 files vs 11
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+PASS 30 seeded
+  ok   git log --all --oneline | head -1 is BASE: e3f49f9 docs(agent): point metadata type at the projection whitelist vs e3f49f9; 509 commits visible
+  ok   git cat-file -t 50fe387 fails: fatal: Not a valid object name 50fe387
+  ok   seeded: has seed patches: 2 patches
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 10 files vs 10
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+  ok   seeded numstat differs from clean numstat only on seeded files: 10 files
+PASS 30 clean
+  ok   git log --all --oneline | head -1 is BASE: e3f49f9 docs(agent): point metadata type at the projection whitelist vs e3f49f9; 509 commits visible
+  ok   git cat-file -t 50fe387 fails: fatal: Not a valid object name 50fe387
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 10 files vs 10
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+PASS 31 seeded
+  ok   git log --all --oneline | head -1 is BASE: 7a6989a Merge branch 'ai-agent-29-seed-coverage' into ai-agent-v0 vs 7a6989a; 507 commits visible
+  ok   git cat-file -t 3ec20e8 fails: fatal: Not a valid object name 3ec20e8
+  ok   seeded: has seed patches: 2 patches
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 16 files vs 16
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+  ok   seeded numstat differs from clean numstat only on seeded files: 16 files
+PASS 31 clean
+  ok   git log --all --oneline | head -1 is BASE: 7a6989a Merge branch 'ai-agent-29-seed-coverage' into ai-agent-v0 vs 7a6989a; 507 commits visible
+  ok   git cat-file -t 3ec20e8 fails: fatal: Not a valid object name 3ec20e8
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 16 files vs 16
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+PASS 32 seeded
+  ok   git log --all --oneline | head -1 is BASE: e3f49f9 docs(agent): point metadata type at the projection whitelist vs e3f49f9; 509 commits visible
+  ok   git cat-file -t 17efe12 fails: fatal: Not a valid object name 17efe12
+  ok   seeded: has seed patches: 3 patches
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 12 files vs 12
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+  ok   seeded numstat differs from clean numstat only on seeded files: 12 files
+PASS 32 clean
+  ok   git log --all --oneline | head -1 is BASE: e3f49f9 docs(agent): point metadata type at the projection whitelist vs e3f49f9; 509 commits visible
+  ok   git cat-file -t 17efe12 fails: fatal: Not a valid object name 17efe12
+  ok   git diff HEAD --numstat (seeds reversed) == backend diff numstat: 12 files vs 12
+  ok   TICKET.md has no origin/run-log/z-features line
+  ok   TICKET.md status in-progress, no ticked boxes
+  ok   git diff == git diff HEAD == git diff BASE (stat)
+  ok   dirty + stray commit, then prep.reset restores pristine
+  ok   node_modules and .env kept
+  ok   HEAD is BASE after reset
+
+SUMMARY 15-seeded=PASS 15-clean=PASS 16-seeded=PASS 16-clean=PASS 25-seeded=PASS 25-clean=PASS 28-seeded=PASS 28-clean=PASS 29-seeded=PASS 29-clean=PASS 30-seeded=PASS 30-clean=PASS 31-seeded=PASS 31-clean=PASS 32-seeded=PASS 32-clean=PASS
+16/16 pass

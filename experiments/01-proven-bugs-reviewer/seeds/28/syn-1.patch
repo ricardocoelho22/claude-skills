@@ -1,0 +1,11 @@
+--- a/src/evals/agent/assertions.ts
++++ b/src/evals/agent/assertions.ts
+@@ -160,7 +160,7 @@
+ }
+ 
+ function extractWords(text: string): Set<string> {
+-  return new Set(text.match(/\p{L}+/gu) ?? [])
++  return new Set([...text.match(/\p{L}+/gu)!])
+ }
+ 
+ function countWordMatches(words: ReadonlySet<string>, vocabulary: ReadonlySet<string>): number {

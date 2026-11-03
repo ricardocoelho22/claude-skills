@@ -1,0 +1,13 @@
+--- a/src/modules/agent/agent-conversation.projection.ts
++++ b/src/modules/agent/agent-conversation.projection.ts
+@@ -53,7 +53,9 @@
+   const metadata = {
+     ...(message.metadata?.turnId ? { turnId: message.metadata.turnId } : {}),
+     ...(message.metadata?.error ? { error: message.metadata.error } : {}),
+-    ...(message.metadata?.truncated === true ? { truncated: true } : {}),
++    ...(message.metadata?.truncated === true && message.parts.length === 0
++      ? { truncated: true }
++      : {}),
+     ...(message.metadata?.pageContext?.entities.length
+       ? {
+           pageEntities: message.metadata.pageContext.entities.map(({ type, id }) => ({ type, id })),

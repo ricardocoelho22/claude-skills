@@ -1,0 +1,11 @@
+--- a/src/modules/agent/agent-conversation-chain.service.ts
++++ b/src/modules/agent/agent-conversation-chain.service.ts
+@@ -36,7 +36,7 @@
+       estimatePromptTokens(conversation.rolloverSummary ?? '') +
+       estimatePromptTokens(historyTextFor(conversation.messages)) +
+       estimateToolDefinitionTokens(historyToolJsonFor(conversation.messages))
+-    return replayTokens >= maxReplayTokens
++    return replayTokens > maxReplayTokens
+   }
+ 
+   async rollOverAfterPreflight(

@@ -1,0 +1,11 @@
+--- a/src/modules/notifications/listeners/timeline-batch-notification.listener.ts
++++ b/src/modules/notifications/listeners/timeline-batch-notification.listener.ts
+@@ -25,7 +25,7 @@
+             event.journeyId,
+             'professional',
+             event.professionalId,
+-          )
++          ).catch(() => null)
+         : undefined
+ 
+       await this.participantNotifier.notifyParticipantsInApp({

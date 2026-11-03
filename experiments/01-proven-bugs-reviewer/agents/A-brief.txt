@@ -1,0 +1,1 @@
+Find defects the diff introduces or exposes: logic errors, unhandled error paths, edge cases (empty, null, boundary, concurrent), callers of changed code that now break, leaked resources, and security holes (injection, missing authorization, secrets). For a bug fix, check that it fixes the root cause. Style and spec conformance belong to other reviewers. Under 400 words.

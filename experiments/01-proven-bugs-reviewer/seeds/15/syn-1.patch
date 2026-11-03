@@ -1,0 +1,17 @@
+--- a/src/modules/journeys/journeys.service.ts
++++ b/src/modules/journeys/journeys.service.ts
+@@ -616,12 +616,8 @@
+ 
+     for (const field of nullableFields) {
+       const value: NullableStepUpdate[typeof field] | null = input[field]
+-      if (value === undefined) continue
+-      if (value === null) {
+-        unsetFields.push(field)
+-      } else {
+-        Object.assign(update, { [field]: value })
+-      }
++      if (value === undefined || value === null) continue
++      Object.assign(update, { [field]: value })
+     }
+ 
+     if (input.precedents !== undefined) update.precedents = input.precedents

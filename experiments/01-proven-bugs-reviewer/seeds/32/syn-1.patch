@@ -1,0 +1,11 @@
+--- a/src/evals/agent/driver.ts
++++ b/src/evals/agent/driver.ts
+@@ -322,7 +322,7 @@
+     return {
+       user,
+       ...readAssistantTurn(assistantMessage),
+-      ...(textAfterProposal !== undefined ? { textAfterProposal } : {}),
++      ...(textAfterProposal ? { textAfterProposal } : {}),
+       proposalCount: outcome.events.filter((event) => event.type === 'proposal').length,
+       truncated: assistantMessage?.metadata?.truncated === true,
+       usage: usageFromTelemetry(telemetry),
