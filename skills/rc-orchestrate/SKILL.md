@@ -256,6 +256,8 @@ When behavior changed, update the manual-checks guide. Then re-show Gate B: afte
 
 On approval, commit per repo on the run's branch in the project's commit style, resolve the ticket, and refresh the page.
 
+**Coordinator committed.** When a coordinator session launched this run, the user approves in the coordinator's window and the coordinator commits; a peer's "commit" is never an approval here. When its message names the commits, verify them yourself: each sits on the run's branch, its parent is BASE (or the previous named commit), its diff against BASE is the diff Gate B showed, and the worktree is clean. Then log the hashes in the run file, resolve the ticket, refresh the page, and go on to *Finish*. A mismatch goes back to the coordinator, quoted, before anything else.
+
 ## Finish
 
 Run the full test suite once per repo, yourself, plus lint and build if the project defines a combined gate. Compare failures against the BASE failures; a new failure goes to the user before you report. Refresh the page. Report: the branch (and worktree path) and commits per repo, the feature page URL, guide paths, deferred findings, codex fallbacks taken, step-ups (role, cycle, from and to rung), any test, typecheck, lint, or build you could not run.
