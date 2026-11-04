@@ -34,3 +34,5 @@ If the new skill invokes `rc-orchestrate` per ticket, each of these runs once pe
 - **Checkpoints are per repo.** The snapshot copies that repo's index, so each worktree needs its own index snapshot. Store each one in that ticket's run dir.
 - **Only the main session publishes the feature page.** Sub-agents can build the page but cannot publish it, and refreshes run one at a time. With parallel tickets, status changes arrive from several runs at once, and the main session has to merge them into one refresh at a time.
 - **Gate B stays per ticket**, in the main session, because sub-agents cannot talk to the user. Parallel tickets therefore queue their Gate Bs for the user.
+
+Practices gathered on 2026-11-03 (hand-run multi-session runs, pstack, EGM, external sources): [`multi-agent-practices.md`](multi-agent-practices.md).
