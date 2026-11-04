@@ -27,7 +27,7 @@ known() { # <name>: ours, third-party, or built in
     [[ " $builtin " == *" $1 "* ]]
 }
 
-docs=$(find skills agents docs README.md -name '*.md' -not -path '*/node_modules/*' 2>/dev/null | sort)
+docs=$(find skills agents docs README.md -name '*.md' -not -path '*/node_modules/*' -not -path 'docs/research/*' 2>/dev/null | sort)
 
 # --- 1. Frontmatter ---
 check_frontmatter() { # <file> <expected name>
