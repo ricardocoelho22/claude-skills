@@ -1,0 +1,10 @@
+**0 Important, 2 Nit, 0 Pre-existing.** Nothing in the diff breaks behaviour. The contacts search rewrite is safe: both callers check that `search` still has at least one character after trimming (`contacts.dto.ts:78`, `agent/tools/contact.tools.ts:17`), so the `$and` list is never empty. All three tools exist and return the facts the new eval cases check for.
+
+1. **Nit: The invitation seeder finds the journey without checking whose it is.** `src/seeds/journey-invitations.seed.ts:88-89`:
+   ```ts
+   const { items: journeys } = await journeysService.listPaginated({ page: 1, limit: 100 })
+   const journey = journeys.find((item) => item.templateKey === invitation.journeyTemplateKey)
+   ```
+   This takes the first journey anywhere with the `home-seller-v1` template key. The seeder fetches ricardo's `consumerProfile` at line 81, but only uses it to decide whether to skip. The participants seeder finds the same journey through the owner's journeys (`journey-participants.seed.ts:72-74`, `findByConsumerOwnerId`). Today only one seeded journey has that key (`journeys.seed.ts:316`), so it works. If a second one is added, the invitation could land on a journey where ricardo is not a participant. Use `journeysService.findByConsumerOwnerId(String(consumerProfile._id))` instead, as the participants seeder does.
+
+2. **Nit: Re-running the seed can re-invite nikki to a journey she has already joined.** `src/seeds/journey-invitations.seed.ts:111-118` only looks for an existing *pending* invitation, then writes straight to the repository. That skips the real create flow's check that the professional is not already a participant (`journey-invitations.service.ts:496-501`, `validateNotAlreadyParticipant`). In local dev, if nikki accepts or declines the seeded invitation and someone runs `pnpm seed:local` again, the seeder creates a fresh pending invitation. After an accept, that invitation targets a journey she is already in, a state the service never allows. The fix is to skip when any invitation exists for this journey and professional, whatever its status, or when nikki is already a participant (`journeyParticipantsService.findByJourneyAndActor`).

@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "src/evals/agent/assertions.ts",
+   "line": 205,
+   "tag": "Nit",
+   "effect": "Spanish content words count even when capitalized because the text is lowercased and the content-word check has no proper-noun guard. English replies containing Spanish names or addresses can therefore be classified as Spanish and fail when English is expected.",
+   "quote": "countWordMatches(words, SPANISH_CONTENT_WORDS)"
+  }
+ ]
+}

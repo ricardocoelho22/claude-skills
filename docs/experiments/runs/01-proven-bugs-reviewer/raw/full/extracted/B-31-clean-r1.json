@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "agent-model-client.truncation.spec.ts",
+   "line": 47,
+   "tag": "Important",
+   "effect": "The spec omits the tool-call part that the real provider sends for a cut-off tool call, so it covers a stream shape production cannot reach. With the real stream shape, raw JSON parser text reaches the pro as a tool error and is stored for the model to read on the next turn.",
+   "quote": "status: 'error'"
+  },
+  {
+   "file": "agent-turn.service.ts",
+   "line": 261,
+   "tag": "Nit",
+   "effect": "The backend adds a truncated flag but no visible English or Spanish message for a cut-off turn. Unless the frontend reads that flag and displays a message, the turn remains silent.",
+   "quote": "truncated"
+  }
+ ]
+}

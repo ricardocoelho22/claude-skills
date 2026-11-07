@@ -1,0 +1,66 @@
+{
+ "ticket": "25",
+ "condition": "seeded",
+ "keys": [
+  {
+   "id": "S1",
+   "kind": "synthetic",
+   "key": "src/modules/agent/agent-turn.service.ts:83 \u00b7 withPageContextPart \u00b7 the guard tests entities.length, so a valid pageContext with an empty entities array loses its route in the model prompt \u00b7 reached via src/modules/agent/agent.controller.ts:80 (POST /agent body {message, pageContext:{route, entities:[]}}; agentPageContextSchema, agent.dto.ts:12, allows an empty array)"
+  },
+  {
+   "id": "S2",
+   "kind": "synthetic",
+   "key": "src/modules/agent/agent-conversation-chain.service.ts:39 \u00b7 isAtRolloverCeiling \u00b7 the replay-token check uses > instead of >=, so rollover is skipped when replay tokens exactly equal the ceiling and turns remain below their limit \u00b7 reached via src/modules/agent/agent.service.ts:171 (a follow-up message on a conversation whose estimated replay tokens equal AGENT_ROLLOVER_MAX_REPLAY_TOKENS; the estimate is deterministic, so it is exact only for crafted history or a small configured ceiling)"
+  }
+ ],
+ "findings": [
+  {
+   "review": "A-25-seeded-r1",
+   "file": "agent-turn.service.ts",
+   "line": 83,
+   "tag": "Important",
+   "effect": "Page context with an empty entities array is no longer sent to the model, so the model loses the route. This affects both new turns and replay of messages already stored in Mongo.",
+   "quote": "if (message.role !== 'user' || !message.metadata?.pageContext?.entities.length) {",
+   "fid": "F01",
+   "hit_seed": "S1",
+   "verdict": "hit",
+   "reason": "Names the seed file, identifies the lost route for empty entities, and supplies both the seeded line and guard."
+  },
+  {
+   "review": "B-25-seeded-r1",
+   "file": "src/modules/agent/agent-conversation-chain.service.ts",
+   "line": 40,
+   "tag": "Important",
+   "effect": "The rollover now waits one token longer. When replay tokens exactly equal AGENT_ROLLOVER_MAX_REPLAY_TOKENS, the conversation used to roll over and now replays in full.",
+   "quote": "return replayTokens > maxReplayTokens",
+   "fid": "F02",
+   "hit_seed": "S2",
+   "verdict": "hit",
+   "reason": "Names the seed file, describes skipped rollover at exact token equality, and locates the defect by line and code quote."
+  },
+  {
+   "review": "A-25-seeded-r1",
+   "file": "agent-conversation-chain.service.ts",
+   "line": 39,
+   "tag": "Important",
+   "effect": "A conversation whose replay estimate exactly equals AGENT_ROLLOVER_MAX_REPLAY_TOKENS now replays in full instead of rolling over. The replay-token and turn-count ceilings now disagree about the boundary.",
+   "quote": "return replayTokens > maxReplayTokens",
+   "fid": "F03",
+   "hit_seed": "S2",
+   "verdict": "hit",
+   "reason": "Names the seed file, describes skipped rollover at exact token equality, and supplies the seeded line and comparison."
+  },
+  {
+   "review": "B-25-seeded-r1",
+   "file": "src/modules/agent/agent-turn.service.ts",
+   "line": null,
+   "tag": "Important",
+   "effect": "Page context with a route and an empty entities array is no longer sent to the model. The route is silently dropped from the model's input for new turns and replayed history.",
+   "quote": "if (message.role !== 'user' || !message.metadata?.pageContext?.entities.length)",
+   "fid": "F04",
+   "hit_seed": "S1",
+   "verdict": "hit",
+   "reason": "Names the seed file, describes the dropped route for empty entities, and locates the defect by quoting the seeded guard."
+  }
+ ]
+}

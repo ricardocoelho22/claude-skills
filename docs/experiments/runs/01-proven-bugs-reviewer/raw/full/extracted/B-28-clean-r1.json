@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "assertions.ts",
+   "line": 197,
+   "tag": "Important",
+   "effect": "Capitalized proper nouns count as Spanish content words because the text is lowercased before content-word matching, without a capitalization guard. One Spanish stopword plus one capitalized content word reaches the threshold, causing English replies containing Spanish names or addresses to fail.",
+   "quote": "countWordMatches(words, SPANISH_CONTENT_WORDS)"
+  },
+  {
+   "file": "assertions.ts",
+   "line": 105,
+   "tag": "Nit",
+   "effect": "English loanwords with accents count as Spanish orthography. Two lowercase accented loanwords and fewer than two English stopwords are enough to classify a reply as Spanish.",
+   "quote": "SPANISH_ACCENTS = /[\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1]/u"
+  }
+ ]
+}

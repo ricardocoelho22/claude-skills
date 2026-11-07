@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/contacts/contacts.repo.ts",
+   "line": 51,
+   "tag": "Important",
+   "effect": "Contact search discards every word after the second, so it returns contacts excluded by the user's remaining search words. The agent then has to ask a disambiguating question about matches those words had already excluded.",
+   "quote": "const words: string[] = params.search.trim().split(/\\s+/, 2)"
+  }
+ ]
+}

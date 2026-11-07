@@ -1,0 +1,55 @@
+{
+ "ticket": "31",
+ "condition": "clean",
+ "keys": [],
+ "findings": [
+  {
+   "review": "A-31-clean-r1",
+   "file": "agent.types.ts",
+   "line": 478,
+   "tag": "Nit",
+   "effect": "The SSE contract comment still describes done as carrying only turnId and usage, although it can now also carry truncated.",
+   "quote": "done `{ turnId, usage }`",
+   "fid": "F01",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "The SSE contract comment omits the optional truncated field now emitted in done payloads."
+  },
+  {
+   "review": "B-31-clean-r1",
+   "file": "agent-model-client.truncation.spec.ts",
+   "line": 47,
+   "tag": "Important",
+   "effect": "The spec omits the tool-call part that the real provider sends for a cut-off tool call, so it covers a stream shape production cannot reach. With the real stream shape, raw JSON parser text reaches the pro as a tool error and is stored for the model to read on the next turn.",
+   "quote": "status: 'error'",
+   "fid": "F02",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "The installed Anthropic adapter emits the incomplete tool-call input, which the SDK converts into a parser tool-error that the backend exposes and persists, but the spec omits that event."
+  },
+  {
+   "review": "B-31-clean-r1",
+   "file": "agent-turn.service.ts",
+   "line": 261,
+   "tag": "Nit",
+   "effect": "The backend adds a truncated flag but no visible English or Spanish message for a cut-off turn. Unless the frontend reads that flag and displays a message, the turn remains silent.",
+   "quote": "truncated",
+   "fid": "F03",
+   "hit_seed": null,
+   "verdict": "false",
+   "reason": "The backend exposes truncation through both SSE and persisted message metadata, allowing the frontend to display localized text; absent backend prose does not establish a silent UI."
+  },
+  {
+   "review": "A-31-clean-r1",
+   "file": "agent-model-client.service.ts",
+   "line": 138,
+   "tag": "Important",
+   "effect": "The backend marks a cut-off turn as truncated but does not provide the requested en/es message. An empty cut-off turn remains silent unless the frontend displays a message from the flag.",
+   "quote": "truncated",
+   "fid": "F04",
+   "hit_seed": null,
+   "verdict": "false",
+   "reason": "Localized display can be handled by the frontend using the exposed truncated flag, so the model client's lack of English or Spanish prose is not itself a defect."
+  }
+ ]
+}

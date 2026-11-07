@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/journeys/journey-edits.planner.ts",
+   "line": null,
+   "tag": "Important",
+   "effect": "The search returns false as soon as it pops a step with no precedents, even when other branches remain in pending. This lets cycles through when such a branch is explored before the branch that loops back.",
+   "quote": "if (step?.precedents.length === 0) return false"
+  },
+  {
+   "file": "src/modules/agent/tools/journey-edit-preview.ts",
+   "line": null,
+   "tag": "Important",
+   "effect": "The proposal card only includes precedents when there is exactly one, hiding dependencies when a new step has two or more even though the planner saves them. Users would approve dependencies they never saw, affecting both add_step and steps nested in add_section.",
+   "quote": "...(precedents?.length === 1 ? { precedents: previewPrecedents(precedents) } : {}),"
+  }
+ ]
+}

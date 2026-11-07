@@ -1,0 +1,16 @@
+{
+ "findings": [
+  {
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 81,
+   "tag": "Nit",
+   "effect": "An unused consumer-profile check skips the invitation with only a warning if Ricardo has no consumer profile, even though the invitation is sent by the professional actor. This causes the pending-invitations eval to fail with no clear cause."
+  },
+  {
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 88,
+   "tag": "Nit",
+   "effect": "The journey lookup ignores the owner and searches only the first 100 journeys platform-wide. It can miss home-seller-v1 and skip the invitation without an error, or select another consumer's journey with that template."
+  }
+ ]
+}

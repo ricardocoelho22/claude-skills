@@ -1,0 +1,820 @@
+{
+ "A": {
+  "reviews_ok": 16,
+  "reviews_failed": 0,
+  "retries": 0,
+  "seeds_hit_real": 0,
+  "seeds_hit_synthetic": 14,
+  "seeds_hit_above_nit_real": 0,
+  "seeds_hit_above_nit_synthetic": 11,
+  "findings": 23,
+  "important": 12,
+  "nit": 10,
+  "pre_existing": 1,
+  "false_above_nit": 1,
+  "unsure_above_nit": 0,
+  "real_unseeded_above_nit": 0,
+  "false_nit": 2,
+  "median_wall_s": 46.305,
+  "wall_s": [
+   53.27,
+   45.68,
+   91.98,
+   46.93,
+   48.98,
+   63.86,
+   36.94,
+   51.32,
+   38.24,
+   32.08,
+   41.37,
+   50.54,
+   58.63,
+   39.85,
+   29.35,
+   44.41
+  ],
+  "cost_usd": 6.1815,
+  "usage_sums": {
+   "input_tokens": 246,
+   "cache_creation_input_tokens": 546308,
+   "cache_read_input_tokens": 2841885,
+   "output_tokens": 62083,
+   "thinking_tokens": 25379
+  },
+  "reviews": {
+   "A-15-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 6,
+     "Read": 3
+    },
+    "wall_attempts_s": [
+     53.27
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-16-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 7
+    },
+    "wall_attempts_s": [
+     45.68
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-15-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 11,
+     "Read": 1
+    },
+    "wall_attempts_s": [
+     91.98
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-25-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 6,
+     "Read": 2
+    },
+    "wall_attempts_s": [
+     46.93
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-16-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 8
+    },
+    "wall_attempts_s": [
+     48.98
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-25-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 11,
+     "Read": 2
+    },
+    "wall_attempts_s": [
+     63.86
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-28-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 5
+    },
+    "wall_attempts_s": [
+     36.94
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-28-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 4
+    },
+    "wall_attempts_s": [
+     51.32
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-29-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 6
+    },
+    "wall_attempts_s": [
+     38.24
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-30-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 6
+    },
+    "wall_attempts_s": [
+     32.08
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-29-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 8
+    },
+    "wall_attempts_s": [
+     41.37
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-31-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 8
+    },
+    "wall_attempts_s": [
+     50.54
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-30-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 9
+    },
+    "wall_attempts_s": [
+     58.63
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-31-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 6
+    },
+    "wall_attempts_s": [
+     39.85
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-32-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 5
+    },
+    "wall_attempts_s": [
+     29.35
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "A-32-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 7
+    },
+    "wall_attempts_s": [
+     44.41
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   }
+  },
+  "reviews_leak_suspect": [],
+  "reviews_model_mismatch": []
+ },
+ "B": {
+  "reviews_ok": 16,
+  "reviews_failed": 0,
+  "retries": 0,
+  "seeds_hit_real": 0,
+  "seeds_hit_synthetic": 14,
+  "seeds_hit_above_nit_real": 0,
+  "seeds_hit_above_nit_synthetic": 13,
+  "findings": 23,
+  "important": 16,
+  "nit": 7,
+  "pre_existing": 0,
+  "false_above_nit": 0,
+  "unsure_above_nit": 0,
+  "real_unseeded_above_nit": 3,
+  "false_nit": 3,
+  "median_wall_s": 89.20500000000001,
+  "wall_s": [
+   90.87,
+   119.51,
+   53.4,
+   102.66,
+   56.55,
+   43.01,
+   88.15,
+   72.21,
+   107.29,
+   109.46,
+   58.19,
+   139.73,
+   87.36,
+   90.26,
+   136.43,
+   67.37
+  ],
+  "cost_usd": 8.0369,
+  "usage_sums": {
+   "input_tokens": 422,
+   "cache_creation_input_tokens": 591872,
+   "cache_read_input_tokens": 6055186,
+   "output_tokens": 104458,
+   "thinking_tokens": 30597
+  },
+  "reviews": {
+   "B-15-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 14,
+     "Read": 2,
+     "Write": 1,
+     "Edit": 1
+    },
+    "proof_runs": [
+     {
+      "command": "cd /Users/ricardocoelho/Code/sidedoor/worktrees/exp01-15-seeded/backend/src/modules/journeys && (sed -n 1,95p journeys.service.spec.ts; cat zz-review.tail.txt) > zz-review.spec.ts && rm zz-review.tail.txt && cd ../../.. && pnpm test -- src/modules/journeys/zz-review.spec.ts 2>&1 | grep -v \"^\\s*at \" ",
+      "exit_code": 0,
+      "jest_tests_line": null
+     },
+     {
+      "command": "cd /Users/ricardocoelho/Code/sidedoor/worktrees/exp01-15-seeded/backend/src/modules/journeys && sed -n 1,95p journeys.service.spec.ts > zz-review.spec.ts && cat zz-review.tail.txt >> zz-review.spec.ts && rm zz-review.tail.txt && cd ../../.. && pnpm test -- src/modules/journeys/zz-review.spec.ts 2>&1",
+      "exit_code": 0,
+      "jest_tests_line": null
+     },
+     {
+      "command": "rm src/modules/journeys/zz-review.tail.txt; pnpm test -- src/modules/journeys/zz-review.spec.ts 2>&1 | grep -v \"^\\s*at \" | head -80",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       0 total"
+     },
+     {
+      "command": "pnpm test -- src/modules/journeys/zz-review.spec.ts 2>&1 | grep -v \"^\\s*at \" | head -90",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       2 failed, 1 passed, 3 total"
+     }
+    ],
+    "writes": [
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-15-seeded/backend/src/modules/journeys/zz-review.tail.txt",
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-15-seeded/backend/src/modules/journeys/zz-review.spec.ts"
+    ],
+    "wall_attempts_s": [
+     90.87
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-15-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 17,
+     "Write": 1
+    },
+    "proof_runs": [
+     {
+      "command": "f=src/modules/journeys/zz-review-milestone.spec.ts && sed -n 1,95p src/modules/journeys/journeys.service.spec.ts > $f && python3 - \"$f\" <<'EOF'\nimport sys\np=sys.argv[1]; s=open(p).read()\ns=s.replace(\"import { FrontendUrlBuilder } from '@common/url/frontend-url.builder'\",\"import { FrontendUrlBuilder ",
+      "exit_code": 0,
+      "jest_tests_line": null
+     },
+     {
+      "command": "python3 zz-patch.py src/modules/journeys/zz-review-milestone.spec.ts && pnpm test -- src/modules/journeys/zz-review-milestone.spec.ts 2>&1 | grep -v \"^\\s*at \" | tail -30",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       1 failed, 1 total"
+     }
+    ],
+    "writes": [
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-15-clean/backend/zz-patch.py"
+    ],
+    "wall_attempts_s": [
+     119.51
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-16-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 10,
+     "Write": 1
+    },
+    "proof_runs": [
+     {
+      "command": "f=src/modules/notifications/listeners/zz-review-probe.spec.ts && cat > $f <<'EOF'\nimport { EventEmitter2 } from '@nestjs/event-emitter'\nimport { MilestoneDetectionListener } from './milestone-detection.listener'\nimport { JourneyTimelineBatchAppliedEvent } from '@common/events/journey.events'\nimport ",
+      "exit_code": 0,
+      "jest_tests_line": null
+     },
+     {
+      "command": "pnpm test -- src/modules/notifications/listeners/zz-review-probe.spec.ts 2>&1 | grep -E \"\u2713|\u2715|Expected|Number of calls|Tests:|TypeError|Cannot read|ERROR\" | head; rm src/modules/notifications/listeners/zz-review-probe.spec.ts; git status --short | grep zz",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       1 failed, 1 total"
+     }
+    ],
+    "writes": [
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-16-seeded/backend/src/modules/notifications/listeners/zz-review-probe.spec.ts"
+    ],
+    "wall_attempts_s": [
+     53.4
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-16-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 15
+    },
+    "proof_runs": [
+     {
+      "command": "cp src/modules/journeys/journeys.service.spec.ts $TMPDIR/orig.spec.ts && python3 - <<'EOF'\np='src/modules/journeys/journeys.service.spec.ts'\ns=open(p).read()\nanchor=\"    it('uses different batch ids for two successive applyJourneyEdits calls'\"\nt='''    it('REVIEW: no-op batch emits no batch_applied'",
+      "exit_code": 0,
+      "jest_tests_line": null
+     },
+     {
+      "command": "python3 - <<'EOF'\np='src/modules/journeys/journeys.service.spec.ts'\ns=open(p).read()\nanchor=\"    it('uses different batch ids for two successive applyJourneyEdits calls'\"\nt='''    it('REVIEW: no-op batch emits no batch_applied', async () => {\n      if (mongoUnavailable) throw new Error('mongo unavai",
+      "exit_code": 0,
+      "jest_tests_line": null
+     },
+     {
+      "command": "pnpm test -- src/modules/journeys src/modules/notifications src/modules/agent/agent-proposal-decision.spec.ts 2>&1 | grep -E \"Tests:|Suites:|\u2715\" | head; pnpm typecheck 2>&1 | tail -3; git status --short",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       652 passed, 652 total"
+     }
+    ],
+    "writes": [],
+    "wall_attempts_s": [
+     102.66
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-25-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 13,
+     "Write": 1
+    },
+    "proof_runs": [
+     {
+      "command": "pnpm test -- src/modules/agent/zz-review-probe.spec.ts 2>&1 | grep -E \"\u2713|\u2715|Expected|Received|Tests:\"; rm src/modules/agent/zz-review-probe.spec.ts",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       2 failed, 2 total"
+     }
+    ],
+    "writes": [
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-25-seeded/backend/src/modules/agent/zz-review-probe.spec.ts"
+    ],
+    "wall_attempts_s": [
+     56.55
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-28-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 7,
+     "Read": 1,
+     "Write": 1
+    },
+    "proof_runs": [
+     {
+      "command": "pnpm test -- src/evals/agent/zz-review.spec.ts 2>&1 | grep -E \"\u2713|\u2715|TypeError|Expected|Received|at extractWords|Tests:\" | head -30",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       3 failed, 3 total"
+     }
+    ],
+    "writes": [
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-28-seeded/backend/src/evals/agent/zz-review.spec.ts"
+    ],
+    "wall_attempts_s": [
+     43.01
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-25-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 16,
+     "Read": 1
+    },
+    "proof_runs": [
+     {
+      "command": "cd /Users/ricardocoelho/Code/sidedoor/worktrees/exp01-25-clean/backend && pnpm typecheck 2>&1 | tail -15 && pnpm test -- src/modules/agent 2>&1 | tail -15",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       293 passed, 293 total"
+     }
+    ],
+    "writes": [],
+    "wall_attempts_s": [
+     88.15
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-29-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 9,
+     "Read": 1,
+     "Write": 1
+    },
+    "proof_runs": [
+     {
+      "command": "pnpm test -- src/seeds/run-seeds.spec.ts src/modules/contacts 2>&1 | tail -40; grep -n \"deletedAt\" src/modules/contacts/contact.schema.ts src/modules/contacts/contacts.repo.ts; grep -n \"\\$and\\|filter\\.\" src/modules/contacts/contacts.repo.ts",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       30 passed, 30 total"
+     },
+     {
+      "command": "mkdir -p src/zz-review && cat > src/zz-review/search3.spec.ts <<'EOF'\nimport { Test } from '@nestjs/testing'\nimport { MongooseModule } from '@nestjs/mongoose'\nimport { createInMemoryMongo } from '../testing/mongo-memory.server'\nimport { ContactsModule } from '../modules/contacts/contacts.module'\nimp",
+      "exit_code": 0,
+      "jest_tests_line": null
+     },
+     {
+      "command": "pnpm test -- src/zz-review/search3.spec.ts 2>&1 | grep -E \"RESULT|Expected|Received|Tests:|\\[\" | head; rm -rf src/zz-review; git status --short",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       1 failed, 1 total"
+     }
+    ],
+    "writes": [
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-29-seeded/backend/src/zz-review/search3.spec.ts"
+    ],
+    "wall_attempts_s": [
+     72.21
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-28-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 12,
+     "Write": 2,
+     "Edit": 1
+    },
+    "proof_runs": [
+     {
+      "command": "pnpm test -- src/evals/agent/zz-probe.spec.ts 2>&1 | grep '\"' ",
+      "exit_code": 0,
+      "jest_tests_line": null
+     },
+     {
+      "command": "rm src/evals/agent/zz-probe.spec.ts src/evals/agent/zz-regrade.spec.ts src/evals/agent/zz-old-assertions.ts && pnpm test -- src/evals 2>&1 | grep -E \"^Tests:|^Test Suites:\"; git status --short",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       100 passed, 100 total"
+     }
+    ],
+    "writes": [
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-28-clean/backend/src/evals/agent/zz-regrade.spec.ts",
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-28-clean/backend/src/evals/agent/zz-regrade.spec.ts",
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-28-clean/backend/src/evals/agent/zz-probe.spec.ts"
+    ],
+    "wall_attempts_s": [
+     107.29
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-29-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 12,
+     "Read": 4
+    },
+    "proof_runs": [
+     {
+      "command": "pnpm test -- src/seeds/run-seeds.spec.ts src/modules/contacts 2>&1 | tail -40",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       30 passed, 30 total"
+     },
+     {
+      "command": "cp src/modules/contacts/contacts.service.spec.ts $TMPDIR/orig.spec.ts && python3 - <<'EOF'\np='src/modules/contacts/contacts.service.spec.ts'\ns=open(p).read()\nidx=s.rfind('})')\ns=s[:idx]+'''\n  it('PROBE many-word search', async () => {\n    if (mongoUnavailable) return\n    const owner = 'probe'\n    fo",
+      "exit_code": 0,
+      "jest_tests_line": null
+     },
+     {
+      "command": "python3 - <<'EOF'\ns=open('src/modules/contacts/contacts.service.spec.ts').read()\nhead=s[:s.index(\"  it('creates a contact\")]\nprobe=head+'''\n  it('PROBE many-word search', async () => {\n    if (mongoUnavailable) return\n    const owner = 'probe'\n    for (let i = 0; i < 2000; i++) await contactModel.cr",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       1 passed, 1 total"
+     }
+    ],
+    "writes": [],
+    "wall_attempts_s": [
+     109.46
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-30-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 8,
+     "Read": 1,
+     "Write": 1
+    },
+    "proof_runs": [
+     {
+      "command": "mkdir -p src/zz-probe && cat > src/zz-probe/probe.spec.ts <<'EOF'\nimport { planJourneyEdits } from '@modules/journeys/journey-edits.planner'\nimport { buildJourneyEditPreviews } from '@modules/agent/tools/journey-edit-preview'\nconst t = (s: string) => ({ en: s, es: s })\nconst st = (id: string, preced",
+      "exit_code": 0,
+      "jest_tests_line": null
+     },
+     {
+      "command": "pnpm test -- src/zz-probe/probe.spec.ts 2>&1 | grep -E \"CYCLE|PREVIEW|Tests:\" ; rm -rf src/zz-probe",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       2 passed, 2 total"
+     }
+    ],
+    "writes": [
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-30-seeded/backend/src/zz-probe/probe.spec.ts"
+    ],
+    "wall_attempts_s": [
+     58.19
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-30-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 14,
+     "Write": 1
+    },
+    "proof_runs": [
+     {
+      "command": "pnpm test -- src/modules/journeys/journey-edits.planner.spec.ts src/modules/agent 2>&1 | tail -15; pnpm typecheck 2>&1 | tail -5",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       406 passed, 406 total"
+     },
+     {
+      "command": "mkdir -p $TMPDIR/probe && cat > src/modules/journeys/zz-probe.spec.ts <<'EOF'\nimport { planJourneyEdits } from './journey-edits.planner'\nconst step = (id: string, precedents: string[] = []) => ({ id, key: id, sectionKey: 's', title: { en: id, es: id }, type: 'ad_hoc', status: 'pending', precedents, ",
+      "exit_code": 0,
+      "jest_tests_line": null
+     },
+     {
+      "command": "pnpm test -- src/modules/journeys/zz-probe.spec.ts 2>&1 | grep -E 'PROBE|PASS|FAIL'; rm src/modules/journeys/zz-probe.spec.ts; git status --short | grep zz",
+      "exit_code": 0,
+      "jest_tests_line": null
+     }
+    ],
+    "writes": [
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-30-clean/backend/src/modules/journeys/zz-probe.spec.ts"
+    ],
+    "wall_attempts_s": [
+     139.73
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-31-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 13,
+     "Write": 1
+    },
+    "proof_runs": [
+     {
+      "command": "pnpm test -- src/modules/agent/zz-review-probe.spec.ts 2>&1 | grep -v \"^\\s*at \" | head -70",
+      "exit_code": 0,
+      "jest_tests_line": null
+     }
+    ],
+    "writes": [
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-31-seeded/backend/src/modules/agent/zz-review-probe.spec.ts"
+    ],
+    "wall_attempts_s": [
+     87.36
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-32-seeded-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 10,
+     "Write": 1
+    },
+    "proof_runs": [
+     {
+      "command": "cp src/evals/agent/driver.spec.ts $TMPDIR/driver.spec.bak && python3 - <<'EOF'\np='src/evals/agent/driver.spec.ts'\ns=open(p).read()\ns=s.replace(\"import { createAgentEvalDriver } from './driver'\",\"import { createAgentEvalDriver } from './driver'\\nimport { checkTranscript } from './assertions'\",1)\ngen=",
+      "exit_code": 0,
+      "jest_tests_line": null
+     },
+     {
+      "command": "cp src/evals/agent/driver.spec.ts src/evals/agent/probe.spec.ts && python3 - <<'EOF'\np='src/evals/agent/probe.spec.ts'\ns=open(p).read()\ns=s.replace(\"import { createAgentEvalDriver } from './driver'\",\"import { createAgentEvalDriver } from './driver'\\nimport { checkTranscript } from './assertions'\",1)",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       10 skipped, 1 passed, 11 total"
+     },
+     {
+      "command": "pnpm test -- src/evals/agent/probe2.spec.ts 2>&1 | grep -E \"PROBE2|Tests:|rror\" | head; rm src/evals/agent/probe2.spec.ts; git status --short | grep probe",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       1 passed, 1 total"
+     }
+    ],
+    "writes": [
+     "/Users/ricardocoelho/Code/sidedoor/worktrees/exp01-32-seeded/backend/src/evals/agent/probe2.spec.ts"
+    ],
+    "wall_attempts_s": [
+     90.26
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-31-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 16,
+     "Read": 2
+    },
+    "proof_runs": [
+     {
+      "command": "f=$(ls -d node_modules/.pnpm/@ai-sdk+anthropic@2*/node_modules/@ai-sdk/anthropic/dist/index.js | head -1); echo $f; grep -n 'content_block_stop' -A30 $f | grep -n 'tool-call\\|input:\\|tool-input-end' | head; grep -n 'applyModelEvent\\|tool-call\\|tool-error\\|input-available\\|output-error' src/modules/a",
+      "exit_code": 0,
+      "jest_tests_line": null
+     },
+     {
+      "command": "pnpm typecheck 2>&1 | tail -5; pnpm lint 2>&1 | tail -8",
+      "exit_code": 0,
+      "jest_tests_line": null
+     }
+    ],
+    "writes": [],
+    "wall_attempts_s": [
+     136.43
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   },
+   "B-32-clean-r1": {
+    "leak_suspect": [],
+    "tool_counts": {
+     "Bash": 7
+    },
+    "proof_runs": [
+     {
+      "command": "pnpm typecheck 2>&1 | tail -5; pnpm test -- src/evals/agent 2>&1 | tail -25",
+      "exit_code": 0,
+      "jest_tests_line": "Tests:       108 passed, 108 total"
+     }
+    ],
+    "writes": [],
+    "wall_attempts_s": [
+     67.37
+    ],
+    "model_ids": [
+     "claude-opus-5-5"
+    ],
+    "model": "claude-opus-5-5",
+    "model_mismatch": null
+   }
+  },
+  "reviews_leak_suspect": [],
+  "reviews_model_mismatch": []
+ },
+ "grader": {
+  "calls": 48,
+  "failed": 0,
+  "tokens_used": 805517,
+  "wall_s": 607.0
+ },
+ "total_cost_usd": 14.2184
+}

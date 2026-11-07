@@ -1,0 +1,19 @@
+{
+ "ticket": "16",
+ "condition": "clean",
+ "keys": [],
+ "findings": [
+  {
+   "review": "A-16-clean-r1",
+   "file": "timeline-batch-notification.listener.ts",
+   "line": 20,
+   "tag": "Nit",
+   "effect": "Every approved batch now sends a homeowner notification without checking what changed. Batches that only rename, reorder, reschedule or change step statuses now notify, whereas previously only batches that added or removed steps did.",
+   "quote": "replaceTimeline",
+   "fid": "F01",
+   "hit_seed": null,
+   "verdict": "false",
+   "reason": "The diff intentionally sends one timeline-updated notification per applied batch; notifying about renames, reordering, rescheduling, or status changes is consistent with that behavior and does not establish a defect."
+  }
+ ]
+}

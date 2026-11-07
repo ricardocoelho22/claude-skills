@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/agent/agent-conversation-chain.service.ts",
+   "line": 40,
+   "tag": "Important",
+   "effect": "The rollover now waits one token longer. When replay tokens exactly equal AGENT_ROLLOVER_MAX_REPLAY_TOKENS, the conversation used to roll over and now replays in full.",
+   "quote": "return replayTokens > maxReplayTokens"
+  },
+  {
+   "file": "src/modules/agent/agent-turn.service.ts",
+   "line": null,
+   "tag": "Important",
+   "effect": "Page context with a route and an empty entities array is no longer sent to the model. The route is silently dropped from the model's input for new turns and replayed history.",
+   "quote": "if (message.role !== 'user' || !message.metadata?.pageContext?.entities.length)"
+  }
+ ]
+}

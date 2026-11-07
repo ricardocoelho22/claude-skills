@@ -85,4 +85,14 @@ else
   echo "   set  statusLine in settings.json"
 fi
 
+# --- 4. Checks: run them now, and on every commit via .githooks/pre-commit ---
+log "Checking skill and agent references …"
+"$REPO_DIR/scripts/check.sh" || warn "fix the errors above; the pre-commit hook blocks commits until they pass"
+if [ -z "$(git -C "$REPO_DIR" config --get core.hooksPath || true)" ]; then
+  git -C "$REPO_DIR" config core.hooksPath .githooks
+  echo "   set  core.hooksPath → .githooks"
+else
+  echo "   ok   core.hooksPath already set — leaving it untouched"
+fi
+
 log "Done. Restart Claude Code to load newly linked skills/agents."

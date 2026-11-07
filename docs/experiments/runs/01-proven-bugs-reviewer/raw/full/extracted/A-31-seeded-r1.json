@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/agent/agent-turn.service.ts",
+   "line": 296,
+   "tag": "Important",
+   "effect": "The truncation flag is only set when the turn has no assistant parts. A length cut-off after a complete tool call or earlier output therefore gives the user no visible truncation notice.",
+   "quote": "truncated = event.truncated && assistantParts.length === 0"
+  },
+  {
+   "file": "agent-turn.service.ts",
+   "line": 260,
+   "tag": "Important",
+   "effect": "A fatal model error is dropped from saved metadata whenever the turn has no assistant parts. On reload, the user sees an empty assistant reply with no error.",
+   "quote": "...(fatalError && assistantParts.length > 0 ? { error: fatalError } : {})"
+  }
+ ]
+}

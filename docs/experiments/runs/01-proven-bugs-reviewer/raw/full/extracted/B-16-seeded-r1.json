@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/notifications/listeners/milestone-detection.listener.ts",
+   "line": null,
+   "tag": "Important",
+   "effect": "A step added by a batch has no entry in the old timeline, so accessing beforeStep.status throws a TypeError that the method's try/catch swallows. The entire batch sends no section or journey celebrations, and the batchId early return disables the per-step fallback, so those milestones are lost.",
+   "quote": "return beforeStep!.status !== step.status && this.isStepDone(step)"
+  }
+ ]
+}

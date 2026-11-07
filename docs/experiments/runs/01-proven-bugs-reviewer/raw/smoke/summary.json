@@ -1,0 +1,67 @@
+{
+ "A": {
+  "reviews_ok": 1,
+  "reviews_failed": 0,
+  "retries": 0,
+  "seeds_hit_real": 0,
+  "seeds_hit_synthetic": 1,
+  "seeds_hit_above_nit_real": 0,
+  "seeds_hit_above_nit_synthetic": 0,
+  "findings": 2,
+  "important": 0,
+  "nit": 2,
+  "pre_existing": 0,
+  "false_above_nit": 0,
+  "unsure_above_nit": 0,
+  "real_unseeded_above_nit": 0,
+  "false_nit": 0,
+  "median_wall_s": 134.55,
+  "wall_s": [
+   134.55
+  ],
+  "cost_usd": 0.4991,
+  "usage_sums": {
+   "input_tokens": 38,
+   "cache_creation_input_tokens": 32362,
+   "cache_read_input_tokens": 589255,
+   "output_tokens": 6108,
+   "thinking_tokens": 2527
+  }
+ },
+ "B": {
+  "reviews_ok": 1,
+  "reviews_failed": 0,
+  "retries": 0,
+  "seeds_hit_real": 0,
+  "seeds_hit_synthetic": 0,
+  "seeds_hit_above_nit_real": 0,
+  "seeds_hit_above_nit_synthetic": 0,
+  "findings": 2,
+  "important": 0,
+  "nit": 2,
+  "pre_existing": 0,
+  "false_above_nit": 0,
+  "unsure_above_nit": 0,
+  "real_unseeded_above_nit": 0,
+  "false_nit": 0,
+  "median_wall_s": 68.27,
+  "wall_s": [
+   68.27
+  ],
+  "cost_usd": 0.5148,
+  "usage_sums": {
+   "input_tokens": 32,
+   "cache_creation_input_tokens": 39445,
+   "cache_read_input_tokens": 489856,
+   "output_tokens": 5056,
+   "thinking_tokens": 1629
+  }
+ },
+ "grader": {
+  "calls": 3,
+  "failed": 0,
+  "tokens_used": 53415,
+  "wall_s": 34.4
+ },
+ "total_cost_usd": 1.0139
+}

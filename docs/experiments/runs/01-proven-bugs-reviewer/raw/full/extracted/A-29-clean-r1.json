@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "src/seeds/journey-invitations.seed.ts",
+   "line": 111,
+   "tag": "Nit",
+   "effect": "The invitation seed checks only for an existing pending invitation, so it can create another pending invitation after the original is accepted or declined. After acceptance, this leaves a journey participant holding a pending invitation to the same journey, a state the service forbids.",
+   "quote": "status: 'pending'"
+  }
+ ]
+}

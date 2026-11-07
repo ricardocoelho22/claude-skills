@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/agent/agent.types.ts",
+   "line": 273,
+   "tag": "Nit",
+   "effect": "AgentInvalidOperationDetail omits the new precedentId field, so the type does not describe the model's main hint for these three codes. The field passes through at runtime, but later code that builds details from this type will silently drop it.",
+   "quote": "op"
+  }
+ ]
+}

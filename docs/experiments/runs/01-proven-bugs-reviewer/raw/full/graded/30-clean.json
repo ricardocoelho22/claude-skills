@@ -1,0 +1,31 @@
+{
+ "ticket": "30",
+ "condition": "clean",
+ "keys": [],
+ "findings": [
+  {
+   "review": "A-30-clean-r1",
+   "file": "src/modules/agent/agent.types.ts",
+   "line": 273,
+   "tag": "Nit",
+   "effect": "AgentInvalidOperationDetail omits the new precedentId field, so the type does not describe the model's main hint for these three codes. The field passes through at runtime, but later code that builds details from this type will silently drop it.",
+   "quote": "op",
+   "fid": "F01",
+   "hit_seed": null,
+   "verdict": "false",
+   "reason": "The existing error paths pass details through intact, and the omitted interface field does not cause runtime data loss; the claimed future dropping is speculative."
+  },
+  {
+   "review": "B-30-clean-r1",
+   "file": "journey-edits.planner.ts",
+   "line": null,
+   "tag": "Nit",
+   "effect": "Precedents are checked only at that operation's position and are not re-checked after a later step deletion, so the card can show a precedent the same batch deletes. After approval the listener strips the deleted precedent, leaving the database correct but the preview misleading.",
+   "quote": "plan.steps",
+   "fid": "F02",
+   "hit_seed": null,
+   "verdict": "false",
+   "reason": "Previews intentionally capture each operation\u2019s state in sequence, with later removals displayed separately, so retaining the earlier precedent reference is consistent with the batch preview."
+  }
+ ]
+}

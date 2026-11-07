@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/journeys/journeys.service.ts",
+   "line": 617,
+   "tag": "Important",
+   "effect": "The new loop skips null values instead of adding them to unsetFields, so PATCH requests can no longer clear description, plannedDurationHours, startedAt, dueAt, completedAt, or gamify. Users receive a success response, but the old value stays.",
+   "quote": "if (value === undefined || value === null) continue"
+  },
+  {
+   "file": "src/modules/journeys/journey-edits.planner.ts",
+   "line": 389,
+   "tag": "Important",
+   "effect": "Comparing calendar days drops due-date changes that only change the time, causing the whole batch to fail with no_change if that is the only operation. The comparison also uses the server's local timezone, so whether two instants count as the same day depends on where the server runs.",
+   "quote": "if (step.dueAt?.toDateString() === dueAt?.toDateString()) return"
+  }
+ ]
+}

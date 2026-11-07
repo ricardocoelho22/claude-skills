@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "src/evals/agent/driver.ts",
+   "line": 325,
+   "tag": "Important",
+   "effect": "When a turn ends on the proposal card, the empty textAfterProposal value is omitted because it is falsy. The assertion falls back to the whole reply, including text before the tool call, and incorrectly fails the reply word limit despite there being no closing text.",
+   "quote": "...(textAfterProposal ? { textAfterProposal } : {}),"
+  },
+  {
+   "file": "assertions.ts",
+   "line": null,
+   "tag": "Nit",
+   "effect": "maxReplyWords silently skips the word check on truncated turns. A case without notTruncated can therefore pass the word check without reporting truncation.",
+   "quote": "if (limit !== undefined && !turn.truncated)"
+  }
+ ]
+}

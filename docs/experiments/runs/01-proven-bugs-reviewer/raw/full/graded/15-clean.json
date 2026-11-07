@@ -1,0 +1,43 @@
+{
+ "ticket": "15",
+ "condition": "clean",
+ "keys": [],
+ "findings": [
+  {
+   "review": "A-15-clean-r1",
+   "file": "journey.tools.ts",
+   "line": 170,
+   "tag": "Nit",
+   "effect": "The preview generates new step IDs, but approval plans again and generates different IDs. Links or keys using an added step's preview stepId will point at a step that never exists in the journey.",
+   "quote": "id: options.generateStepId!()",
+   "fid": "F01",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "Preview IDs are exposed as stepId values, but approval replans with fresh ObjectIds, leaving references to the preview IDs unresolved."
+  },
+  {
+   "review": "A-15-clean-r1",
+   "file": "accepted-offer.listener.ts",
+   "line": 178,
+   "tag": "Pre-existing",
+   "effect": "The agent can add or move ad-hoc steps into the closing section, causing later offer acceptance to skip generating closing steps. Separately, backToMarket deletes every step in that section, including steps the user moved there.",
+   "quote": "type: 'ad_hoc'",
+   "fid": "F02",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "The planner permits adding or moving ad-hoc steps into the closing section, where they suppress closing-step generation and are deleted by backToMarket."
+  },
+  {
+   "review": "B-15-clean-r1",
+   "file": "src/modules/journeys/journeys.service.ts",
+   "line": null,
+   "tag": "Important",
+   "effect": "A batch that completes several steps emits one journey.step_updated event per changed step against the same final journey state, causing completion milestones to fire once per completed step instead of once per batch. Completing the last three steps therefore sends three journey-completed milestone events and three celebrations or notifications.",
+   "quote": "await this.eventEmitter.emitAsync('journey.step_updated', ...)",
+   "fid": "F03",
+   "hit_seed": null,
+   "verdict": "real-but-unseeded",
+   "reason": "Each completed step emits an update after the entire batch is persisted, so milestone detection repeatedly observes the completed journey and sends duplicate celebrations."
+  }
+ ]
+}

@@ -1,0 +1,12 @@
+**0 Important, 2 Nits, 0 Pre-existing.** I found nothing that needs fixing before merge.
+
+What I ran: `pnpm test -- src/seeds/run-seeds.spec.ts src/modules/contacts` passed 3 suites and 30 tests. The suite ran against real in-memory Mongo: the seed logs printed, including `Seed journey invitations completed. created=0, skipped=1` on the second run. So the seeders work and running them twice creates nothing new.
+
+What I checked and found no defect in:
+- **Contacts search change** (`contacts.repo.ts:50-55`): the search now splits the text into words and matches each word separately. A blank search would build an empty `$and`, which Mongo rejects. Both callers trim the text and require at least one character first (`contacts.dto.ts:78` and `agent/tools/contact.tools.ts:17`), so that can't happen. A full-name search like "Maria Alvarez", which used to find nothing, now matches. Street searches like "42 Maple" still match.
+- **Microsite seed**: it writes the record directly and skips the publish step (`publish.service.ts:46-90`), so no entitlement or headline check runs. The seeded content has a headline, the slug is protected by the unique slug index, and `get_my_microsite` has no entitlement check (`microsite.tools.ts:50-54`). The eval case can read it.
+- **Invitation seed**: the fields it writes satisfy the schema's required fields. Only one seeded journey uses `home-seller-v1` (`journeys.seed.ts:316`), so picking it by template key is unambiguous. Ricardo is a participant on that journey as a professional (`journey-participants.seed.ts:34-39`).
+
+Nits:
+1. **Nit**: `src/seeds/journey-invitations.seed.ts:408-413` looks up the sender's consumer profile and then never uses it, except to skip the invitation when it's missing. The skip makes the professional invitation depend on Ricardo also having a consumer profile, which is unrelated. Either delete the lookup or use it to choose the journey (see Nit 2).
+2. **Nit**: `src/seeds/journey-invitations.seed.ts:415-416` picks the journey by template key from the first page of `listPaginated({ page: 1, limit: 100 })`. The participants seed instead narrows by the consumer's journeys (`journey-participants.seed.ts:58-76`). Today only one journey uses that key, so it works. If another `home-seller-v1` journey is seeded, or the list passes 100 journeys, the invitation will silently go to the wrong journey or be skipped. I didn't write a test for this because it can't fail with the current seed data.

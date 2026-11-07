@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "src/evals/agent/assertions.ts",
+   "line": 162,
+   "tag": "Important",
+   "effect": "`extractWords` spreads `null` when text has no letters, causing a TypeError. Failed turns with empty assistant text crash `checkTranscript` instead of being recorded as `turn_error`, and user messages containing only digits or emoji also crash.",
+   "quote": "return new Set([...text.match(/\\p{L}+/gu)!])"
+  },
+  {
+   "file": "src/evals/agent/assertions.ts",
+   "line": 201,
+   "tag": "Nit",
+   "effect": "A single English stopword causes the language heuristic to discard all new Spanish content-word, accent and punctuation evidence. Because the English list includes words common in Spanish, such as `me`, short Spanish replies can pass when English is expected.",
+   "quote": "if (english >= 1) return classifyLanguage(english, spanish)"
+  }
+ ]
+}

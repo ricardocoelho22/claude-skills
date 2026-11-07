@@ -1,0 +1,66 @@
+{
+ "ticket": "30",
+ "condition": "seeded",
+ "keys": [
+  {
+   "id": "S1",
+   "kind": "synthetic",
+   "key": "src/modules/journeys/journey-edits.planner.ts:152 \u00b7 reachesStep \u00b7 returning false when a visited step has no precedents ends the traversal while other pending branches are unexplored, so a precedent cycle through a later branch is not found \u00b7 reached via src/modules/agent/tools/journey.tools.ts:307 (edit_journey update_step/add_step with precedents [rootStepId, otherStepId], where otherStepId leads back to the edited step; pending.pop() visits the root first)"
+  },
+  {
+   "id": "S2",
+   "kind": "synthetic",
+   "key": "src/modules/agent/tools/journey-edit-preview.ts:27 \u00b7 previewNewStep \u00b7 precedents?.length === 1 drops the precedents from the preview of a new step with two or more \u00b7 reached via src/modules/agent/tools/journey-edit-preview.ts:77 (edit_journey add_step with two or more precedent ids; the tool schema takes an unbounded array)"
+  }
+ ],
+ "findings": [
+  {
+   "review": "B-30-seeded-r1",
+   "file": "src/modules/journeys/journey-edits.planner.ts",
+   "line": null,
+   "tag": "Important",
+   "effect": "The search returns false as soon as it pops a step with no precedents, even when other branches remain in pending. This lets cycles through when such a branch is explored before the branch that loops back.",
+   "quote": "if (step?.precedents.length === 0) return false",
+   "fid": "F01",
+   "hit_seed": "S1",
+   "verdict": "hit",
+   "reason": "Names the seeded file, quotes the seeded code, and correctly describes how premature termination leaves pending branches unexplored and misses cycles."
+  },
+  {
+   "review": "B-30-seeded-r1",
+   "file": "src/modules/agent/tools/journey-edit-preview.ts",
+   "line": null,
+   "tag": "Important",
+   "effect": "The proposal card only includes precedents when there is exactly one, hiding dependencies when a new step has two or more even though the planner saves them. Users would approve dependencies they never saw, affecting both add_step and steps nested in add_section.",
+   "quote": "...(precedents?.length === 1 ? { precedents: previewPrecedents(precedents) } : {}),",
+   "fid": "F02",
+   "hit_seed": "S2",
+   "verdict": "hit",
+   "reason": "Names the seeded file, quotes the seeded code, and correctly describes the omission of precedents from previews when a new step has two or more."
+  },
+  {
+   "review": "A-30-seeded-r1",
+   "file": "src/modules/agent/tools/journey-edit-preview.ts",
+   "line": 27,
+   "tag": "Important",
+   "effect": "The proposal card omits precedents for new steps with two or more precedents, including nested steps in add_section. Those dependencies are still saved when the user approves, despite never appearing on the card.",
+   "quote": "...(precedents?.length === 1 ? { precedents: previewPrecedents(precedents) } : {}),",
+   "fid": "F03",
+   "hit_seed": "S2",
+   "verdict": "hit",
+   "reason": "Names the seeded file at line 27 and correctly describes how previews omit multiple precedents that are subsequently saved."
+  },
+  {
+   "review": "A-30-seeded-r1",
+   "file": "src/modules/journeys/journey-edits.planner.ts",
+   "line": 152,
+   "tag": "Important",
+   "effect": "The cycle check returns false for the whole search when it encounters a step with no precedents, even when other paths remain on the stack. This allows real precedent cycles to be missed and saved.",
+   "quote": "if (step?.precedents.length === 0) return false",
+   "fid": "F04",
+   "hit_seed": "S1",
+   "verdict": "hit",
+   "reason": "Names the seeded file at line 152 and correctly describes how returning false on a root step misses cycles through other pending branches."
+  }
+ ]
+}

@@ -1,0 +1,18 @@
+{
+ "findings": [
+  {
+   "file": "agent-turn.service.ts",
+   "line": 296,
+   "tag": "Important",
+   "effect": "The truncation flag is dropped whenever the turn already has an assistant part, including prose or a tool call. A turn cut off by the length cap therefore shows no visible length message, and a complete tool call with a length finish is saved as an interrupted tool error.",
+   "quote": "truncated = event.truncated && assistantParts.length === 0"
+  },
+  {
+   "file": "agent-turn.service.ts",
+   "line": 260,
+   "tag": "Important",
+   "effect": "A model failure before any output saves an assistant message with no parts and no metadata.error because an error event never adds a part. This triggers paid title generation for failed turns, shows an empty reply without an error on reload, and removes the evaluation driver's error fallback.",
+   "quote": "...(fatalError && assistantParts.length > 0 ? { error: fatalError } : {})"
+  }
+ ]
+}

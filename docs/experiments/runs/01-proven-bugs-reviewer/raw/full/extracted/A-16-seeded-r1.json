@@ -1,0 +1,11 @@
+{
+ "findings": [
+  {
+   "file": "src/modules/notifications/listeners/milestone-detection.listener.ts",
+   "line": null,
+   "tag": "Important",
+   "effect": "When an approved batch adds a step, beforeSteps.get(step.id) returns undefined and accessing beforeStep!.status throws a TypeError, stopping milestone detection. If the batch also completes a section or journey, its completion notifications are silently dropped because per-step handling returns early for batch-stamped events.",
+   "quote": "beforeStep!.status"
+  }
+ ]
+}
