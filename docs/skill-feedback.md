@@ -1057,3 +1057,45 @@ Gate B took 2 rounds of user changes (comment length; underscore rename).
    template: "grep the new name as a local/parameter before renaming."
 5. **Low · Information access.** Codex probe failed again (cloud credentials) — third run in a row on the Claude
    fallback. The feature page was again not refreshed by the run.
+
+## 2026-11-07 — retro of an orchestrate run (frontend restyle ticket to match a design file)
+
+### rc-orchestrate, steps 1a/1b verify: run the changed-files lint, not only the test file
+
+- **What happened:** the test-writer used a bitwise `&` in an assertion. The cycle verify ran only the single test
+  file, so the repo's `no-bitwise` lint error surfaced at the end of the run, after review and trim, and cost one
+  extra fixer round and checkpoint.
+- **Suggested change:** in 1a and 1b, "Verify" also runs the repo's changed-files lint command from the plan's
+  Commands (it is fast), and a lint error counts as a rejection like a red typecheck. The briefs name the lint
+  command among the checks.
+
+### rc-orchestrate, visual acceptance: a screenshot harness must reset the pointer before each shot
+
+- **What happened:** the temporary screenshot harness clicked a toggle to expand a section, then took the shot with
+  the pointer still on the toggle. The shot showed the toggle's `:hover` colour, the orchestrator reported it at
+  Gate B as a "remaining difference" against the design, and the user asked for a code fix. The resting colour was
+  already correct; one more round went into proving it.
+- **Suggested change:** when the plan has a screenshot harness, its brief says: "after every interaction, move the
+  pointer to a neutral point and blur the focused element before the shot; record the computed colour of each
+  interactive element you compare." And before a design difference reaches Gate B, check it against a real-app
+  screenshot when one exists.
+
+### rc-feature-page, `scripts/patch-status.py`: a two-word status parses as its first word
+
+- **What happened:** a ticket with `Status: in progress — …` parsed as `UNKNOWN:in`, because the parser splits the
+  status on whitespace before the lookup. The status refresh would have published a wrong state, so the orchestrator
+  skipped the publish. The same run also reported two tickets as `NEW` (not on the page), so the page could not
+  show this ticket's status at all.
+- **Suggested change:** match multi-word states before splitting (`in progress`, `ready for agent`, `needs info`),
+  or normalise spaces to hyphens first, as underscores are already. Add a test case per multi-word state.
+
+### rc-orchestrate, step 2 triage: a Pre-existing finding next to new code under a user rule goes to `Your call`
+
+- **What happened:** the Standards reviewer tagged a mid-file constants block as Pre-existing. The diff had added a
+  new constant into that block. The orchestrator deferred it but also put it on `Your call:`, and the user chose to
+  move the whole block. Separately, no reviewer noticed that the domain writes icon sizes as template literals; the
+  new size constants were removed at Gate B on the user's request.
+- **Suggested change:** in the triage rules, a Pre-existing finding that the diff extends (new lines join the flagged
+  block) goes to `Your call:`, never only `deferred` — this run did that, keep it. For the Standards brief: "for each
+  new constant, check how the surrounding domain writes the same kind of value (literal vs constant) and report a
+  mismatch."
