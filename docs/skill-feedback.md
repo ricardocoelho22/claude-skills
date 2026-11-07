@@ -1169,3 +1169,50 @@ fixed / 8 rejected / 3 deferred, spec ~20 / 5 / 1, bugs ~10 / 2 / 6, no escapes.
   item is a plain-bullet hand check") checks the form, not the claims.
 - **Suggested change:** in rc-orchestrate step 4, verify each "→ expected result" against the diff and the ticket,
   not only the bullet form; or run the guide writer one rung up.
+
+## 2026-11-07 — retro of an orchestrate run (agent prompt rule + eval check, backend + docs)
+
+### rc-orchestrate, Gate B and round review: the orchestrator's own product facts need a source
+
+- **What happened:** at Gate B the orchestrator diagnosed live replies as "invented UI" and proposed adding a
+  domain fact to the agent prompt ("X has no Y"). It had verified the fact with one grep over a single module's
+  schemas. The fact was false: another module models the relation, a frontend control exposes it, and the
+  project glossary states it in one line. The round review caught it only because the orchestrator happened to
+  ask the Bugs reviewer "is the stated fact true?". The user had already approved the change on the false
+  premise; it cost a fix round, one stopped paid measurement, and a correction at the re-shown Gate B.
+- **Suggested change:**
+  - Gate B: a "Your call" that rests on a product fact names its source (glossary line, schema, UI component),
+    the same rule as `rejected: intentional`. A fact without one is checked first, across modules and the
+    glossary, not only the module the ticket touches.
+  - Step 2, agent-facing-text bullet: also append to the Bugs prompt "verify every product claim the text makes
+    (what exists, what is allowed, what is impossible) against the code and the project glossary; a false claim
+    is Important". Today this depends on the orchestrator remembering to ask.
+
+### rc-orchestrate, briefs: scope a mechanical check to the changed lines
+
+- **What happened:** the fix brief told the fixer to run a whole-file line-width check ("must print nothing").
+  The file already had over-long lines, so the fixer reflowed five unrelated paragraphs and a comment block to
+  pass it. Behaviour-preserving, but it widened the diff and needed a Deviations line at Gate B.
+- **Suggested change:** in *Writing a brief*, a check the executor must make pass runs on the lines the run
+  changed (e.g. `git diff -U0 <tree> | …`), never on the whole file, unless the plan makes the file-wide
+  cleanup part of the ticket.
+
+### rc-orchestrate, measuring a live-model regression case: check fixture preconditions before paid repeats
+
+- **What happened:** a new eval case for a live-model bug took three paid re-measures at BASE before it measured
+  anything: the single-turn version did not reproduce the bug (it needed the prior turn from the real
+  conversation); the first turn asked for a change the seed already had, so nothing was proposed; and an
+  expectation misfired on a follow-up turn because the eval driver carries a pending artefact across turns.
+  Measuring at BASE before the change was the right call and exposed all three, but each cost a paid run.
+- **Suggested change:** in the plan, a regression case for a live-model bug (a) replays the real conversation's
+  turns, not a summary of the last one, (b) states each turn's seed preconditions with the seed line that
+  proves them, and (c) gets one single-repeat smoke at BASE before any multi-repeat measure.
+
+### rc-feature-page, status refresh: new tickets in a flat ticket list need a full rebuild
+
+- **What happened:** two tickets were added to a feature whose tickets live in one flat `issues/` list. The
+  status patch printed `NEW` for each and published nothing, so the page could not show them without a full
+  delegated build, which the run skipped.
+- **Suggested change:** when the feature has a single flat ticket list (no slices), let `patch-status.py`
+  append a NEW ticket's row to it instead of only reporting it; keep `NEW` reporting for sliced features,
+  where the slice is ambiguous.
