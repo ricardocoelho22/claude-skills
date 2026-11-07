@@ -1139,3 +1139,33 @@ fixed / 8 rejected / 3 deferred, spec ~20 / 5 / 1, bugs ~10 / 2 / 6, no escapes.
   Bugs reviewer caught both, only because the orchestrator named fixture false positives in its brief.
 - **Suggested change:** the Bugs brief's "worth checking" list adds: "for eval fixtures, check each forbidden
   phrase against the wording the prompt itself asks for, and against a correct reply's likely words."
+
+## 2026-11-07 — retro of an orchestrate run (frontend restyle of a composer to match a design file)
+
+### rc-orchestrate, plan and review: a restyled shared component reaches pages outside the ticket
+
+- **What happened:** a design-matching ticket restyled two shared components (a footer and an input bar) that other
+  pages also render. The Spec reviewer flagged only one of them, as a "your call"; the Bugs reviewer flagged that the
+  second no longer matched its twin, and the orchestrator "fixed" that by restyling the other page too. At Gate B
+  the user ruled "do not change any other page": one round went into reverting and adding a variant.
+- **Suggested change:** in Phase 0, for every component the plan will change, grep its users outside the ticket's
+  surface and record them under Risks. Spec brief: "a visible change on a page the ticket does not name is scope
+  creep: tag it Important". Triage rule: a parity finding between a changed shared component and an out-of-scope
+  page is fixed by keeping the outside page as it was (a variant or prop), never by extending the change.
+
+### rc-orchestrate, backend check: a piped probe hides the wrapper's exit code
+
+- **What happened:** the probe ran as `codex-run.sh … | tail -3; echo EXIT=$?`, which printed `EXIT=0` (the exit code
+  of `tail`) although the backend had failed with a credentials error, and the `-o` file was never written. The
+  orchestrator caught it only from the error text.
+- **Suggested change:** state the probe's pass test as "the `-o` file exists and contains OK", and show the command
+  without a pipe (or with `set -o pipefail`).
+
+### rc-manual-checks at the cheapest model: the guide over-claims behaviour
+
+- **What happened:** a guide written by the cheapest model had two wrong checks: it said a link changes colour when
+  only the text around it does, and it said a file dropped at the attachment cap is attached, when the cap refuses
+  it. An earlier run of the same skill also needed two over-claims corrected. The orchestrator's verify step ("every
+  item is a plain-bullet hand check") checks the form, not the claims.
+- **Suggested change:** in rc-orchestrate step 4, verify each "→ expected result" against the diff and the ticket,
+  not only the bullet form; or run the guide writer one rung up.
