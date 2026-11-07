@@ -1099,3 +1099,43 @@ Gate B took 2 rounds of user changes (comment length; underscore rename).
   block) goes to `Your call:`, never only `deferred` — this run did that, keep it. For the Standards brief: "for each
   new constant, check how the surrounding domain writes the same kind of value (literal vs constant) and report a
   mismatch."
+
+## 2026-11-07 — retro of an orchestrate run (backend + docs ticket, prompt wording)
+
+Codex probe passed; Codex did every execution step. Review outcomes across the feature's run logs: standards ~31
+fixed / 8 rejected / 3 deferred, spec ~20 / 5 / 1, bugs ~10 / 2 / 6, no escapes. No axis is noisy.
+
+### rc-orchestrate, plan: a prompt-wording ticket uses live repeat measurement as its red/green
+
+- **What happened:** the ticket changed only model-facing prompt text, so there was no unit seam. The run used the
+  eval fixtures as the seam: 1a tightened the fixtures (forbidden phrases), the orchestrator measured them at BASE
+  with the eval CLI's targeted repeat mode (6 cases × 2 tiers × N=5: 28/50 first-attempt failures = red), then
+  measured each prompt candidate the same way (17/50, then 0/50 = green), then ran one committed full eval. It cost
+  $1.25 against a budget the user set at Gate A, and the second candidate came from reading the failing replies, not
+  from a guess.
+- **Suggested change:** *Write the plan*: "A ticket that changes text a model reads has its red/green in a live
+  repeat measurement: tighten the fixtures first (1a), measure BASE with N repeats, measure each candidate the same
+  way, and put the spend envelope to the user at Gate A." Point at `rc-experiment` for the measurement mechanics
+  instead of restating them.
+
+### rc-orchestrate, *Executors*: a fix round across two repos is one codex call with `--add-dir`
+
+- **What happened:** the review fix touched a backend repo and a docs repo. The orchestrator ran two codex fixer calls
+  (one per repo cwd), believing codex cannot write outside its cwd. `codex exec --add-dir <DIR>` makes another
+  directory writable; the wrapper passes exec flags through.
+- **Suggested change:** *Executors* -> Codex call: "When a brief spans two repos, run from one and add `--add-dir
+  <other worktree>` (exec only: `resume` drops it, so a cross-repo follow-up is a fresh call)." Check that the
+  wrapper's worktree `writable_roots` override still applies alongside it.
+
+### rc-feature-page Status refresh: +1 for "a data.json read does not count as the page read"
+
+- Same three-call sequence: refused (page not viewed), refused (identical resend), published. The entries above
+  (2026-10-15, -21, -24, -28, 2026-11-03) are still unapplied; this is the most repeated item in the log.
+
+### rc-orchestrate, review brief for eval fixtures: forbidden substrings vs the prompt's own words
+
+- **What happened:** the new fixtures forbade `inbox` and `undo` as bare substrings while the prompt tells the model
+  to point users to their email ("check your email inbox") and a correct deletion caveat says "can't be undone". The
+  Bugs reviewer caught both, only because the orchestrator named fixture false positives in its brief.
+- **Suggested change:** the Bugs brief's "worth checking" list adds: "for eval fixtures, check each forbidden
+  phrase against the wording the prompt itself asks for, and against a correct reply's likely words."
