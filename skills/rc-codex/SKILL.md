@@ -53,7 +53,7 @@ A model the account cannot use fails 400, which the wrapper turns into exit 2. C
 
 ## Sandbox
 
-- `workspace-write` (default): codex may edit the working tree.
+- `workspace-write` (default): codex may edit the working tree. In a linked worktree the wrapper also makes the worktree's git dir and the shared objects writable, so `git mv` and `git add` work; refs stay read-only, so commits fail.
 - `read-only`: plan-only; use when the user wants a proposal first.
 - `danger-full-access`: only when the user explicitly asks.
 
