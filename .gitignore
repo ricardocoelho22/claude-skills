@@ -6,3 +6,4 @@ node_modules/
 docs/experiments/runs/**/claude-json/
 docs/experiments/runs/**/codex-work/
 docs/experiments/runs/**/snap.idx
+__pycache__/
