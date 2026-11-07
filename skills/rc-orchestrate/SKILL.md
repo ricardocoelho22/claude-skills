@@ -188,7 +188,9 @@ Append what landed to the run file.
 
 ### 2. Review
 
-Invoke `/code-review` and follow its steps with two adaptations:
+Run the plan's full gate first (tests, typecheck, and lint when the project defines a combined gate), yourself. A failure off the BASE failures goes to an executor before the review starts. Put the gate's result, command and exit code, in every reviewer's prompt: a reviewer that can't see a check ran reports it as missing.
+
+Invoke `/code-review` and follow its steps with these adaptations:
 
 - **Diff:** use `git diff <BASE>` (working tree against BASE) and the fixed point BASE. The ticket is uncommitted, so the skill's `...HEAD` form would show nothing.
 - **Reviewers:** where it spawns the Standards and Spec sub-agents, spawn each as `subagent_type: rc-reviewer`, with the prompt the skill specifies.
