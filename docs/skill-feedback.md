@@ -1216,3 +1216,31 @@ fixed / 8 rejected / 3 deferred, spec ~20 / 5 / 1, bugs ~10 / 2 / 6, no escapes.
 - **Suggested change:** when the feature has a single flat ticket list (no slices), let `patch-status.py`
   append a NEW ticket's row to it instead of only reporting it; keep `NEW` reporting for sliced features,
   where the slice is ambiguous.
+
+## 2026-11-07 — retro of an orchestrate run (small frontend fix: file picker + tooltip focus)
+
+### rc-orchestrate, step 5: the trim's delta reaches Gate B unreviewed
+
+- **What happened:** the trimmer removed one assertion and, to keep a helper's side effect, left a bare call to a
+  helper named for counting (`countX(...)` with its return value unused). The review had run before the trim, so no
+  reviewer saw the new line; the orchestrator's verify ("only removes or merges test code, stays green") passed it.
+- **Suggested change:** in step 5 verify, add: "every line the trim leaves changed (not only deleted) reads as
+  intended: a call kept only for its side effect is renamed or split, not left behind a misleading name". Or show
+  the trim's delta as its own line in the Gate B report.
+
+### rc-manual-checks: an over-claim again, this time from a pipeline step the guide did not know
+
+- **What happened:** a guide check said that picking two images totalling more than the message budget shows the
+  budget banner. Images are resized on add, so they never reach the budget; only documents do. The orchestrator
+  caught it during the retro, not at verify. This is the third run with an over-claimed check (see the entry above).
+- **Suggested change:** the earlier suggestion stands (verify each "→ expected result" against the code, or run the
+  writer one rung up). Add to the writer's brief: "for every limit a check exercises, name the code that enforces it
+  and the inputs that reach it".
+
+### rc-orchestrate, briefs from a coordinator: verify a handed-down test command reaches the touched file
+
+- **What happened:** the coordinator's brief gave a single-file test command whose test project excludes the
+  touched folder (a separate project runs it). Run as given, it would report zero tests, which reads as a pass. The
+  orchestrator noticed only because an earlier run's file had the right command.
+- **Suggested change:** Phase 0 *Commands*: "run the single-file command once on a touched test file at BASE and
+  record the test count; a count of 0 means the command is wrong".
