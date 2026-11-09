@@ -163,5 +163,8 @@ Still not tested: Gate A relayed on a real ticket, a permission prompt in a deta
 ## Open questions
 
 - Confirm Gate A on a real ticket, and a ticket with a feature page (the single page writer of practice 7).
-- Does Gate A belong in the worker or the coordinator? Probe 1 showed that a worker accepts relayed Gate A answers, so holding every Gate A in the coordinator's window would batch your planning answers into one sitting. Under practice 18, Gate B's approval moves to the coordinator too; only its review of the code stays per ticket.
-- How many workers to run at once? Your attention, not the agents, sets the limit. Run A's four worked; the docs suggest 3–5 for teams.
+
+## Decisions
+
+- **Gate A sits in the coordinator, as a trial (2026-11-09).** The coordinator relays each worker's Gate A questions verbatim (no summarising) and batches whichever are ready when you sit down; it does not hold a ready ticket back for a slower plan. When a question needs back-and-forth, you answer it in that worker's window instead. What this gives up, and what to watch in the trial: relay loss, slow follow-ups through messages, and the coordinator's context growing with every plan. Under practice 18, Gate B's approval moves to the coordinator too; only its review of the code stays per ticket.
+- **No cap on workers (2026-11-09).** Batches stay small in practice. The coordinator launches every ticket that is unblocked and whose touch list does not overlap a running one; slots gate the shared resources.
