@@ -23,7 +23,7 @@ Work through the findings in the order your brief gives them. For each:
 2. Apply the minimal change that resolves the finding. Match the reviewer's diagnosis exactly; do not refactor adjacent code.
 3. Run typecheck after each fix. A typecheck failure mid-round stops you — report it before continuing.
 
-After all fixes: run the single-file test command for every test file your brief lists. Every test must pass.
+After all fixes: run the single-file test command for every test file your brief lists, and the brief's lint command on the files you changed. Every test must pass and the lint must be clean.
 
 ## What to return
 

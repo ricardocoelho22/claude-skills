@@ -25,7 +25,7 @@ Your four jobs, in priority order:
 | Explorer | `rc-explorer` | `gpt-6.1-sol` · medium · `read-only` | `rc-explorer` |
 | Test-writer / Implementer | `rc-tdd` | `gpt-6.1-sol` · medium | `rc-tdd` |
 | Fixer | `rc-fixer` | `gpt-6.1-sol` · high | `rc-fixer` |
-| Manual checks | — (ad hoc) | — (always Claude: its file lands outside the repo, where codex writes go missing) | general-purpose, `model: haiku` |
+| Manual checks | — (ad hoc) | — (always Claude: its file lands outside the repo, where codex writes go missing) | general-purpose, `model: sonnet` |
 | Test trimmer | `rc-trimmer` | `gpt-6.1-sol` · medium | `rc-trimmer` |
 | Reviewer | `rc-reviewer` | — (always Claude) | `rc-reviewer` (opus · medium) |
 
@@ -54,7 +54,7 @@ On a Claude call, set the Agent tool's `model` and `effort`; on a codex call, `-
 
 ## Executors
 
-Executors run one at a time, since two executors touching one working tree collide. While one runs in the background, the working tree is its alone. Spend the wait on the user and the run file, and verify once its completion notice arrives.
+Executors run one at a time, since two executors touching one working tree collide. While one runs in the background, the working tree is its alone. Spend the wait on the user and the run file, and verify once its completion notice arrives. Every background executor and suite sends that notice, so the notice is your only wake-up: schedule none of your own.
 
 **Backend check** (once, in Phase 0):
 
@@ -63,7 +63,7 @@ cd <repo> && ~/.claude/skills/rc-codex/scripts/codex-run.sh -m gpt-6-luna -c mod
   -o <run-dir>/probe.md "Reply with OK."
 ```
 
-`<repo>` is a git repo root (the worktree, when the run made one): codex refuses a folder outside a git repo. It runs in the foreground, since it takes seconds. Exit 0 → backend `codex`. Anything else → backend `claude` for the whole run. Record the backend in the run file.
+`<repo>` is a git repo root (the worktree, when the run made one): codex refuses a folder outside a git repo. Run it bare, in the foreground (it takes seconds): a pipe after it reports the pipe's exit code, not the wrapper's. It passes when `<run-dir>/probe.md` exists and contains OK → backend `codex`. Anything else → backend `claude` for the whole run. Record the backend in the run file, and on a failure, the probe's last error line.
 
 **Codex call.** Through the `rc-codex` skill's wrapper, from the repo root so session lookup by cwd works:
 
@@ -134,14 +134,14 @@ git -C <repo> switch -c <slug>                                # when the user as
 
 **Explore.** Brief the explorer with the ticket and spec paths, the repo roots, and the ticket in your own words. Save its report as `<run-dir>/recon.md` (a codex explorer's `-o` file already is). Spot-check it: open every file it names as in scope and every reuse candidate. Its report is a claim.
 
-**Record BASE failures.** Run the full test suite once per repo. Write every failing test into the run file. A later failure on this list is pre-existing; a failure off it belongs to this run.
+**Record BASE failures.** Run the full test suite once per repo. Write every failing test into the run file. A later failure on this list is pre-existing; a failure off it belongs to this run. Another run file of the feature that pinned the same BASE commit already holds this list: reuse it. The suite runs in place, so it owns its tree until it ends: finish it before the first executor call, or run it in a tree that sits at BASE and that no executor touches (the parent's worktree when its HEAD is BASE, or a throwaway `git worktree add --detach`). Run it so its exit code is the test runner's, never a trailing `grep` or `tail`.
 
 **Write the plan** into the run file yourself: mistakes here fan out into every later step.
 
-- **Cycles**: the ticket's test-first cycles in sequence; for each cycle, the seams it tests (one line on why each earns a test), its acceptance criteria, and a `mechanical` or `design-heavy` mark when it sits off the norm (see *Rungs*).
+- **Cycles**: the ticket's test-first cycles in sequence; for each cycle, the seams it tests (one line on why each earns a test), its acceptance criteria, the existing tests that pin a shape, name or rule the cycle changes (grep the tests for it), and a `mechanical` or `design-heavy` mark when it sits off the norm (see *Rungs*).
 - **Reuse**: helpers and fixtures executors must call instead of reimplementing.
-- **Commands**: verified from config: single test file, full suite, typecheck, lint. Name the package manager.
-- **Risks**: shared state, generated code, env vars, the BASE failures.
+- **Commands**: verified from config: single test file, full suite, typecheck, and the lint command of each package in scope (the repo's changed-files lint when it has one, as its nearest `CLAUDE.md`/`AGENTS.md` states it). Name the package manager.
+- **Risks**: shared state, generated code, env vars, the BASE failures. Name the unchanged code each change passes through: its callers, the buffers, holds and retries it crosses, the users of a changed shared component outside the ticket, and the tests of sibling tickets that pin a changed shape. Each mitigation names the test that fails when it is false; a mitigation with no test is an open question for Gate A.
 
 **Open the feature page.** When the feature has a page, record its URL in the run file; the first status change refreshes it. When it has none, create it with a full build (below) and record the new URL.
 
@@ -150,7 +150,7 @@ git -C <repo> switch -c <slug>                                # when the user as
 **Full build**, for a create or when the user asks for a full refresh: a delegated build (same skill, *Delegated build*), then the publish yourself:
 
 - **Build.** Spawn a general-purpose sub-agent in the background: `model: haiku` for a refresh, `model: sonnet` for a create, since it drafts `overview.md` that nobody reviews. Brief it to read that skill and run a delegated build for the feature folder, with the review waived, in the build folder `<session scratchpad>/rc-feature-page/<feature>/` (an absolute path: the publish takes files only from the scratchpad or the working directory). It returns the build folder, every file in it, and the waiting lines; the publish's `files` comes from that list.
-- **Publish.** When it returns, run *Build and publish* steps 4 and 5 with the Artifact tool. On a refresh, your first publish of the run needs a `read` of the page URL first. On a create, pass `icon: "map"` and write the new URL on the `Artifact:` line of `overview.md`.
+- **Publish.** When it returns, run *Build and publish* steps 4 and 5 with the Artifact tool, including step 4's page read and stale-file list on a refresh. On a create, pass `icon: "map"` and write the new URL on the `Artifact:` line of `overview.md`.
 - **One at a time.** The page is a view of the feature's files, so a refresh starts after the file change it must show. When a status changes while a refresh runs, start one more refresh after it lands; it reads the latest files, so it covers every change since.
 
 **Track status** the way the repo's issue tracker records it: `in-progress` when Phase 1 starts, resolved the way the tracker closes work when Gate B's commit lands, `needs-info` when escalated to the user mid-work. After every status change, refresh the page.
@@ -176,13 +176,13 @@ Set the ticket `in-progress`, refresh the page, then run steps 1–5.
 
 Each cycle runs two executors in sequence. Complete both before starting the next cycle.
 
-**1a — Tests.** Brief `rc-tdd` in test-writer mode: the cycle's seams from the plan, the commands, the paths, and the boundary: **write failing tests only; return before writing production code.**
+**1a — Tests.** Brief `rc-tdd` in test-writer mode: the cycle's seams from the plan, the existing tests the plan lists as pinning what the cycle changes (they are updated here and go red with the new tests), the commands, the paths, and the boundary: **write failing tests only; return before writing production code.**
 
-Verify: the call's delta (`git -C <repo> diff --stat <tree>`, then `git -C <repo> diff <tree>`), then the single test file command. Every changed file is a test file. Every test is red for a behavioral reason, not an import error or missing fixture. Typecheck errors are expected only where a test calls API the cycle has not built yet. A test green before any production code means the seam is wrong: take it to the user.
+Verify: the call's delta (`git -C <repo> diff --stat <tree>`, then `git -C <repo> diff <tree>`), then the single test file command and the lint command on the delta's files. Every changed file is a test file. Every test is red for a behavioral reason, not an import error or missing fixture: read each red test's error type, not only the count. A lint error is a rejection. Typecheck errors are expected only where a test calls API the cycle has not built yet. A test green before any production code means the seam is wrong: take it to the user.
 
 **1b — Implement.** Brief `rc-tdd` in implementer mode: the red test files, the commands, the paths, and the boundary: **make the red tests green; write no new tests and nothing speculative.**
 
-Verify: the call's delta (against its checkpoint) touches production files only, typecheck is clean, the single test file is green. A blocked implementer gets a tighter brief, resumed on the same session.
+Verify: the call's delta (against its checkpoint) touches production files only, typecheck and the lint command on the delta's files are clean, the single test file is green. A blocked implementer gets a tighter brief, resumed on the same session.
 
 Append what landed to the run file.
 
@@ -196,23 +196,24 @@ Invoke `/code-review` and follow its steps with these adaptations:
 - **Reviewers:** where it spawns the Standards and Spec sub-agents, spawn each as `subagent_type: rc-reviewer`, with the prompt the skill specifies.
 - **Agent-facing text:** when the diff adds or changes text an agent will read (a prompt, tool description, skill, `AGENTS.md`/`CLAUDE.md`, or a doc or knowledge base meant for agents), append to the Standards prompt: "Also check that text against `~/.claude/skills/writing-for-agents/SKILL.md`, and report each lapse as a Standards finding."
 - **Bugs axis:** spawn a third `rc-reviewer` alongside them, with the diff command, the ticket path, and this brief: "Find defects the diff introduces or exposes: logic errors, unhandled error paths, edge cases (empty, null, boundary, concurrent), callers of changed code that now break, leaked resources, and security holes (injection, missing authorization, secrets). For a bug fix, check that it fixes the root cause. Style and spec conformance belong to other reviewers. Under 400 words." Report it under `## Bugs`, after the other two.
+- **Standards prompt:** append: "Compare each new or moved hunk with how its destination file already does the same job (sets the same field, writes the same kind of value, comments the same kind of code, places the same kind of logic), and flag a hunk that does it another way."
 - **Not run:** a reviewer that fails or returns no report has not reviewed, which is different from finding nothing. Re-run it once; when it fails again, log `<axis> · not run` and carry `<axis> not run` onto Gate B's `Review:` line.
 
-Triage the findings against your own reading of the code: fix now, deferred (with a reason), or rejected. A `Pre-existing` finding is deferred, never fixed now: it is outside the ticket. A finding that a test is redundant, mock-only, off-seam, or tautological goes to the trim in step 5, not the fixer.
+Triage the findings against your own reading of the code: fix now, deferred (with a reason), or rejected. A `Pre-existing` finding is deferred, never fixed now: it is outside the ticket. When the diff extends it (new lines join the flagged block or pattern), it goes on Gate B's `Your call:` line as well. A finding that a test is redundant, mock-only, off-seam, or tautological goes to the trim in step 5, not the fixer.
 
 **Review log.** Write each finding into the run file's review log, one line each: `<axis> · <tag> · <file:line> · <outcome>`, where the outcome is `fixed`, `deferred (<reason>)`, `rejected: wrong`, `rejected: intentional`, or `rejected: irrelevant`. The retro reads this log to tune the reviewer briefs.
 
-**Intent needs a source.** A `rejected: intentional` names where the intent is written, in a place the reviewer could read: the ticket, the spec, an ADR, a pattern in the code, or a plan line that records the user's answer. A plan call you made alone is your own wish, not evidence: such a finding goes on Gate B's `Your call:` line, and the user's answer becomes its source.
+**Intent needs a source.** A `rejected: intentional` names where the intent is written, in a place the reviewer could read: the ticket, the spec, an ADR, a pattern in the code, or a plan line that records the user's answer. A plan call you made alone is your own wish, not evidence: such a finding goes on Gate B's `Your call:` line, and the user's answer becomes its source. So does a finding that cites a repo or user convention when the only source against it is a ticket or plan line: a planner's rule is not the user's answer to a convention.
 
 ### 3. Fix
 
-Send the fix-now set to `rc-fixer` as one brief, quoting each finding (every instance of its class) with your triage decision and listing every test file in `git diff --stat <BASE>`. Verify with typecheck and the single test file command for every one of those test files, not only the ones the fixer touched. Cap at **one fix round**; a second means a structural problem: take it to the user.
+Send the fix-now set to `rc-fixer` as one brief, quoting each finding (every instance of its class) with your triage decision and listing every test file in `git diff --stat <BASE>`. Verify with typecheck, the lint command on the changed files, and the single test file command for every one of those test files, not only the ones the fixer touched. Cap at **one fix round**; a second means a structural problem: take it to the user.
 
 ### 4. Manual checks
 
 Brief the manual-checks executor to read `~/.claude/skills/rc-manual-checks/SKILL.md` and follow it, with the ticket path, BASE as the base, and the output path `manual-test-<NN>-<slug>.md` next to the ticket.
 
-Verify: the file exists and every item is a plain-bullet hand check.
+Verify: the file exists, every item is a plain-bullet hand check, and every `→` result is one the diff produces: check each against the code, and correct or drop one it does not.
 
 The file is a **guide** for the user, reference like the rc-diff-tour. Assume its checks done: the ticket's status, Gate B's approval, and every report treat the ticket as verified by the tests and typecheck alone.
 
@@ -266,9 +267,13 @@ Run the full test suite once per repo, yourself, plus lint and build if the proj
 
 Then offer to wrap up: **Merge into `<parent>`, retro, and clean up?** The user may take all three or name a subset; run what they take, in this order. Merge and cleanup run from each repo's original checkout, `<origin>` below (the repo itself when the run made no worktree).
 
-1. **Merge.** Per repo: `git -C <origin> switch <parent>`, then `git -C <origin> merge <slug>`. On a conflict, invoke `/resolving-merge-conflicts`. When the merge was not a fast-forward, run the full test suite again and compare against the BASE failures; a new failure goes to the user. The merge stays local: pushing is the user's call.
+1. **Merge.** Per repo, find where `<parent>` is checked out (`git -C <origin> worktree list`); when the workspace's `CLAUDE.md` names a merge helper, use it for the steps below.
+   - `<parent>` is an ancestor of `<slug>` (`git merge-base --is-ancestor`): fast-forward it with no switch, `git -C <origin> fetch . <slug>:<parent>`, or `git -C <that worktree> merge --ff-only <slug>` when a worktree has it checked out.
+   - Otherwise merge in the checkout that holds `<parent>`, once no merge, rebase or cherry-pick is in progress there (another session may be merging into it). When no checkout holds it and `<origin>` is on another branch, ask the user before switching it.
+
+   On a conflict, invoke `/resolving-merge-conflicts`. When the merge was not a fast-forward, run the full test suite again and compare against the BASE failures; a new failure goes to the user. The merge stays local: pushing is the user's call.
 2. **Retro.** Call the Skill tool with `rc-retro` yourself (don't ask the user to run it) while this session is still in context. The run file is its primary source: fallbacks, blocked executors, fix rounds, and deferred findings are where the environment cost the run. It runs before cleanup because a worktree removal can take the run file with it.
-3. **Clean up.** Per repo: `git -C <origin> worktree remove <worktree-path>` when the run made one, then `git -C <origin> branch -d <slug>`. When either refuses (untracked files, unmerged commits), show the user why and leave the rest to them.
+3. **Clean up.** Per repo: `git -C <origin> worktree remove <worktree-path>` when the run made one, then, once `git -C <origin> merge-base --is-ancestor <slug> <parent>` passes, `git -C <origin> branch -D <slug>` (`-d` compares against HEAD, which may be another branch). When either refuses (untracked files, unmerged commits), show the user why and leave the rest to them.
 
 Done when every step the user took has run, or has been handed back to them with the reason it stopped.
 
@@ -285,7 +290,7 @@ An executor has no access to this conversation, the spec, or the user's answers.
 - **Exact commands** and the package manager.
 - **Paths**: the run file, the spec, the repo root, the files in scope.
 - **The boundary**: what is out of scope, and the instruction to stop and report rather than expand.
-- **Every check runs**: a check the sandbox blocks is reported, and the brief's other checks still run.
+- **The done check**: green tests and a clean lint command on the files the call changed, scoped to its changed lines when the command checks whole files. A check the sandbox blocks is reported, and the brief's other checks still run.
 - **What to return**, concretely.
 
 Quote what lives only in this conversation (decisions, the user's answers): "as discussed" and "the usual pattern" do not resolve inside an executor. Point at what lives in a file (the spec, `recon.md`, the plan in the run file, commits) by path instead of pasting it; the executor reads it itself.

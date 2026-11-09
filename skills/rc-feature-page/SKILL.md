@@ -57,10 +57,10 @@ Done when: the publish succeeded and every finding from step 2 is on the page.
 
 A **patch**: the live page keeps every id, slice, doc and decision, and only ticket states, checklist links and `builtAt` change. The main session runs it itself, with no sub-agent, and it is the refresh other skills use after a status change.
 
-1. Read the live `data.json` (`action: "read"`, `url` from `overview.md`, `path: "data.json"`).
+1. **Read the page**, then its data. On the session's first refresh of this page, read the page itself (`action: "read"`, `url` from `overview.md`, no `path`): only a page read counts as viewing it, and a publish without one is refused. Then read the live `data.json` (same `url`, `path: "data.json"`).
 2. Run `scripts/patch-status.py <saved data.json> <feature folder> <scratchpad>/rc-feature-page/<feature>-patch/`. It prints each `STATUS` and `GUIDE` change and the `FILES` list.
-3. Publish: `file_path` is the out folder's `index.html`, `root` is the out folder, `files` is the printed list. A refusal hands you a newer live version: go back to step 1 with it; the files left out of `files` stay as they are.
-4. Report the URL and the changes. A `NEW` or `MISSING` line means the page's structure is out of date: report it, and run a full **refresh** when the user wants it.
+3. Publish: `file_path` is the out folder's `index.html`, `root` is the out folder, `files` is the printed list. A refusal hands you a newer live version: go back to step 2 with its `data.json`; the files left out of `files` stay as they are.
+4. Report the URL and the changes. A `NEW`, `NEW SLICE` or `MISSING` line means the page's structure is out of date, and an `UNPARSED` line names a ticket whose status kept its old value: report each, and run a full **refresh** when the user wants it.
 
 Done when: the publish succeeded, or the script printed no change.
 
@@ -70,11 +70,18 @@ Build in `<scratchpad>/rc-feature-page/<feature>/`, starting from an empty folde
 
 1. Copy everything in this skill's `page/` folder into the build folder. In `index.html`, replace the text of `<title>` with the feature name.
 2. Copy each manual-checks guide, and each markdown file named under *Experiments* or *Related*, to `src/docs/<id>.md`. Copy each HTML prototype named there to `src/proto/<name>.html`. Copy them as they are; never edit a copied file. An experiment whose source is a folder or a branch gets no copy; the page shows its path.
+
+   **Ids.** A doc's `<id>` and a prototype's `<name>` are its source file's name without the extension (`manual-test-07-retry-banner.md` → `manual-test-07-retry-banner`). When two sources share a name, prefix each with its slice id and a hyphen. Every build derives the same ids from the same files, so a refresh keeps every published link.
 3. Write `data.json` (schema below).
-4. Publish with the `Artifact` tool: `file_path` is the build folder's `index.html`, `root` is the build folder, and `files` lists every other file in it. On a refresh, pass `url` from `overview.md`; when this session has not yet read or published that artifact, read it first (`action: "read"`). The page templates already meet the artifact page contract, so a refresh needs no design pass.
+4. Publish with the `Artifact` tool: `file_path` is the build folder's `index.html`, `root` is the build folder, and `files` lists every other file in it. On a refresh, pass `url` from `overview.md`, and before the session's first publish of that artifact:
+   - read the page itself (`action: "read"`, no `path`): only a page read counts as viewing it;
+   - list its published files (`action: "list"`, `scope: "files"`) and add `"<path>": null` to `files` for every published path your build lacks, so the page holds exactly the build's files.
+
+   The page templates already meet the artifact page contract, so a refresh needs no design pass.
 5. **Refused publish.** A refusal on an artifact you already read means another session published the page after your read. It hands you the live version. Read that version's `data.json` (`action: "read"`, `path: "data.json"`) and compare its ticket states with your build's:
    - **Same states:** the other session already published what your refresh exists to show. Skip the publish and say so in the report.
-   - **Different states:** the files can have changed since your build read them. Rebuild from step 1, then publish with the same `url`; the refusal counts as the read. A second refusal goes to the user.
+   - **Newer build:** your `builtAt` is later than the live one, and every state that differs matches the ticket files on disk now. Send the same publish again; the refusal counts as the read. The first resend is refused as identical content; send it once more, unchanged, and it goes through.
+   - **Different states otherwise:** the files can have changed since your build read them. Rebuild from step 1, then publish with the same `url`. A refusal after the rebuild goes to the user.
 
 ### data.json
 

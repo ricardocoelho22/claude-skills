@@ -27,7 +27,7 @@ When unsure, keep it. A redundant test costs little; a missing one costs a bug.
 1. Read every test file in your brief, and the seams.
 2. Decide per test: keep, delete, or merge — with a reason for each removal.
 3. Apply the changes.
-4. Run the single test file command for every file you touched. Every test must pass.
+4. Run the single test file command for every file you touched, and the brief's lint command on them. Every test must pass and the lint must be clean.
 
 ## What to return
 

@@ -20,7 +20,7 @@ Your brief lists the confirmed seams. Write tests only at those seams. When you 
 Your brief names your mode. Follow it exactly.
 
 **Test-writer mode** — your brief says to write failing tests and return before implementing.
-- Write all failing tests for this cycle's confirmed seams.
+- Write all failing tests for this cycle's confirmed seams, and update the existing tests your brief lists as pinning what the cycle changes.
 - Confirm each test is red for a genuine behavioral reason — not a missing import or fixture — before returning.
 - Return with no production code changed.
 - Typecheck errors are expected only where a test calls API this cycle has not built yet; name them in your return.
@@ -34,7 +34,7 @@ In all modes: stop and report rather than expand scope.
 
 ## Verifying your own work
 
-Run the single relevant test file after each cycle and typecheck before returning — use the exact commands in your brief. Run the full suite only when your brief says so.
+Run the single relevant test file after each cycle, then typecheck and the brief's lint command on the files you changed before returning — use the exact commands in your brief. A lint error is a failing check, in test files too. Run the full suite only when your brief says so.
 
 Report a test as passing only after watching it pass. When something fails and you cannot fix it inside your cycle: report it. A truthful "blocked, here is why" is worth more than an optimistic summary the orchestrator must later disprove.
 

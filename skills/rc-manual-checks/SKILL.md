@@ -22,11 +22,13 @@ At most 10 items, ordered as a tester walks them. Each item is a plain bullet on
 
 A guide is reference, complete once written. Whoever reads it later (a report, a ticket status, a feature page) assumes its checks done: it leaves the ticket's status and the user's to-do list as they were.
 
-An item earns its place when a human must perform it: the result is something seen, felt, or timed, or it crosses a boundary the tests mock (a real email arrives, a real payment clears). Behavior a test already pins is covered; leave it to the tests.
+An item earns its place when a human must perform it: the result is something seen, felt, or timed, or it crosses a boundary the tests mock (a real email arrives, a real payment clears). Behavior a test already pins is covered; leave it to the tests. Behavior a later ticket owns is out.
+
+Every `→` result is **traced**: you read the code that produces it, every step between the action and the result included. For a limit or a refusal, that means the code that enforces it and the inputs that actually reach it (a resize or a type check earlier in the pipeline can stop them first). Drop an item you cannot trace.
 
 Cover every user-visible surface the diff touches, and each one's empty, error, and loading states where the diff changes them. A change with no human-observable surface gets no guide: say so in one line instead.
 
-Done when: every user-visible surface in the diff has an item or is named as test-covered, and the list is 10 plain bullets or fewer.
+Done when: every user-visible surface in the diff has an item or is named as test-covered, every result is traced, and the list is 10 plain bullets or fewer.
 
 ## Output
 

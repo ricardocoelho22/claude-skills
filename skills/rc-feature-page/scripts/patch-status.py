@@ -9,8 +9,9 @@ Keeps every id, slice, doc and decision of the live page. Changes only:
     (the guide is copied to <out-dir>/src/docs/<id>.md and added to docs and published);
   - builtAt.
 Ticket files are looked up in <feature>/specs/<slice-id>/issues/ when that folder exists, else in
-<feature>/issues/. Tickets on disk that the page does not show are listed as NEW: placing them
-needs a full refresh. Also writes <out-dir>/index.html from the skill's page template. Prints the changes and the
+<feature>/issues/. Tickets on disk that the page does not show are listed as NEW, and slice folders
+with tickets that the page does not show as NEW SLICE: placing either needs a full refresh. A status
+line that maps to no known state is listed as UNPARSED and the ticket keeps its live state. Also writes <out-dir>/index.html from the skill's page template. Prints the changes and the
 `files` list for the Artifact publish (file_path <out-dir>/index.html, root <out-dir>).
 """
 import glob
@@ -35,11 +36,21 @@ TICKET_FILE = re.compile(r'^(\d+)-.+\.md$')
 
 
 def ticket_state(path):
+    """(state, phrase) from the ticket's Status: line; state is None when the phrase maps to no known state.
+
+    Multi-word phrases (`in progress`, `ready for agent`) match as their hyphenated form; the longest
+    known prefix wins, so trailing words (`in progress resumed`) are ignored.
+    """
     match = STATUS_LINE.search(open(path, encoding='utf-8').read())
     if not match:
-        return 'open'
-    word = re.split(r'[\s(—–:,.]', match.group(1).strip().lower().replace('_', '-'))[0]
-    return WORD_TO_STATE.get(word, f'UNKNOWN:{word}')
+        return 'open', ''
+    phrase = match.group(1).strip()
+    words = re.split(r'[\s_-]+', phrase.lower())
+    for end in range(len(words), 0, -1):
+        state = WORD_TO_STATE.get('-'.join(words[:end]))
+        if state:
+            return state, phrase
+    return None, phrase
 
 
 def issues_dir(feature, slice_id):
@@ -65,9 +76,11 @@ def main(live_path, feature, out_dir):
             if not files:
                 print(f'MISSING  {num} (no ticket file in {folder})')
                 continue
-            state = ticket_state(files[0])
-            if state != ticket.get('status'):
-                print(f'STATUS   {num}: {ticket.get("status")} -> {state}')
+            state, phrase = ticket_state(files[0])
+            if state is None:
+                print(f'UNPARSED {slice_["id"]}/{num}: "{phrase}" (kept {ticket.get("status")})')
+            elif state != ticket.get('status'):
+                print(f'STATUS   {slice_["id"]}/{num}: {ticket.get("status")} -> {state}')
                 ticket['status'] = state
             guides = glob.glob(os.path.join(folder, f'manual-test-{num}-*.md'))
             if guides and not ticket.get('checklist'):
@@ -78,12 +91,17 @@ def main(live_path, feature, out_dir):
                 data['docs'][doc_id] = {'title': title, 'kind': 'Manual checks', 'src': src}
                 ticket['checklist'] = doc_id
                 new_docs.append(src)
-                print(f'GUIDE    {num}: {src}')
+                print(f'GUIDE    {slice_["id"]}/{num}: {src}')
     for folder in {f for f, _ in shown}:
         for path in sorted(glob.glob(os.path.join(folder, '*.md'))):
             match = TICKET_FILE.match(os.path.basename(path))
             if match and (folder, match.group(1)) not in shown and is_ticket(path):
                 print(f'NEW      {os.path.relpath(path, feature)} (not on the page: run a full refresh)')
+    page_slices = {slice_['id'] for slice_ in data['slices']}
+    for folder in sorted(glob.glob(os.path.join(feature, 'specs', '*', 'issues'))):
+        slice_id = os.path.basename(os.path.dirname(folder))
+        if slice_id not in page_slices and any(is_ticket(p) for p in glob.glob(os.path.join(folder, '*.md'))):
+            print(f'NEW SLICE {slice_id} (not on the page: run a full refresh)')
     template = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'page', 'index.html')
     page = open(template, encoding='utf-8').read()
     page = re.sub(r'<title>.*?</title>', f"<title>{data['feature']}</title>", page, count=1, flags=re.S)
