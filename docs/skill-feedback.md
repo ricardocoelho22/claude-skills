@@ -1414,3 +1414,42 @@ fixed / 8 rejected / 3 deferred, spec ~20 / 5 / 1, bugs ~10 / 2 / 6, no escapes.
 - **Suggested change:** add to the explorer brief / Risks: "for each test command, read the autouse fixtures of the
   conftests on its path and list every write outside the test's own data; a write to shared state is a Gate A
   question, not a run".
+
+## 2026-11-09 — retro of an orchestrate run (design-system variants replacing style overrides; visual no-change)
+
+### rc-orchestrate, Phase 0 plan: read the path-scoped test rules before writing seams
+
+- **What happened:** the plan's seams asserted computed CSS (padding, colour). The repo's path-scoped frontend test
+  rules forbid CSS-property assertions; the coordinator caught it before the tests were written, and the seams were
+  re-planned to modifier classes plus screenshots. Some existing tests in the same package do use computed styles,
+  so "the package does it" was not a safe guide.
+- **Suggested change:** in *Write the plan*, add: "Before you write a seam, read every rule file whose path scope
+  matches the test files the cycle will touch (e.g. `.claude/rules/**` with `paths:` globs), and quote the rules that
+  limit what a test may assert."
+
+### rc-orchestrate: a branch for "the look must not change" refactors
+
+- **What happened:** the ticket asked that the UI look the same after a refactor. What worked: a throwaway browser
+  test that screenshots the affected components at BASE (run twice to prove the shots are byte-identical:
+  animations off, fixed width), the same shots after the change (byte-compared), and a **sabotage run** (the new
+  props removed for one run, files restored from a checkpoint tree) to prove the harness sees the change at all. The
+  sabotage also showed which states the change could not affect (hover shots stayed the same).
+- **Suggested change:** add a short "Visual no-change" note to step 1 or to Gate B evidence: "take BEFORE shots at
+  BASE before the first executor; prove determinism (two identical runs) and sensitivity (one sabotage run that
+  differs); keep the harness outside git".
+
+### rc-reviewer (Standards brief): a "file convention" claim needs evidence from the same file
+
+- **What happened:** a Standards nit said a new example broke "the file's pattern" by using a separate code constant;
+  the reviewer had compared it with a different file. The file itself used separate constants everywhere. Logged
+  `rejected: wrong`.
+- **Suggested change:** add to the Standards brief: "when a finding claims a file's or folder's convention, cite two
+  existing instances of that convention in the same file or folder".
+
+### rc-orchestrate, Phase 0 BASE failures: record each command's exit code, not only filtered output
+
+- **What happened:** the BASE run piped every command through `grep` for summary lines inside a tool shell. One build
+  failed (a tooling 401) and its test command printed nothing; the filtered output looked like "no lines" rather than
+  "failed". It was caught only because the build step echoed its exit code.
+- **Suggested change:** in *Record BASE failures*: "capture each command's exit code (or use `set -o pipefail`) and
+  treat a command with no summary line as failed until shown otherwise".
