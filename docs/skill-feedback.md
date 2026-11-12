@@ -78,6 +78,41 @@ Each entry: the skill, the problem, the change, and `Seen` (the dates it came up
 - **Test-framework update pending on the parent:** put the new test-API rules in every test-writer brief from
   cycle 1. Seen: 11-03.
 
+### rc-coordinate
+
+From the first real run (11-11 to 11-12, several tickets, one PR per ticket). What worked: one window for
+decisions, the workers' Gate Bs, the slots, pilot-first.
+
+- **PR landing mode.** The skill ends at a fast-forward, but the work landed as one PR per ticket, and most of the
+  coordinator's time after Gate B went to steps it had no guidance for. Add a mode chosen at setup: the coordinator
+  rebases, pushes, opens the PR (body from the Gate B report) and posts it; a watcher script polls CI and reviews and
+  reports state changes only; the worker turns CI failures and review findings into a fix that comes back as a small
+  Gate B; the coordinator merges under the merge rules. Landing is the coordinator's main context cost, so the
+  reading of logs and findings goes to the worker, which has the ticket's context. Seen: 11-12.
+- **A project file for the project's answers.** Merge rules (who, when, method, per area), posting and review routing,
+  preflight checks, worktree warm-up, extra slots: read from a file in the work repo, asked once and written when
+  missing. Settled at setup, never mid-run. Keeps the skill generic. Seen: 11-12.
+- **Preflight at setup**, before the pilot: tools, credentials, tokens, and the permissions the landing mode needs
+  (push, PR create and posts ran into permission blocks after the user's go-ahead). Run every check, then ask once.
+  Seen: 11-12.
+- **The coordinator owns shared git state.** One fetch per wave; workers never fetch, rebase onto the remote, or push;
+  stagger worktree creation. Parallel fetches from many worktrees corrupted the shared object store. Seen: 11-12.
+- **Worker liveness.** Every worker lost its socket overnight. After any gap, sweep every worker, resume the dead ones
+  from the session ids in the run file, and tell the user once. Seen: 11-12.
+- **Attention budget.** Message the user only when a decision is needed or a result changes; keep the digest in the
+  run file, show it on request, and post a short summary about hourly. Many messages were "nothing new". Seen: 11-12.
+- **"Waiting for base."** When a PR's CI fails on tests that also fail on the base branch, park the PR, watch the base
+  fix, then start a fresh CI run on the new base; it is not the ticket's failure. Seen: 11-12.
+- **Descriptive worker names** (`pdf-page-cut`, not a ticket number), with the subject on every user-facing line.
+  Seen: 11-12.
+- **Wave size.** The run suggests 3–4 tickets the first time, since load grew with PR follow-up, not with workers.
+  Keep workers uncapped and move follow-up out of the coordinator; if load still grows, cap PRs in flight. Seen: 11-12.
+- **Coordinator guardrails:** test hooks with the hook runner, not a probe commit; every container or suite use
+  takes its slot, however short; check a watcher's status parsing before trusting its events (a case-sensitive match
+  reported a false DONE); resume only a session id read from the run file (a typo started a stray session). Seen: 11-12.
+- **protocol.md:** PR follow-up events (CI failed, review findings, base red) and the base check (does this failure
+  also fail on base?); workers never fetch or push. Seen: 11-12.
+
 ### Role files (rc-tdd, rc-fixer, rc-trimmer)
 
 - **Work in the worktree's own state.** To compare with the base, use the checkpoint tree or `git show <base>:<path>`;

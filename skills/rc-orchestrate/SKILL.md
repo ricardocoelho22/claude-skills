@@ -141,7 +141,7 @@ git -C <repo> switch -c <slug>                                # when the user as
 - **Cycles**: the ticket's test-first cycles in sequence; for each cycle, the seams it tests (one line on why each earns a test), its acceptance criteria, the existing tests that pin a shape, name or rule the cycle changes (grep the tests for it), and a `mechanical` or `design-heavy` mark when it sits off the norm (see *Rungs*).
 - **Reuse**: helpers and fixtures executors must call instead of reimplementing.
 - **Commands**: verified from config: single test file, full suite, typecheck, and the lint command of each package in scope (the repo's changed-files lint when it has one, as its nearest `CLAUDE.md`/`AGENTS.md` states it). Name the package manager.
-- **Risks**: shared state, generated code, env vars, the BASE failures. Name the unchanged code each change passes through: its callers, the buffers, holds and retries it crosses, the users of a changed shared component outside the ticket, and the tests of sibling tickets that pin a changed shape. Each mitigation names the test that fails when it is false; a mitigation with no test is an open question for Gate A.
+- **Risks**: shared state, generated code, env vars, the BASE failures. Name the unchanged code each change passes through: its callers, the buffers, holds and retries it crosses, the users of a changed shared component outside the ticket, and the tests of sibling tickets that pin a changed shape. Each mitigation names the test that fails when it is false; a mitigation with no test is an open question for Gate A. Name anything the change touches that another team owns or a shared pipeline consumes (a lock file, a base image, a schema, a CI rule); each one is an open question for Gate A.
 
 **Open the feature page.** When the feature has a page, record its URL in the run file; the first status change refreshes it. When it has none, create it with a full build (below) and record the new URL.
 
@@ -161,7 +161,7 @@ Done when: the run file holds the backend, BASE and the run's branch per repo, B
 
 ## Gate A — The plan 🚦 (optional)
 
-Stop only when the plan has open questions the user must resolve: seam candidates you cannot choose between, spec ambiguities with real downstream cost, unknowns that force a re-do if wrong. Otherwise state the cycles and proceed.
+Stop only when the plan has open questions the user must resolve: seam candidates you cannot choose between, spec ambiguities with real downstream cost, unknowns that force a re-do if wrong, a change to something another team owns. Otherwise state the cycles and proceed.
 
 When you stop, invoke `/grilling` with two adaptations:
 
@@ -229,6 +229,7 @@ The user reads the code here to stay grounded and catch quirks. Hand them a repo
 
 ```
 ## Ticket <NN> — <title>        ✅ tests · ✅ typecheck
+Worktree:   <absolute path, per repo>
 <the rc-diff-tour body: Read first … Watch for>
 
 Review:     <n> fixed · <n> deferred (<reason>) · <n> rejected
