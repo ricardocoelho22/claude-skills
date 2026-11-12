@@ -64,13 +64,18 @@ This is the main driver for all implementation work; it does not hand off to
 ### `rc-coordinate`
 
 Several tickets at once: one background `rc-orchestrate` worker per ticket, each
-in its own worktree, launched from one coordinator session. The coordinator
-plans the waves (unblocked tickets whose touch-lists don't overlap), launches a
-pilot first, batches every Gate A question and Gate B report into one digest in
-its own window, commits on your approval, lands tickets one at a time through a
-merge queue, and runs a cross-ticket review after each wave. It is the only
-writer of the feature page. Workers follow `skills/rc-coordinate/protocol.md`
-(message events, slots, bans). The evidence behind it is in
+in its own worktree, launched from one coordinator session. The coordinator runs
+a preflight, plans the waves (unblocked tickets whose touch-lists don't
+overlap), launches a pilot first, batches every Gate A question and Gate B
+report into one digest in its own window, commits on your approval, and lands
+tickets one at a time: fast-forward onto a branch, or one PR per ticket, which
+the worker watches and fixes until the coordinator merges it under the merge
+rules. It runs a cross-ticket review after each wave, owns the shared git
+state, and is the only writer of the feature page. Workers follow
+`skills/rc-coordinate/protocol.md`. Each work repo keeps its own rules
+(landing mode, merge and posting rules, preflight checks, slots) in
+`docs/agents/coordinate.md`; the template is
+`skills/rc-coordinate/project-file.md`. The evidence behind it is in
 `docs/multi-agent-practices.md`.
 
 **Depends on** `rc-orchestrate` and everything it depends on, plus Claude Code
