@@ -1,0 +1,11 @@
+# What desk/drift-check.sh compares between the laptop and the desk.
+# One entry per line, paths relative to ~.
+#   git <path>     a git repo: branch, commit, uncommitted files, ahead/behind
+#   files <path>   a folder outside git: a hash per top-level entry, skipping
+#                  git repos, worktrees, node_modules and .pnpm-store inside it
+git Code/claude-skills
+git Code/personal/lelemon
+git Code/sidedoor/sidedoor-backend
+git Code/sidedoor/sidedoor-frontend
+git Code/sidedoor/sidedoor-docs
+files Code/sidedoor

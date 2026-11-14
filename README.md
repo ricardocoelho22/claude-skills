@@ -22,6 +22,7 @@ cd claude-skills
 | `manifest/plugins.json` | Claude Code plugins + their marketplace. Not installed by `install.sh`. |
 | `statusline/` | My status line script. Symlinked to `~/.claude/statusline.sh`. |
 | `scripts/check.sh` | Checks that frontmatter names match their files, and that every skill, agent, and path the docs name exists (ours, in `manifest/skills.json`, or built in). Run by `install.sh` and the pre-commit hook in `.githooks/`. |
+| `desk/` | My desktop remote dev box: layout, sync rules, a laptop-vs-desk drift check, Windows setup commands. Optional and self-contained: nothing else in this repo uses it. See [desk/README.md](desk/README.md). |
 | `install.sh` | Symlinks `skills/`, `agents/` and the status line into `~/.claude/`, sets `statusLine` in `settings.json` if unset, runs `scripts/check.sh`, and points `core.hooksPath` at `.githooks/` if unset. |
 
 ## My own skills
